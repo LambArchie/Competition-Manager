@@ -39,7 +39,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template('users/login.html', title='Sign In', form=form)
 
 @app.route('/logout')
 def logout():
@@ -60,7 +60,7 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('users/register.html', title='Register', form=form)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -76,7 +76,7 @@ def edit_profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    return render_template('edit_profile.html', title='Edit Profile', form=form)
+    return render_template('users/edit_profile.html', title='Edit Profile', form=form)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -92,7 +92,7 @@ def change_password():
             db.session.commit()
             flash('Your password has been changed successfully.')
             return redirect(url_for('user', username=current_user.username))
-    return render_template('change_password.html', title='Change Password', form=form)
+    return render_template('users/change_password.html', title='Change Password', form=form)
 
 @app.route('/user/<username>')
 @login_required
@@ -103,4 +103,4 @@ def user(username):
         {'author': user, 'body': 'Test reviews #1'},
         {'author': user, 'body': 'Test reviews #2'}
     ]
-    return render_template('user.html', user=user, reviews=reviews)
+    return render_template('users/user.html', user=user, reviews=reviews)
