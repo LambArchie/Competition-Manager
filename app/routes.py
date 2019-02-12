@@ -87,6 +87,8 @@ def change_password():
         user = User.query.filter_by(username=current_user.username).first()
         if not user.check_password(form.currentpassword.data):
             flash('Wrong current password')
+        elif form.password.data == form.currentpassword.data:
+            flash('Same as exsisting password')
         else:
             user.set_password(form.password.data)
             db.session.commit()
