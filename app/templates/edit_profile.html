@@ -2,6 +2,7 @@
 
 {% block content %}
     <h1>Edit Profile</h1>
+    <p><a href="{{ url_for('change_password') }}">Change Password</a></p>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>

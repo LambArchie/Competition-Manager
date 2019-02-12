@@ -18,8 +18,7 @@ class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -38,10 +37,6 @@ class EditProfileForm(FlaskForm):
     """Allows profile editing"""
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    currentpassword = PasswordField('Current Password', validators=[DataRequired()])
-    password = PasswordField('New Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Edit Profile')
 
     def __init__(self, original_username, original_email, *args, **kwargs):
@@ -62,3 +57,10 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(email=self.email.data).first()
             if user is not None:
                 raise ValidationError('Please use a different email address.')
+
+class ChangePasswordForm(FlaskForm):
+    """Change Your Password"""
+    currentpassword = PasswordField('Current Password', validators=[DataRequired()])
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Edit Profile')

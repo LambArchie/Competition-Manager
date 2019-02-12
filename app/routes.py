@@ -6,7 +6,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm
 from app.models import User
 
 @app.before_request
@@ -77,6 +77,22 @@ def edit_profile():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    """Change password form"""
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=current_user.username).first()
+        if not user.check_password(form.currentpassword.data):
+            flash('Wrong current password')
+        else:
+            user.set_password(form.password.data)
+            db.session.commit()
+            flash('Your password has been changed successfully.')
+            return redirect(url_for('user', username=current_user.username))
+    return render_template('change_password.html', title='Change Password', form=form)
 
 @app.route('/user/<username>')
 @login_required
