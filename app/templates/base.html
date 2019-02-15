@@ -8,6 +8,13 @@
     {% endif %}
 {% endblock %}
 
+{% import "bootstrap/google.html" as google %}
+
+{% block scripts %}
+  {{super()}}
+  {{google.uanalytics(config['GOOGLE_ANALYTICS_ID'])}}
+{% endblock %}
+
 {% block navbar %}
     <nav class="navbar navbar-default">
         <div class="container">
