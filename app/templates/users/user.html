@@ -1,9 +1,9 @@
 
 {% extends "base.html" %}
 
-{% block content %}
-    <table>
-        <tr valign="top">
+{% block app_content %}
+    <table class="table table-hover">
+        <tr>
             <td>
                 <h1>User: {{ user.username }}</h1>
                 {% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
@@ -13,12 +13,7 @@
             </td>
         </tr>
     </table>
-    <hr>
     {% for review in reviews %}
-    <table>
-        <tr valign="top">
-            <td>{{ review.author.username }} says:<br>{{ review.body }}</td>
-        </tr>
-    </table>
+        {% include '_review.html' %}
     {% endfor %}
 {% endblock %}
