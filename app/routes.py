@@ -2,7 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
@@ -98,7 +98,7 @@ def change_password():
 
 @app.route('/user/<username>')
 @login_required
-def userprofile(username):
+def user_profile(username):
     """Makes dynamic user pages"""
     user = User.query.filter_by(username=username).first_or_404()
     reviews = [
