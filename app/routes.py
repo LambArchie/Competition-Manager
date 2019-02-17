@@ -3,7 +3,7 @@ Controls which pages load and what is shown on each
 """
 from os import path, remove
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, send_from_directory, send_file
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
@@ -120,7 +120,6 @@ def upload_avatar():
             flash('Avatar updated')
             return redirect(url_for('user_profile', username=current_user.username))
         else:
-            file_url = None
             flash('Avatar not uploaded')
     return render_template('users/upload_avatar.html', title='Upload Avatar', form=form)
 
