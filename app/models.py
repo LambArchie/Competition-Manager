@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     review = db.relationship('Review', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    avatar = db.Column(db.String(70), default="")
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -29,6 +30,10 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         """Checks if the password matches"""
         return check_password_hash(self.password_hash, password)
+
+    def avatar_filename(self, filename):
+        """Sets avatar name"""
+        self.avatar = filename
 
 class Review(db.Model):
     """Controls the Review SQL table"""

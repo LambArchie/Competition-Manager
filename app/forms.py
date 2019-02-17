@@ -2,9 +2,11 @@
 Controls forms
 """
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
+from app import avatars
 
 class LoginForm(FlaskForm):
     """Login Form fields"""
@@ -64,3 +66,8 @@ class ChangePasswordForm(FlaskForm):
     password = PasswordField('New Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Change Password')
+
+class UploadAvatarForm(FlaskForm):
+    """Upload an Avatar"""
+    avatar = FileField('Avatar', validators=[FileRequired(), FileAllowed(avatars, 'Images only!')])
+    submit = SubmitField('Upload Avatar')

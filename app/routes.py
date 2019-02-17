@@ -1,12 +1,14 @@
 """
 Controls which pages load and what is shown on each
 """
+from os import path, remove
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, send_from_directory
+from flask import render_template, flash, redirect, url_for, request, send_from_directory, send_file
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm
+from werkzeug.utils import secure_filename
+from app import app, db, avatars
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm, UploadAvatarForm
 from app.models import User
 
 @app.before_request
@@ -96,6 +98,32 @@ def change_password():
             return redirect(url_for('user', username=current_user.username))
     return render_template('users/change_password.html', title='Change Password', form=form)
 
+@app.route('/upload_avatar', methods=['GET', 'POST'])
+@login_required
+def upload_avatar():
+    """Controls avatar uploads"""
+    form = UploadAvatarForm()
+    if request.method == 'POST' and 'avatar' in request.files:
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=current_user.username).first()
+            if (user.avatar != "") and (path.exists(app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
+                print(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
+                remove(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
+                user.avatar_filename("")
+            file_obj = request.files['avatar']
+            file_extension = (file_obj.filename.split('.')[-1]).lower()
+            file_name = secure_filename(current_user.username + '.' + file_extension)
+            file_name = avatars.save(file_obj, name=file_name)
+            user.avatar_filename(file_name)
+            print(file_name)
+            db.session.commit()
+            flash('Avatar updated')
+            return redirect(url_for('user_profile', username=current_user.username))
+        else:
+            file_url = None
+            flash('Avatar not uploaded')
+    return render_template('users/upload_avatar.html', title='Upload Avatar', form=form)
+
 @app.route('/user/<username>')
 @login_required
 def user_profile(username):
@@ -106,3 +134,10 @@ def user_profile(username):
         {'author': user, 'body': 'Test reviews #2'}
     ]
     return render_template('users/user.html', user=user, reviews=reviews)
+
+@app.route('/avatar/<username>')
+def avatar(username):
+    """Gets avatar if one is set else uses default"""
+    user = User.query.filter_by(username=username).first_or_404()
+    print(app.config['UPLOADS_DEFAULT_DEST'] + user.avatar)
+    return send_from_directory(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
