@@ -98,7 +98,7 @@ def change_password():
 
 @app.route('/user/<username>')
 @login_required
-def user(username):
+def userprofile(username):
     """Makes dynamic user pages"""
     user = User.query.filter_by(username=username).first_or_404()
     reviews = [
