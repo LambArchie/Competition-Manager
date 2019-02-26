@@ -31,6 +31,10 @@ class User(UserMixin, db.Model):
         """Checks if the password matches"""
         return check_password_hash(self.password_hash, password)
 
+    def avatar_get(self):
+        """Returns avatar url"""
+        return '/avatar/{}'.format(self.username)
+
     def avatar_filename(self, filename):
         """Sets avatar name"""
         self.avatar = filename

@@ -138,5 +138,7 @@ def user_profile(username):
 def avatar(username):
     """Gets avatar if one is set else uses default"""
     user = User.query.filter_by(username=username).first_or_404()
+    if user.avatar == "":
+        return redirect("https://www.gravatar.com/avatar?d=identicon&s=128")
     print(app.config['UPLOADS_DEFAULT_DEST'] + user.avatar)
     return send_from_directory(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
