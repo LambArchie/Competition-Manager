@@ -56,7 +56,7 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, admin=bool(form.admin.data))
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -142,3 +142,12 @@ def avatar(username):
         return redirect("https://www.gravatar.com/avatar?d=identicon&s=128")
     print(app.config['UPLOADS_DEFAULT_DEST'] + user.avatar)
     return send_from_directory(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
+
+@app.route('/admin')
+@login_required
+def admin():
+    """Shows default admin page if got permissions"""
+    if (current_user.admin is False) or (current_user.admin is None):
+        return render_template('errors/403.html')
+    else:
+        return render_template('admin/admin.html')

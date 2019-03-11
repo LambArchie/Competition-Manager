@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
     review = db.relationship('Review', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     avatar = db.Column(db.String(70), default="")
+    admin = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
