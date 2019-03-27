@@ -52,17 +52,21 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Registration page"""
-    if current_user.is_authenticated:
+    if app.config['DISABLE_PUBLIC_REGISTRATION']:
+        return render_template('errors/403.html')
+    elif current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, admin=bool(form.admin.data))
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
-    return render_template('users/register.html', title='Register', form=form)
+    else:
+        form = RegistrationForm()
+        del form.admin # Hides option to make user admin
+        if form.validate_on_submit():
+            user = User(username=form.username.data, email=form.email.data, admin=False)
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash('Congratulations, you are now a registered user!')
+            return redirect(url_for('login'))
+        return render_template('users/register.html', title='Register', form=form)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -149,3 +153,19 @@ def admin():
         return render_template('errors/403.html')
     else:
         return render_template('admin/admin.html')
+
+@app.route('/admin/register', methods=['GET', 'POST'])
+def admin_register():
+    """Registration page"""
+    if (current_user.admin is False) or (current_user.admin is None):
+        return render_template('errors/403.html')
+    else:
+        form = RegistrationForm()
+        if form.validate_on_submit():
+            user = User(username=form.username.data, email=form.email.data, admin=bool(form.admin.data))
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash('User registed successfully')
+            return redirect(url_for('admin'))
+        return render_template('users/register.html', title='Register', form=form)

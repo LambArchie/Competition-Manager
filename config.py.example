@@ -11,6 +11,7 @@ class Config(object):
     GOOGLE_ANALYTICS_ID = ""
 
     MAX_UPLOAD_SIZE = 4  # In MiB
+    DISABLE_PUBLIC_REGISTRATION = False # Can always create users from admin area
 
     # Do not edit below this line unless you know what you are doing
     UPLOADS_DEFAULT_DEST = basedir + '/uploads/'
