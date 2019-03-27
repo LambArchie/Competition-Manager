@@ -107,7 +107,6 @@ def upload_avatar():
         if form.validate_on_submit():
             user = User.query.filter_by(username=current_user.username).first()
             if (user.avatar != "") and (path.exists(app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
-                print(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
                 remove(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
                 user.avatar_filename("")
             file_obj = request.files['avatar']
@@ -115,7 +114,6 @@ def upload_avatar():
             file_name = secure_filename(current_user.username + '.' + file_extension)
             file_name = avatars.save(file_obj, name=file_name)
             user.avatar_filename(file_name)
-            print(file_name)
             db.session.commit()
             flash('Avatar updated')
             return redirect(url_for('user_profile', username=current_user.username))
