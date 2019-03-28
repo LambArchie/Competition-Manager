@@ -1,7 +1,39 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+{% block scripts %}
+{{super()}}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/jq-3.3.1/dt-1.10.18/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('#myTable').DataTable( {
+        "processing": true,
+        "ajax": {url:"/api/admin/users",
+                dataSrc:""
+                },
+        // add column definitions to map your json to the table                                           
+        "columns": [
+            {data: "username"},
+            {data: "email"},
+            {data: "lastSeen"},
+            {data: "isAdmin"}
+        ]
+    } );
+    });
+</script>
+{% endblock %}
+
 {% block app_content %}
-    You are Admin
-    <p><a href="{{ url_for('admin_register') }}">Register</a></p>
+    <table id="myTable" class="table table-striped" style="width:100%" >
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Last Seen</th>
+                <th>Is Admin</th>                                 
+            </tr>
+        </thead> 
+    </table>
+    <p><a href="{{ url_for('admin_register') }}">Register New User</a></p>
 {% endblock %}

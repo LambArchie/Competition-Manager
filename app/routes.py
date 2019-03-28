@@ -3,7 +3,7 @@ Controls which pages load and what is shown on each
 """
 from os import path, remove
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, send_from_directory
+from flask import render_template, flash, redirect, url_for, request, send_from_directory, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
@@ -155,6 +155,7 @@ def admin():
         return render_template('admin/admin.html')
 
 @app.route('/admin/register', methods=['GET', 'POST'])
+@login_required
 def admin_register():
     """Registration page"""
     if (current_user.admin is False) or (current_user.admin is None):
@@ -169,3 +170,12 @@ def admin_register():
             flash('User registed successfully')
             return redirect(url_for('admin'))
         return render_template('users/register.html', title='Register', form=form)
+
+@app.route('/api/admin/users')
+@login_required
+def admin_users():
+    if (current_user.admin is False) or (current_user.admin is None):
+        return render_template('errors/403.html')
+    else:
+        users = [user.serialize_user() for user in User.query.all()]
+        return jsonify(users)

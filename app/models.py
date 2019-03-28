@@ -40,6 +40,15 @@ class User(UserMixin, db.Model):
         """Sets avatar name"""
         self.avatar = filename
 
+    def serialize_user(self):
+        """Returns user objects for api creation"""
+        return {    
+            "email": self.email,
+            "isAdmin": self.admin,
+            "lastSeen": self.last_seen,
+            "username": self.username
+        }
+
 class Review(db.Model):
     """Controls the Review SQL table"""
     id = db.Column(db.Integer, primary_key=True)
