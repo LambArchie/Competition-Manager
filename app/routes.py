@@ -159,7 +159,7 @@ def admin():
 def admin_register():
     """Registration page"""
     if (current_user.admin is False) or (current_user.admin is None):
-        return render_template('errors/403.html')
+        return render_template('errors/403.html'), 403
     else:
         form = RegistrationForm()
         if form.validate_on_submit():
@@ -171,11 +171,11 @@ def admin_register():
             return redirect(url_for('admin'))
         return render_template('users/register.html', title='Register', form=form)
 
-@app.route('/api/admin/users')
+@app.route('/api/v1/admin/users')
 @login_required
 def admin_users():
     if (current_user.admin is False) or (current_user.admin is None):
-        return render_template('errors/403.html')
+        return render_template('errors/403.html'), 403
     else:
         users = [user.serialize_user() for user in User.query.all()]
         return jsonify(users)
