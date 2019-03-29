@@ -163,7 +163,10 @@ def admin_register():
     else:
         form = RegistrationForm()
         if form.validate_on_submit():
-            user = User(username=form.username.data, email=form.email.data, admin=bool(form.admin.data))
+            user = User(username=form.username.data,
+                        email=form.email.data,
+                        admin=bool(form.admin.data)
+                        )
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -174,6 +177,7 @@ def admin_register():
 @app.route('/api/v1/admin/users')
 @login_required
 def admin_users():
+    """Returns all users details in json"""
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html'), 403
     else:

@@ -3,8 +3,8 @@ Controls forms
 """
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SubmitField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models import User
 from app import avatars
 
@@ -52,7 +52,7 @@ class EditProfileForm(FlaskForm):
         if username.data != self.original_username:
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
-                raise ValidationError(_('Please use a different username.'))
+                raise ValidationError('Please use a different username.')
 
     def validate_email(self, email):
         """Checks if email is already used unless its current email"""

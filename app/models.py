@@ -8,6 +8,7 @@ from app import db, login
 
 @login.user_loader
 def load_user(id):
+    """Returns user details"""
     return User.query.get(int(id))
 
 class User(UserMixin, db.Model):
@@ -42,7 +43,7 @@ class User(UserMixin, db.Model):
 
     def serialize_user(self):
         """Returns user objects for api creation"""
-        return {    
+        return {
             "email": self.email,
             "isAdmin": self.admin,
             "lastSeen": self.last_seen,
