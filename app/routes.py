@@ -3,20 +3,24 @@ Controls which pages load and what is shown on each
 """
 from os import path, remove
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, send_from_directory, jsonify
+from flask import render_template, flash, redirect, url_for, request, send_from_directory, g
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from app import app, db, avatars
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm, UploadAvatarForm
 from app.models import User
+from app.api.users import get_users
 
 @app.before_request
 def before_request():
     """Code which is run before every request"""
+    g.current_user = current_user
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+    else:
+        g.current_user.admin = False
 
 @app.route('/')
 @app.route('/index')
@@ -174,12 +178,8 @@ def admin_register():
             return redirect(url_for('admin'))
         return render_template('users/register.html', title='Register', form=form)
 
-@app.route('/api/v1/admin/users')
+@app.route('/admin/users/get')
 @login_required
 def admin_users():
-    """Returns all users details in json"""
-    if (current_user.admin is False) or (current_user.admin is None):
-        return render_template('errors/403.html'), 403
-    else:
-        users = [user.serialize_user() for user in User.query.all()]
-        return jsonify(users)
+    """Dummy function, calls other function"""
+    return get_users()

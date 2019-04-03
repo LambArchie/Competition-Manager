@@ -19,4 +19,7 @@ bootstrap = Bootstrap(app)
 avatars = UploadSet('avatars', IMAGES)
 configure_uploads(app, avatars)
 
+from app.api import bp as api_bp
+app.register_blueprint(api_bp, url_prefix='/api')
+
 from app import routes, models, errors
