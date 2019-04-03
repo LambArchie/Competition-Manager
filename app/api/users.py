@@ -25,7 +25,6 @@ def get_users():
 @bp.route('/v1/admin/users', methods=['POST'])
 @token_auth.login_required
 def create_user():
-    """TODO: CHECK AUTH, ADMIN OPTION"""
     """Allows creating a user"""
     data = request.get_json() or {}
     if ('username' not in data) or ('email' not in data) or ('password' not in data) or ('admin' not in data):
@@ -42,8 +41,8 @@ def create_user():
         return bad_request('admin is not boolean')
     user = User()
     user.from_json(data, new_user=True)
-    #db.session.add(user)
-    #db.session.commit()
+    db.session.add(user)
+    db.session.commit()
     response = jsonify(user.to_json())
     response.status_code = 201
     return response

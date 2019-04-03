@@ -8,8 +8,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from app import app, db, avatars
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm,
-                        UploadAvatarForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm, UploadAvatarForm
 from app.models import User
 from app.api.users import get_users
 
