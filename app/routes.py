@@ -8,7 +8,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from app import app, db, avatars
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm, UploadAvatarForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm,
+                        UploadAvatarForm
 from app.models import User
 from app.api.users import get_users
 
@@ -60,17 +61,16 @@ def register():
         return render_template('errors/403.html')
     elif current_user.is_authenticated:
         return redirect(url_for('index'))
-    else:
-        form = RegistrationForm()
-        del form.admin # Hides option to make user admin
-        if form.validate_on_submit():
-            user = User(username=form.username.data, email=form.email.data, admin=False)
-            user.set_password(form.password.data)
-            db.session.add(user)
-            db.session.commit()
-            flash('Congratulations, you are now a registered user!')
-            return redirect(url_for('login'))
-        return render_template('users/register.html', title='Register', form=form)
+    form = RegistrationForm()
+    del form.admin # Hides option to make user admin
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data, admin=False)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('users/register.html', title='Register', form=form)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -125,8 +125,7 @@ def upload_avatar():
             db.session.commit()
             flash('Avatar updated')
             return redirect(url_for('user_profile', username=current_user.username))
-        else:
-            flash('Avatar not uploaded')
+        flash('Avatar not uploaded')
     return render_template('users/upload_avatar.html', title='Upload Avatar', form=form)
 
 @app.route('/user/<username>')
@@ -155,8 +154,7 @@ def admin():
     """Shows default admin page if got permissions"""
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html')
-    else:
-        return render_template('admin/admin.html')
+    return render_template('admin/admin.html')
 
 @app.route('/admin/register', methods=['GET', 'POST'])
 @login_required
@@ -164,19 +162,18 @@ def admin_register():
     """Registration page"""
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html'), 403
-    else:
-        form = RegistrationForm()
-        if form.validate_on_submit():
-            user = User(username=form.username.data,
-                        email=form.email.data,
-                        admin=bool(form.admin.data)
-                        )
-            user.set_password(form.password.data)
-            db.session.add(user)
-            db.session.commit()
-            flash('User registed successfully')
-            return redirect(url_for('admin'))
-        return render_template('users/register.html', title='Register', form=form)
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data,
+                    email=form.email.data,
+                    admin=bool(form.admin.data)
+                    )
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('User registed successfully')
+        return redirect(url_for('admin'))
+    return render_template('users/register.html', title='Register', form=form)
 
 @app.route('/admin/users/get')
 @login_required
