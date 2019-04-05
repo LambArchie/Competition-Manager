@@ -62,6 +62,8 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     del form.admin # Hides option to make user admin
+    if app.config['CAPTCHA_ENABLED'] is False:
+        del form.recaptcha
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data, admin=False)
         user.set_password(form.password.data)
@@ -162,6 +164,7 @@ def admin_register():
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html'), 403
     form = RegistrationForm()
+    del form.recaptcha
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data,
