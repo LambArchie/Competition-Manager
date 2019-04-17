@@ -49,8 +49,9 @@ class User(UserMixin, db.Model):
     def to_json(self):
         """Returns user objects for api creation"""
         return {
-            "email": self.email,
             "admin": self.admin,
+            "email": self.email,
+            "id": self.id,
             "lastSeen": self.last_seen,
             "username": self.username
         }
@@ -88,6 +89,9 @@ class User(UserMixin, db.Model):
 class Review(db.Model):
     """Controls the Review SQL table"""
     id = db.Column(db.Integer, primary_key=True)
+    compId = db.Column(db.Integer, db.ForeignKey('competition.id'))
+    catId = db.Column(db.Integer, db.ForeignKey('category.id'))
+    name = db.Column(db.String(64))
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -95,3 +99,24 @@ class Review(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<Review {}>'.format(self.body)
+
+class Category(db.Model):
+    """Controls Categories SQL table"""
+    id = db.Column(db.Integer, primary_key=True)
+    compId = db.Column(db.Integer, db.ForeignKey('competition.id'))
+    name = db.Column(db.String(64))
+    body = db.Column(db.String(140))
+
+    def __repr__(self):
+        """Printable return"""
+        return '<Category {}>'.format(self.body)
+
+class Competition(db.Model):
+    """Controls Competition SQL table"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    body = db.Column(db.String(140))
+
+    def __repr__(self):
+        """Printable return"""
+        return '<Competition {}>'.format(self.body)
