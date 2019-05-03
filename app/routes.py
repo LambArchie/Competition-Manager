@@ -8,8 +8,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from app import app, db, avatars
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm, UploadAvatarForm
-from app.models import User
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm, UploadAvatarForm, CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm
+from app.models import User, Competition, Category, Review
 from app.api.users import get_users
 
 @app.before_request
@@ -182,3 +182,81 @@ def admin_register():
 def admin_users():
     """Dummy function, calls other function"""
     return get_users()
+
+@app.route('/competition')
+@login_required
+def competitionBase():
+    return render_template('competition/index.html', title="Competitions")
+
+@app.route('/competition/<compId>')
+@login_required
+def compId(compId):
+    """Makes dynamic competition pages"""
+    competition = Competition.query.filter_by(id=compId).first_or_404()
+    return render_template('competition/competition.html', title=competition.name, name=competition.name, body=competition.body)
+
+@app.route('/competition/create', methods=['GET', 'POST'])
+@login_required
+def competitionCreate():
+    """Creates competitions"""
+    form = CompetitionCreateForm()
+    if form.validate_on_submit():
+        competition = Competition(name=form.name.data,
+                    body=form.body.data
+                    )
+        db.session.add(competition)
+        db.session.commit()
+        flash('Competition created successfully')
+        return redirect(url_for('index'))
+    return render_template('competition/competitionCreate.html', title='Competition Create', form=form)
+
+@app.route('/competition/<compId>/<catId>')
+@login_required
+def catId(compId, catId):
+    """Makes dynamic categories pages"""
+    category = Category.query.filter_by(id=catId).filter_by(comp_id=compId).first_or_404()
+    return render_template('competition/category.html', title=category.name, name=category.name, body=category.body)
+
+@app.route('/competition/<compId>/create', methods=['GET', 'POST'])
+@login_required
+def categoryCreate(compId):
+    """Create categories"""
+    form = CategoryCreateForm()
+    if form.validate_on_submit():
+        category = Category(name=form.name.data,
+                    body=form.body.data,
+                    comp_id=compId
+                    )
+        db.session.add(category)
+        db.session.commit()
+        flash('Category created successfully')
+        return redirect(url_for('index'))
+    return render_template('competition/categoryCreate.html', title='Category Create', form=form)
+
+@app.route('/competition/<compId>/<catId>/<reviewId>')
+@login_required
+def reviewId(compId, catId, reviewId):
+    """Makes dynamic review pages"""
+    review = Review.query.filter_by(id=reviewId).filter_by(comp_id=compId).first_or_404()
+    return render_template('competition/review.html', title=review.name, name=review.name, body=review.body, user=review.user_id)
+
+
+@app.route('/competition/<compId>/<catId>/create', methods=['GET', 'POST'])
+@login_required
+def reviewCreate(compId, catId):
+    """Create reviews"""
+    form = ReviewCreateForm()
+    if form.validate_on_submit():
+        review = Review(name=form.name.data,
+                    body=form.body.data,
+                    user_id=int(current_user.id),
+                    comp_id=int(compId)
+                    )
+        db.session.add(review)
+        category = Category.query.filter_by(id=catId).filter_by(comp_id=compId).first_or_404()
+        review.categories.append(category)
+        db.session.commit()
+
+        flash('Review created successfully')
+        return redirect(url_for('index'))
+    return render_template('competition/reviewCreate.html', title='Review Create', form=form)
