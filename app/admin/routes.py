@@ -3,11 +3,11 @@ Controls which pages load and what is shown on each
 """
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
-from app import app, db, avatars
-from app.forms import RegistrationForm
+from app import db
 from app.models import User
 from app.admin import bp
 from app.api.users import get_users
+from app.auth.forms import RegistrationForm
 
 @bp.route('/')
 @login_required

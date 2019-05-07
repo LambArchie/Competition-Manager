@@ -4,8 +4,6 @@ Controls forms in competitions
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import ValidationError, DataRequired, Length
-from app.models import User
-from app import avatars
 
 class CompetitionCreateForm(FlaskForm):
     """Creates a Competition"""

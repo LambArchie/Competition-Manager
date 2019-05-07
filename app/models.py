@@ -8,6 +8,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
 
+category_review_assoc = db.Table('category_review_assoc',
+                                 db.Column('categories', db.Integer, db.ForeignKey('category.id')),
+                                 db.Column('reviews', db.Integer, db.ForeignKey('review.id'))
+                                )
+
 @login.user_loader
 def load_user(id):
     """Returns user details"""
@@ -97,11 +102,6 @@ class Competition(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<Competition {}>'.format(self.body)
-
-category_review_assoc = db.Table('category_review_assoc',
-    db.Column('categories', db.Integer, db.ForeignKey('category.id')),
-    db.Column('reviews', db.Integer, db.ForeignKey('review.id'))
-)
 
 class Category(db.Model):
     """Controls Categories SQL table"""

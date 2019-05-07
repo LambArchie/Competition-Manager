@@ -6,9 +6,9 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
 from app.models import User
 from app.auth import bp
+from app.auth.forms import LoginForm, RegistrationForm, ChangePasswordForm
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -64,10 +64,10 @@ def change_password():
         if not user.check_password(form.currentpassword.data):
             flash('Wrong current password')
         elif form.password.data == form.currentpassword.data:
-            flash('Same as exsisting password')
+            flash('Same as existing password')
         else:
             user.set_password(form.password.data)
             db.session.commit()
             flash('Your password has been changed successfully.')
-            return redirect(url_for('user.user', username=current_user.username))
+            return redirect(url_for('user.user_profile', username=current_user.username))
     return render_template('auth/change_password.html', title='Change Password', form=form)

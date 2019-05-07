@@ -1,12 +1,10 @@
 """
-Controls forms
+Controls forms for auth
 """
 from flask_wtf import FlaskForm, RecaptchaField
-from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models import User
-from app import avatars
 
 class LoginForm(FlaskForm):
     """Login Form fields"""
@@ -37,39 +35,9 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different email address.')
 
-class EditProfileForm(FlaskForm):
-    """Allows profile editing"""
-    username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Edit Profile')
-
-    def __init__(self, original_username, original_email, *args, **kwargs):
-        super(EditProfileForm, self).__init__(*args, **kwargs)
-        self.original_username = original_username
-        self.original_email = original_email
-
-    def validate_username(self, username):
-        """Checks if username is already used unless its current username"""
-        if username.data != self.original_username:
-            user = User.query.filter_by(username=self.username.data).first()
-            if user is not None:
-                raise ValidationError('Please use a different username.')
-
-    def validate_email(self, email):
-        """Checks if email is already used unless its current email"""
-        if email.data != self.original_email:
-            user = User.query.filter_by(email=self.email.data).first()
-            if user is not None:
-                raise ValidationError('Please use a different email address.')
-
 class ChangePasswordForm(FlaskForm):
     """Change Your Password"""
     currentpassword = PasswordField('Current Password', validators=[DataRequired()])
     password = PasswordField('New Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Change Password')
-
-class UploadAvatarForm(FlaskForm):
-    """Upload an Avatar"""
-    avatar = FileField('Avatar', validators=[FileRequired(), FileAllowed(avatars, 'Images only!')])
-    submit = SubmitField('Upload Avatar')
