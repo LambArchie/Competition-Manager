@@ -40,7 +40,7 @@ class User(UserMixin, db.Model):
 
     def avatar_get(self):
         """Returns avatar url"""
-        return '/avatar/{}'.format(self.username)
+        return '/user/{}/avatar'.format(self.username)
 
     def avatar_filename(self, filename):
         """Sets avatar name"""
