@@ -1,4 +1,4 @@
-# Competition Manage
+# Competition Manager
 
 ## Setup
 ```bash
