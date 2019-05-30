@@ -103,6 +103,14 @@ class Competition(db.Model):
         """Printable return"""
         return '<Competition {}>'.format(self.body)
 
+    def to_json(self):
+        """Returns user objects for api creation"""
+        return {
+            "body": self.body,
+            "id": self.id,
+            "name": self.name
+        }
+
 class Category(db.Model):
     """Controls Categories SQL table"""
     id = db.Column(db.Integer, primary_key=True)
@@ -113,6 +121,15 @@ class Category(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<Category {}>'.format(self.body)
+
+    def to_json(self):
+        """Returns user objects for api creation"""
+        return {
+            "body": self.body,
+            "comp_id": self.comp_id,
+            "id": self.id,
+            "name": self.name
+        }
 
 class Review(db.Model):
     """Controls the Review SQL table"""
@@ -129,3 +146,15 @@ class Review(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<Review {}>'.format(self.body)
+    
+    def to_json(self):
+        """Returns user objects for api creation"""
+        return {
+            "body": self.body,
+            "cat_id": self.id,
+            "comp_id": self.comp_id,
+            "id": self.id,
+            "name": self.name,
+            "timestamp": self.timestamp,
+            "user_id": self.user_id
+        }
