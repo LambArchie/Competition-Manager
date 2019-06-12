@@ -3,8 +3,8 @@
 {% block app_content %}
     <h1>Competitions</h1>
     {% for competition in competitions %}
-        <p><a href="{{ url_for('competition.compId', comp_id=competition.id) }}">{{ competition.name }}</a></p>
+        <p><a href="{{ url_for('competition.competition_overview', comp_id=competition.id) }}">{{ competition.name }}</a></p>
     {% endfor %}
     <br>
-    <p><a href="{{ url_for('competition.competitionCreate') }}">Create Competition</a></p>
+    <p><a href="{{ url_for('competition.competition_create') }}">Create Competition</a></p>
 {% endblock %}

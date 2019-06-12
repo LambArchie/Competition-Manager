@@ -17,7 +17,7 @@ def index():
 
 @bp.route('/<int:comp_id>')
 @login_required
-def compId(comp_id):
+def competition_overview(comp_id):
     """Makes dynamic competition pages"""
     competition = Competition.query.filter_by(id=comp_id).first_or_404()
     categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
@@ -25,7 +25,7 @@ def compId(comp_id):
 
 @bp.route('/create', methods=['GET', 'POST'])
 @login_required
-def competitionCreate():
+def competition_create():
     """Creates competitions"""
     form = CompetitionCreateForm()
     if form.validate_on_submit():
@@ -40,7 +40,7 @@ def competitionCreate():
 
 @bp.route('/<int:comp_id>/<int:cat_id>')
 @login_required
-def catId(comp_id, cat_id):
+def category_overview(comp_id, cat_id):
     """Makes dynamic categories pages"""
     category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
     review = Review.query.filter_by(comp_id=comp_id).all()
@@ -54,7 +54,7 @@ def catId(comp_id, cat_id):
 
 @bp.route('/<int:comp_id>/create', methods=['GET', 'POST'])
 @login_required
-def categoryCreate(comp_id):
+def category_create(comp_id):
     """Create categories"""
     form = CategoryCreateForm()
     if form.validate_on_submit():
@@ -70,7 +70,7 @@ def categoryCreate(comp_id):
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>')
 @login_required
-def reviewId(comp_id, cat_id, review_id):
+def review_overview(comp_id, cat_id, review_id):
     """Makes dynamic review pages"""
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
     #category = Category.query.filter_by(id=2).filter_by(comp_id=comp_id).first_or_404()
@@ -87,7 +87,7 @@ def reviewId(comp_id, cat_id, review_id):
 
 @bp.route('/<int:comp_id>/<int:cat_id>/create', methods=['GET', 'POST'])
 @login_required
-def reviewCreate(comp_id, cat_id):
+def review_create(comp_id, cat_id):
     """Create reviews"""
     form = ReviewCreateForm()
     if form.validate_on_submit():
@@ -102,5 +102,5 @@ def reviewCreate(comp_id, cat_id):
         db.session.commit()
 
         flash('Review created successfully')
-        return redirect(url_for('competition.index'))
+        return redirect(url_for('competition.review_overview', comp_id=comp_id, cat_id=cat_id, review_id=review.id))
     return render_template('competition/reviewCreate.html', title='Review Create', form=form)

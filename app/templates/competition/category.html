@@ -6,9 +6,9 @@
     <br>
     <p>Reviews:</p>
     {% for review in reviews %}
-        <p><a href="{{ url_for('competition.reviewId', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">{{ review.name }}</a></p>
+        <p><a href="{{ url_for('competition.review_overview', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">{{ review.name }}</a></p>
     {% endfor %}
     <br>
-    <p><a href="{{ url_for('competition.reviewCreate', comp_id=comp_id, cat_id=cat_id) }}">Create Review</a></p>
-    <p><a href="{{ url_for('competition.compId', comp_id=comp_id) }}">All Categories</a></p>
+    <p><a href="{{ url_for('competition.review_create', comp_id=comp_id, cat_id=cat_id) }}">Create Review</a></p>
+    <p><a href="{{ url_for('competition.competition_overview', comp_id=comp_id) }}">All Categories</a></p>
 {% endblock %}
