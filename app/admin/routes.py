@@ -15,7 +15,7 @@ def admin():
     """Shows default admin page if got permissions"""
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html')
-    return render_template('admin/admin.html')
+    return render_template('admin/admin.html', title="Users")
 
 @bp.route('/register', methods=['GET', 'POST'])
 @login_required

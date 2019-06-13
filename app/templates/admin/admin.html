@@ -1,32 +1,46 @@
 {% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block scripts %}
 {{super()}}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/jq-3.3.1/dt-1.10.18/datatables.min.css"/>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-html5-1.5.6/b-print-1.5.6/fh-3.1.4/datatables.min.css" integrity="sha384-odNHAEjUZPGCJ0/0VAskUrViXs/8EAZ3YFmYyXf9WxxTtaC7O/TkA3JcBy3KDYLv" crossorigin="anonymous"/>
+ 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js" integrity="sha384-htFkmzBKFrwO7EbvHZPvJXWg0sJIkPPUTBDe6LXOU2ghApFVGQx9++EDSrKMZtHE" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js" integrity="sha384-qNRjPXKOnea7MmtbXG6HLwVyoGNFsu7ntdDOFOt3FS4vmj4MWUKyyKMjRKu0Hr4h" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-html5-1.5.6/b-print-1.5.6/fh-3.1.4/datatables.min.js" integrity="sha384-g/y9/SJWeKSvJM3X+emt3C+wV1U8iBElVB9ndwDcnZ0djx/AZP7P7WNhvwzxol8Y" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function() {
-    $('#myTable').DataTable( {
-        "processing": true,
-        "ajax": {url:"/admin/users/get",
-                dataSrc:""
-                },
-        // add column definitions to map your json to the table                                           
-        "columns": [
-            {data: "id"},
-            {data: "username"},
-            {data: "email"},
-            {data: "lastSeen"},
-            {data: "admin"}
-        ]
-    } );
+        $('#users').DataTable( {
+            "processing": true,
+            "ajax": {url:"/admin/users/get",
+                    dataSrc:""
+                    },
+            // add column definitions to map your json to the table                                           
+            "columns": [
+                {data: "id"},
+                {data: "username"},
+                {data: "email"},
+                {data: "lastSeen"},
+                {data: "admin"}
+            ],
+            // export
+            //dom: 'lfrtipB',
+            dom: "<'row'<'col-sm-12 col-md-auto'l><'col-sm-12 col-md-3 mr-auto'B><'col-sm-12 col-md-auto'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            buttons: [
+                //'csv', 'excel', 'pdf', 'print'
+                { extend: 'csv', className: 'btn-sm'},
+                { extend: 'excel', className: 'btn-sm'},
+                { extend: 'pdf', className: 'btn-sm'},
+                { extend: 'print', className: 'btn-sm'}
+            ]
+        } );
     });
 </script>
 {% endblock %}
 
 {% block app_content %}
-    <table id="myTable" class="table table-striped" style="width:100%" >
+    <table id="users" class="table table-striped" style="width:100%" >
         <thead>
             <tr>
                 <th>ID</th>
@@ -37,5 +51,5 @@
             </tr>
         </thead> 
     </table>
-    <p><a href="{{ url_for('admin.admin_register') }}">Register New User</a></p>
+    <p id="register" ><a href="{{ url_for('admin.admin_register') }}">Register New User</a></p>
 {% endblock %}

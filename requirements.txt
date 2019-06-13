@@ -1,7 +1,6 @@
 flask
 python-dotenv
 pylint-flask
-flask-bootstrap
 flask-login>=0.3.0
 flask-migrate
 flask-sqlalchemy
@@ -9,3 +8,4 @@ flask-admin
 flask-httpauth
 flask-uploads
 flask-wtf
+bootstrap-flask
