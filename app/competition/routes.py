@@ -35,7 +35,7 @@ def competition_create():
         db.session.add(competition)
         db.session.commit()
         flash('Competition created successfully')
-        return redirect(url_for('competition.index'))
+        return redirect(url_for('competition.competition_overview', comp_id=competition.id))
     return render_template('competition/competitionCreate.html', title='Competition Create', form=form)
 
 @bp.route('/<int:comp_id>/<int:cat_id>')
@@ -65,7 +65,7 @@ def category_create(comp_id):
         db.session.add(category)
         db.session.commit()
         flash('Category created successfully')
-        return redirect(url_for('competition.index'))
+        return redirect(url_for('competition.category_overview', comp_id=comp_id, cat_id=category.id))
     return render_template('competition/categoryCreate.html', title='Category Create', form=form)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>')
@@ -73,9 +73,6 @@ def category_create(comp_id):
 def review_overview(comp_id, cat_id, review_id):
     """Makes dynamic review pages"""
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
-    #category = Category.query.filter_by(id=2).filter_by(comp_id=comp_id).first_or_404()
-    #review.categories.append(category)
-    #db.session.commit()
     cat_correct = False
     for i in range(len(review.categories)):
         if cat_id == review.categories[i].id:
