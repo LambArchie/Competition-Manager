@@ -1,20 +1,37 @@
 """
 Controls which pages load and what is shown on each
 """
-
-from flask import render_template, flash, redirect, url_for, request
+from datetime import datetime
+from flask import render_template, flash, redirect, url_for, request, current_app, g
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-from app import app, db
+from app import db
 from app.models import User
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm, ChangePasswordForm
+
+@bp.before_app_request
+def before_request():
+    """Code which is run before every request"""
+    g.current_user = current_user
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
+    else:
+        g.current_user.admin = False
+
+@bp.route('/')
+@bp.route('/index')
+@login_required
+def index():
+    """Landing page"""
+    return render_template('index.html', title='Home')
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login page"""
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('auth.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -24,7 +41,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('auth.index')
         return redirect(next_page)
     return render_template('auth/login.html', title='Sign In', form=form)
 
@@ -32,18 +49,18 @@ def login():
 def logout():
     """Logout page"""
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.index'))
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     """Registration page"""
-    if app.config['DISABLE_PUBLIC_REGISTRATION']:
+    if current_app.config['DISABLE_PUBLIC_REGISTRATION']:
         return render_template('errors/403.html')
     elif current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('auth.index'))
     form = RegistrationForm()
     del form.admin # Hides option to make user admin
-    if app.config['CAPTCHA_ENABLED'] is False:
+    if current_app.config['CAPTCHA_ENABLED'] is False:
         del form.recaptcha
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data, admin=False)

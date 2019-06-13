@@ -2,10 +2,10 @@
 Controls which pages load and what is shown on each
 """
 from os import path, remove
-from flask import render_template, flash, redirect, url_for, request, send_from_directory
+from flask import render_template, flash, redirect, url_for, request, send_from_directory, current_app
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
-from app import app, db, avatars
+from app import db, avatars
 from app.models import User
 from app.user import bp
 from app.user.forms import EditProfileForm, UploadAvatarForm
@@ -27,7 +27,7 @@ def avatar(username):
     user = User.query.filter_by(username=username).first_or_404()
     if user.avatar == "":
         return redirect("https://www.gravatar.com/avatar?d=identicon&s=128")
-    return send_from_directory(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
+    return send_from_directory(current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
 
 @bp.route('/<username>/upload_avatar', methods=['GET', 'POST'])
 @login_required
@@ -38,8 +38,8 @@ def upload_avatar(username):
         if request.method == 'POST' and 'avatar' in request.files:
             if form.validate_on_submit():
                 user = User.query.filter_by(username=current_user.username).first()
-                if (user.avatar != "") and (path.exists(app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
-                    remove(app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
+                if (user.avatar != "") and (path.exists(current_app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
+                    remove(current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
                     user.avatar_filename("")
                 file_obj = request.files['avatar']
                 file_extension = (file_obj.filename.split('.')[-1]).lower()
