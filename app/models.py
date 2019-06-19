@@ -146,7 +146,7 @@ class Review(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<Review {}>'.format(self.body)
-    
+
     def to_json(self):
         """Returns user objects for api creation"""
         return {
