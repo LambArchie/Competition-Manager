@@ -2,6 +2,10 @@
 
 {% block app_content %}
     <h1>{{ name }}</h1>
-    {{ body }}
-    {{ user }}
+    {{ body|safe }}
+    <p class="text-muted">Created by
+        <a href="{{ url_for('user.user_profile', username=user.username) }}">
+            {{ user.username }}
+        </a>
+    </p>
 {% endblock %}

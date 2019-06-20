@@ -3,8 +3,9 @@ Controls which pages load and what is shown on each
 """
 from flask import render_template, flash, redirect, url_for, abort
 from flask_login import current_user, login_required
+from markdown import markdown
 from app import db
-from app.models import Competition, Category, Review
+from app.models import Competition, Category, Review, User
 from app.competition import bp
 from app.competition.forms import CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm
 
@@ -80,7 +81,9 @@ def review_overview(comp_id, cat_id, review_id):
             break
     if not cat_correct:
         abort(404)
-    return render_template('competition/review.html', title=review.name, name=review.name, body=review.body, user=review.user_id)
+    body = markdown(review.body, output_format="html5")
+    user = User.query.filter_by(id=review.user_id).first_or_404()
+    return render_template('competition/review.html', title=review.name, name=review.name, body=body, user=user)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/create', methods=['GET', 'POST'])
 @login_required
