@@ -7,5 +7,7 @@ flask-httpauth
 flask-uploads
 flask-wtf
 markdown
+bleach
+bleach-whitelist
 python-dotenv
 pylint-flask

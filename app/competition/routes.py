@@ -4,6 +4,8 @@ Controls which pages load and what is shown on each
 from flask import render_template, flash, redirect, url_for, abort
 from flask_login import current_user, login_required
 from markdown import markdown
+from bleach import clean
+from bleach_whitelist import markdown_tags, markdown_attrs
 from app import db
 from app.models import Competition, Category, Review, User
 from app.competition import bp
@@ -82,6 +84,7 @@ def review_overview(comp_id, cat_id, review_id):
     if not cat_correct:
         abort(404)
     body = markdown(review.body, output_format="html5")
+    body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=review.user_id).first_or_404()
     return render_template('competition/review.html', title=review.name, name=review.name, body=body, user=user)
 
