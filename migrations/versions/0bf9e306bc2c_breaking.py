@@ -21,7 +21,7 @@ def upgrade():
     op.create_table('competition',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('body', sa.String(length=140), nullable=True),
+    sa.Column('body', sa.String(length=280), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
@@ -42,7 +42,7 @@ def upgrade():
     op.create_table('category',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('body', sa.String(length=140), nullable=True),
+    sa.Column('body', sa.String(length=280), nullable=True),
     sa.Column('comp_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['comp_id'], ['competition.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -50,7 +50,7 @@ def upgrade():
     op.create_table('review',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('body', sa.String(length=140), nullable=True),
+    sa.Column('body', sa.String(length=10000), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('comp_id', sa.Integer(), nullable=True),

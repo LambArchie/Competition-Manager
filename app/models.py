@@ -95,7 +95,7 @@ class Competition(db.Model):
     """Controls Competition SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    body = db.Column(db.String(140))
+    body = db.Column(db.String(280))
     categories = db.relationship("Category")
     reviews = db.relationship("Review")
 
@@ -115,7 +115,7 @@ class Category(db.Model):
     """Controls Categories SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    body = db.Column(db.String(140))
+    body = db.Column(db.String(280))
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
 
     def __repr__(self):
@@ -135,7 +135,7 @@ class Review(db.Model):
     """Controls the Review SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    body = db.Column(db.String(140))
+    body = db.Column(db.String(10000))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
