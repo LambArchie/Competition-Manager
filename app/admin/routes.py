@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.models import User
 from app.admin import bp
-from app.api.users import get_users
+from app.api_v1.admin import get_users
 from app.auth.forms import RegistrationForm
 
 @bp.route('/')

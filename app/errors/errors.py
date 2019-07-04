@@ -4,7 +4,7 @@ Controls general errors which may occur
 from flask import render_template, request
 from app import db
 from app.errors import bp
-from app.api.errors import error_response as api_error_response
+from app.api_v1.errors import error_response as api_error_response
 
 def wants_json_response():
     """Checks if JSON or HTML should be returned"""

@@ -29,14 +29,14 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     configure_uploads(app, avatars)
 
+    from app.api_v1 import bp as api_v1_bp
+    app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
+
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/')
-
-    from app.api import bp as api_bp
-    app.register_blueprint(api_bp, url_prefix='/api')
 
     from app.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
