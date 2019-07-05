@@ -35,7 +35,7 @@ def admin_register():
         db.session.commit()
         flash('User registed successfully')
         return redirect(url_for('admin.admin'))
-    return render_template('users/register.html', title='Register', form=form)
+    return render_template('auth/register.html', title='Register', form=form)
 
 @bp.route('/users/get')
 @login_required
