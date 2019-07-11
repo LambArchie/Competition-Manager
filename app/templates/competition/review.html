@@ -3,9 +3,14 @@
 {% block app_content %}
     <h1>{{ name }}</h1>
     {{ body|safe }}
-    <p class="text-muted">Created by
-        <a href="{{ url_for('user.user_profile', username=user.username) }}">
-            {{ user.username }}
-        </a>
-    </p>
+    <div class="row text-muted">
+        <div class="col-auto mr-auto">
+            <span class="align-middle">Created by
+            <a href="{{ url_for('user.user_profile', username=user.username) }}">
+                {{ user.username }}
+            </a>
+            Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ machineTime }}">{{ humanTime }}</a>
+            </span>
+        </div>
+    </div>
 {% endblock %}

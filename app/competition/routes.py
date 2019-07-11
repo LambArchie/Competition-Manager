@@ -1,6 +1,7 @@
 """
 Controls which pages load and what is shown on each
 """
+from arrow import get as arrowGet
 from flask import render_template, flash, redirect, url_for, abort
 from flask_login import current_user, login_required
 from markdown import markdown
@@ -86,7 +87,9 @@ def review_overview(comp_id, cat_id, review_id):
     body = markdown(review.body, output_format="html5")
     body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=review.user_id).first_or_404()
-    return render_template('competition/review.html', title=review.name, name=review.name, body=body, user=user)
+    timestamp = arrowGet(review.timestamp).humanize()
+    return render_template('competition/review.html', title=review.name, name=review.name,
+                           body=body, user=user, humanTime=timestamp, machineTime=review.timestamp)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/create', methods=['GET', 'POST'])
 @login_required
