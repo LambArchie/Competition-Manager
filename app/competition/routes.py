@@ -2,7 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from arrow import get as arrowGet
-from flask import render_template, flash, redirect, url_for, abort
+from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 from markdown import markdown
 from bleach import clean
@@ -100,16 +100,48 @@ def review_create(comp_id, cat_id):
 def review_overview(comp_id, cat_id, review_id):
     """Makes dynamic review pages"""
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
-    cat_correct = False
-    for i in range(len(review.categories)):
-        if cat_id == review.categories[i].id:
-            cat_correct = True
-            break
-    if not cat_correct:
+    if not review.check_category(cat_id):
         abort(404)
     body = markdown(review.body, output_format="html5")
     body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=review.user_id).first_or_404()
     timestamp = arrowGet(review.timestamp).humanize()
-    return render_template('competition/review.html', title=review.name, name=review.name,
-                           body=body, user=user, humanTime=timestamp, machineTime=review.timestamp)
+    return render_template('competition/review.html', review=review, body=body,
+                           user=user, cat_id=cat_id, humanTime=timestamp)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/delete', methods=['GET', 'POST'])
+@login_required
+def review_delete(comp_id, cat_id, review_id):
+    """Deletes the review"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    if not review.check_category(cat_id):
+        abort(404)
+    if User.query.filter_by(id=review.user_id).first() is None:
+        abort(403)
+    db.session.delete(review)
+    db.session.commit()
+    flash('Review deleted successfully')
+    return redirect(url_for('competition.category_overview', comp_id=comp_id, cat_id=cat_id))
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/edit', methods=['GET', 'POST'])
+@login_required
+def review_edit(comp_id, cat_id, review_id):
+    """Edits the review"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    form = ReviewCreateForm()
+    if not review.check_category(cat_id):
+        abort(404)
+    if User.query.filter_by(id=review.user_id).first() is None:
+        abort(403)
+    if request.method == 'GET':
+        form.name.data = review.name
+        form.body.data = review.body
+    if form.validate_on_submit():
+        review.name = form.name.data
+        review.body = form.body.data
+        db.session.commit()
+
+        flash('Review edited successfully')
+        return redirect(url_for('competition.review_overview',
+                                comp_id=comp_id, cat_id=cat_id, review_id=review.id))
+    return render_template('competition/reviewEdit.html', form=form)

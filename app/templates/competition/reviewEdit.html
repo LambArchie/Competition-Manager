@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+<!-- SimpleMDE -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.css" integrity="sha384-rQdIropf4eQBEB9SkNB4xxukYHlkyXJfKYkpVNUQOLizz+d2q0wo7zjVA2XcYSij" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js" integrity="sha384-83rBTICYr+FwAC+A5t0ZYsWjTcPXibCe/NBSFLAgMPkwHBvIi02EcE9OShMsGCi3" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    window.addEventListener("load", function(){
+        $('.col-md-4').removeClass('col-md-4').addClass('col-md-12');
+        var simplemde = new SimpleMDE({ element: document.getElementById("body") });
+        document.getElementById("body").required=false;
+    });
+</script>
+{% endblock %}
+
+{% block app_content %}
+    {% include '_form.html' %}
+{% endblock %}

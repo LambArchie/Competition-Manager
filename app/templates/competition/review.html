@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>{{ name }}</h1>
+    <h1>{{ review.name }}</h1>
     {{ body|safe }}
     <div class="row text-muted">
         <div class="col-auto mr-auto">
@@ -9,8 +9,13 @@
             <a href="{{ url_for('user.user_profile', username=user.username) }}">
                 {{ user.username }}
             </a>
-            Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ machineTime }}">{{ humanTime }}</a>
+            Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ review.machineTime }}">{{ humanTime }}</a>
             </span>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group" aria-label="Change Review">
+                <a href="{{ url_for('competition.review_edit', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>
+                <a href="{{ url_for('competition.review_delete', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}" role="button" class="btn btn-outline-danger btn-sm">Delete</a>
         </div>
     </div>
 {% endblock %}

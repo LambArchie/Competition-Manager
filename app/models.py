@@ -158,3 +158,12 @@ class Review(db.Model):
             "timestamp": self.timestamp,
             "user_id": self.user_id
         }
+    
+    def check_category(self, category):
+        """Checks review is in category"""
+        cat_correct = False
+        for i in range(len(self.categories)):
+            if category == self.categories[i].id:
+                cat_correct = True
+                break
+        return cat_correct
