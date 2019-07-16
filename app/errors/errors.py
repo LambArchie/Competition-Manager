@@ -11,14 +11,14 @@ def wants_json_response():
     return request.accept_mimetypes['application/json'] >= \
         request.accept_mimetypes['text/html']
 
-@bp.errorhandler(404)
+@bp.app_errorhandler(404)
 def not_found_error(error):
     """404 Page Missing handling"""
     if wants_json_response():
         return api_error_response(404)
     return render_template('errors/404.html'), 404
 
-@bp.errorhandler(500)
+@bp.app_errorhandler(500)
 def internal_error(error):
     """500 Server Error handling"""
     db.session.rollback()
