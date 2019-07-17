@@ -8,15 +8,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
 
-category_review_assoc = db.Table('category_review_assoc',
+CATEGORY_REVIEW_ASSOC = db.Table('category_review_assoc',
                                  db.Column('categories', db.Integer, db.ForeignKey('category.id')),
                                  db.Column('reviews', db.Integer, db.ForeignKey('review.id'))
                                 )
 
 @login.user_loader
-def load_user(id):
+def load_user(user_id):
     """Returns user details"""
-    return User.query.get(int(id))
+    return User.query.get(int(user_id))
 
 class User(UserMixin, db.Model):
     """Controls the User SQL Table"""
@@ -140,7 +140,7 @@ class Review(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
     categories = db.relationship(
-        "Category", secondary=category_review_assoc,
+        "Category", secondary=CATEGORY_REVIEW_ASSOC,
         backref='reviews')
 
     def __repr__(self):
@@ -158,7 +158,7 @@ class Review(db.Model):
             "timestamp": self.timestamp,
             "user_id": self.user_id
         }
-    
+
     def check_category(self, category):
         """Checks review is in category"""
         cat_correct = False

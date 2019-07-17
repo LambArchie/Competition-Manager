@@ -27,7 +27,8 @@ def avatar(username):
     user = User.query.filter_by(username=username).first_or_404()
     if user.avatar == "":
         return redirect("https://www.gravatar.com/avatar?d=identicon&s=128")
-    return send_from_directory(current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
+    return send_from_directory(
+        current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/", user.avatar)
 
 @bp.route('/<username>/upload_avatar', methods=['GET', 'POST'])
 @login_required
@@ -38,7 +39,8 @@ def upload_avatar(username):
         if request.method == 'POST' and 'avatar' in request.files:
             if form.validate_on_submit():
                 user = User.query.filter_by(username=current_user.username).first()
-                if (user.avatar != "") and (path.exists(current_app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
+                if (user.avatar != "") and (path.exists(
+                        current_app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
                     remove(current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
                     user.avatar_filename("")
                 file_obj = request.files['avatar']
@@ -51,8 +53,7 @@ def upload_avatar(username):
                 return redirect(url_for('user.user_profile', username=current_user.username))
             flash('Avatar not uploaded')
         return render_template('users/upload_avatar.html', title='Upload Avatar', form=form)
-    else:
-        return render_template('errors/403.html')
+    return render_template('errors/403.html')
 
 @bp.route('/<username>/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -70,5 +71,4 @@ def edit_profile(username):
             form.username.data = current_user.username
             form.email.data = current_user.email
         return render_template('users/edit_profile.html', title='Edit Profile', form=form)
-    else:
-        return render_template('errors/403.html')
+    return render_template('errors/403.html')
