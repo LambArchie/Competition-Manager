@@ -11,6 +11,13 @@ def wants_json_response():
     return request.accept_mimetypes['application/json'] >= \
         request.accept_mimetypes['text/html']
 
+@bp.app_errorhandler(403)
+def forbidden(error):
+    """403 Forbidden handling"""
+    if wants_json_response():
+        return api_error_response(403)
+    return render_template('errors/403.html'), 403
+
 @bp.app_errorhandler(404)
 def not_found_error(error):
     """404 Page Missing handling"""

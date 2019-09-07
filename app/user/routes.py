@@ -2,7 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from os import path, remove
-from flask import render_template, flash, redirect, url_for, request, send_from_directory, current_app
+from flask import render_template, flash, redirect, url_for, request, send_from_directory, current_app, abort
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 from app import db, avatars
@@ -19,7 +19,7 @@ def user_profile(username):
         {'author': user, 'body': 'Test reviews #1'},
         {'author': user, 'body': 'Test reviews #2'}
     ]
-    return render_template('users/user.html', title=user, user=user, reviews=reviews)
+    return render_template('users/user.html', title=user.username, user=user, reviews=reviews)
 
 @bp.route('/<username>/avatar')
 def avatar(username):
@@ -53,7 +53,7 @@ def upload_avatar(username):
                 return redirect(url_for('user.user_profile', username=current_user.username))
             flash('Avatar not uploaded')
         return render_template('users/upload_avatar.html', title='Upload Avatar', form=form)
-    return render_template('errors/403.html')
+    abort(403)
 
 @bp.route('/<username>/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -71,4 +71,4 @@ def edit_profile(username):
             form.username.data = current_user.username
             form.email.data = current_user.email
         return render_template('users/edit_profile.html', title='Edit Profile', form=form)
-    return render_template('errors/403.html')
+    abort(403)
