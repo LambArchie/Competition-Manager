@@ -6,7 +6,7 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
-from app.models import User
+from app.database.models import User
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm, ChangePasswordForm
 

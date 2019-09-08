@@ -4,10 +4,13 @@ Controls DB models
 import base64
 import os
 from datetime import datetime, timedelta
+from uuid import uuid4
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
+from app.database.uuid import GUID
 
+db.GUID = GUID
 CATEGORY_REVIEW_ASSOC = db.Table('category_review_assoc',
                                  db.Column('categories', db.Integer, db.ForeignKey('category.id')),
                                  db.Column('reviews', db.Integer, db.ForeignKey('review.id'))
@@ -167,3 +170,15 @@ class Review(db.Model):
                 cat_correct = True
                 break
         return cat_correct
+
+class ReviewUploads(db.Model):
+    """Contains filenames for Uploads
+    id is only unique per review"""
+    uuid = db.Column(db.GUID, primary_key=True, default=uuid4)
+    id = db.Column(db.Integer)
+    filename = db.Column(db.String(64))
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'))
+
+    def __repr__(self):
+        """Printable return"""
+        return '<ReviewUploads {}>'.format(self.uuid)

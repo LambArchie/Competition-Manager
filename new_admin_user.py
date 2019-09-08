@@ -3,7 +3,7 @@ Allows manually creating admins
 """
 from getpass import getpass
 from app import db
-from app.models import User
+from app.database.models import User
 
 username = input("Enter Admin Username: ")
 email = input("Enter Admin Email: ")

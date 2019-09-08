@@ -2,15 +2,16 @@
 Controls which pages load and what is shown on each
 """
 from arrow import get as arrowGet
-from flask import render_template, flash, redirect, url_for, abort, request
+from flask import render_template, flash, redirect, url_for, abort, request, current_app
 from flask_login import current_user, login_required
 from markdown import markdown
 from bleach import clean
 from bleach_whitelist import markdown_tags, markdown_attrs
-from app import db
-from app.models import Competition, Category, Review, User
+from werkzeug.utils import secure_filename
+from app import db, review_uploads
+from app.database.models import Competition, Category, Review, ReviewUploads, User
 from app.competition import bp
-from app.competition.forms import CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm
+from app.competition.forms import CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm, ReviewEditForm, ReviewUploadForm
 
 @bp.route('/')
 @login_required
@@ -128,7 +129,7 @@ def review_delete(comp_id, cat_id, review_id):
 def review_edit(comp_id, cat_id, review_id):
     """Edits the review"""
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
-    form = ReviewCreateForm()
+    form = ReviewEditForm()
     if not review.check_category(cat_id):
         abort(404)
     if User.query.filter_by(id=review.user_id).first() is None:
@@ -145,3 +146,31 @@ def review_edit(comp_id, cat_id, review_id):
         return redirect(url_for('competition.review_overview',
                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
     return render_template('competition/reviewEdit.html', form=form)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/upload', methods=['GET', 'POST'])
+@login_required
+def review_upload(comp_id, cat_id, review_id):
+    """Allow documents to be uploaded"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    form = ReviewUploadForm()
+    if not review.check_category(cat_id):
+        abort(404)
+    if User.query.filter_by(id=review.user_id).first() is None:
+        abort(403)
+    if request.method == 'POST' and 'fileUpload' in request.files:
+        if form.validate_on_submit():
+            file_obj = request.files['fileUpload']
+            file_name = secure_filename(file_obj.filename)
+            uploads = ReviewUploads(id=1,
+                                    filename=file_name,
+                                    review_id=int(review_id))
+            db.session.add(uploads)
+            db.session.flush() #Needed so uuid generated
+            disk_name = str(uploads.uuid)
+            review_uploads.save(file_obj, name=disk_name)
+            db.session.commit()
+            flash('File Uploaded')
+            return redirect(url_for('competition.review_overview',
+                                    comp_id=comp_id, cat_id=cat_id, review_id=review.id))
+        flash('File failed to upload')
+    return render_template('competition/reviewUpload.html', title='Upload Files', form=form)

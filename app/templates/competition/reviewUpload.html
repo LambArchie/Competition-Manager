@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    {% include '_form.html' %}
+    <br>
+    <p>There is a max size limit of {{ config['MAX_UPLOAD_SIZE'] }}MiB</p>
+{% endblock %}

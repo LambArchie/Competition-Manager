@@ -4,7 +4,7 @@ Controls forms for auth
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
-from app.models import User
+from app.database.models import User
 
 class LoginForm(FlaskForm):
     """Login Form fields"""

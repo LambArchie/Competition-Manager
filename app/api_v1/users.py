@@ -5,7 +5,7 @@ from flask import jsonify
 from app.api_v1 import bp
 from app.api_v1.auth import token_auth
 from app.api_v1.errors import error_response
-from app.models import User
+from app.database.models import User
 
 @bp.route('/users/<int:user_id>', methods=['GET'])
 @token_auth.login_required

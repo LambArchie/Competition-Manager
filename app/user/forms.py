@@ -5,8 +5,8 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email
-from app.models import User
-from app import avatars
+from app.database.models import User
+from app import avatar_uploads
 
 class EditProfileForm(FlaskForm):
     """Allows profile editing"""
@@ -35,5 +35,5 @@ class EditProfileForm(FlaskForm):
 
 class UploadAvatarForm(FlaskForm):
     """Upload an Avatar"""
-    avatar = FileField('Avatar', validators=[FileRequired(), FileAllowed(avatars, 'Images only!')])
+    avatar = FileField('Avatar', validators=[FileRequired(), FileAllowed(avatar_uploads, 'Images only!')])
     submit = SubmitField('Upload Avatar')

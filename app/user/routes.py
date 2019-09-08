@@ -5,8 +5,8 @@ from os import path, remove
 from flask import render_template, flash, redirect, url_for, request, send_from_directory, current_app, abort
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
-from app import db, avatars
-from app.models import User
+from app import db, avatar_uploads
+from app.database.models import User
 from app.user import bp
 from app.user.forms import EditProfileForm, UploadAvatarForm
 
@@ -46,7 +46,7 @@ def upload_avatar(username):
                 file_obj = request.files['avatar']
                 file_extension = (file_obj.filename.split('.')[-1]).lower()
                 file_name = secure_filename(current_user.username + '.' + file_extension)
-                file_name = avatars.save(file_obj, name=file_name)
+                file_name = avatar_uploads.save(file_obj, name=file_name)
                 user.avatar_filename(file_name)
                 db.session.commit()
                 flash('Avatar updated')

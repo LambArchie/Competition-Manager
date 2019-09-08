@@ -8,7 +8,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from flask_uploads import UploadSet, IMAGES, configure_uploads
+from flask_uploads import UploadSet, configure_uploads, AllExcept, EXECUTABLES, IMAGES, SCRIPTS
 from flask_bootstrap import Bootstrap
 from config import Config
 
@@ -17,7 +17,14 @@ db = SQLAlchemy()
 login = LoginManager()
 migrate = Migrate()
 login.login_view = 'auth.login'
-avatars = UploadSet('avatars', IMAGES)
+avatar_uploads = UploadSet('avatars', IMAGES)
+review_uploads = UploadSet('reviews', AllExcept(SCRIPTS + EXECUTABLES + tuple('''
+                                                docm docb dotm xlsm xltm xll xlam xla pptm potm ppsm
+                                                sldm swf app jar scr com msi pif hta cpl msc bat cmd
+                                                vb vbs vbe ps1 ps1xml ps2 ps2xml psc1 psc2 inf reg
+                                                ws wsf msh msh1 msh2 mshxml msh1xml msh2xml jse py
+                                                bash cgi 386 torrent vscript asp cer csr drv sys cpl
+                                                crt htaccess htpasswd lnk ksh url pyc'''.split())))
 
 def create_app(config_class=Config):
     """Initialises the app"""
@@ -27,7 +34,8 @@ def create_app(config_class=Config):
     db.init_app(app)
     login.init_app(app)
     migrate.init_app(app, db)
-    configure_uploads(app, avatars)
+    configure_uploads(app, avatar_uploads)
+    configure_uploads(app, review_uploads)
 
     from app.api_v1 import bp as api_v1_bp
     app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
@@ -64,4 +72,4 @@ def create_app(config_class=Config):
 
     return app
 
-from app import models
+from app.database import models
