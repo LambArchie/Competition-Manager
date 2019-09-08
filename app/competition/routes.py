@@ -2,7 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from arrow import get as arrowGet
-from flask import render_template, flash, redirect, url_for, abort, request, current_app
+from flask import render_template, flash, redirect, url_for, abort, request, current_app, send_from_directory, make_response
 from flask_login import current_user, login_required
 from markdown import markdown
 from bleach import clean
@@ -34,6 +34,19 @@ def competition_create():
         flash('Competition created successfully')
         return redirect(url_for('competition.competition_overview', comp_id=competition.id))
     return render_template('competition/competitionCreate.html', title='Competition Create', form=form)
+
+@bp.route('/file/<uuid>/<filename>')
+@login_required
+def file_download(uuid, filename):
+    """Sends file"""
+    if not secure_filename(uuid) == uuid:
+        abort(404)
+    uploads = ReviewUploads.query.filter_by(uuid=uuid).first_or_404()
+    if not filename == uploads.filename:
+        abort(404)
+    r = make_response(send_from_directory(current_app.config['UPLOADS_DEFAULT_DEST'] + "reviews/", uuid))
+    r.headers['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename)
+    return r
 
 @bp.route('/<int:comp_id>')
 @login_required
@@ -159,9 +172,11 @@ def review_upload(comp_id, cat_id, review_id):
         abort(403)
     if request.method == 'POST' and 'fileUpload' in request.files:
         if form.validate_on_submit():
+            uploads = ReviewUploads.query.order_by(ReviewUploads.id.desc()).filter_by(review_id=review_id).first()
+            next_id = uploads.id+1 #ids are per review
             file_obj = request.files['fileUpload']
             file_name = secure_filename(file_obj.filename)
-            uploads = ReviewUploads(id=1,
+            uploads = ReviewUploads(id=next_id,
                                     filename=file_name,
                                     review_id=int(review_id))
             db.session.add(uploads)
@@ -174,3 +189,27 @@ def review_upload(comp_id, cat_id, review_id):
                                     comp_id=comp_id, cat_id=cat_id, review_id=review.id))
         flash('File failed to upload')
     return render_template('competition/reviewUpload.html', title='Upload Files', form=form)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/files')
+@login_required
+def review_files(comp_id, cat_id, review_id):
+    """Shows all attached files"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    if not review.check_category(cat_id):
+        abort(404)
+    if User.query.filter_by(id=review.user_id).first() is None:
+        abort(403)
+    uploads = ReviewUploads.query.filter_by(review_id=review_id)
+    return render_template('competition/reviewFiles.html', title='Attached Files', uploads=uploads, comp_id=comp_id, cat_id=cat_id, review_id=review_id)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/files/<int:file_id>')
+@login_required
+def review_download_redirect(comp_id, cat_id, review_id, file_id):
+    """Redirects you to the download url"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    if not review.check_category(cat_id):
+        abort(404)
+    if User.query.filter_by(id=review.user_id).first() is None:
+        abort(403)
+    uploads = ReviewUploads.query.filter_by(review_id=review_id).filter_by(id=file_id).first_or_404()
+    return redirect(url_for('competition.file_download', uuid=str(uploads.uuid), filename=uploads.filename))

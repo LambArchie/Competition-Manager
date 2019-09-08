@@ -2,6 +2,12 @@
 
 {% block app_content %}
     <h1>{{ review.name }}</h1>
+    <a class="btn btn-secondary" href="{{ url_for('competition.review_files', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">
+        Uploads <span class="badge badge-light">9</span>
+        <span class="sr-only">uploads</span>
+    </a>
+    <br>
+    <br>
     {{ body|safe }}
     <div class="row text-muted">
         <div class="col-auto mr-auto">
@@ -11,7 +17,7 @@
             </a>
             Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ review.machineTime }}">{{ humanTime }}</a>
             </span>
-        </div>
+        </div>  
         <div class="col-auto">
             <div class="btn-group" role="group" aria-label="Change Review">
                 <a href="{{ url_for('competition.review_edit', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>
