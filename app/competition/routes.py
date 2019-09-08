@@ -174,7 +174,10 @@ def review_upload(comp_id, cat_id, review_id):
     if request.method == 'POST' and 'fileUpload' in request.files:
         if form.validate_on_submit():
             uploads = ReviewUploads.query.order_by(ReviewUploads.id.desc()).filter_by(review_id=review_id).first()
-            next_id = uploads.id+1 #ids are per review
+            if uploads is None:
+                next_id = 1
+            else:
+                next_id = uploads.id+1 #ids are per review
             file_obj = request.files['fileUpload']
             file_name = secure_filename(file_obj.filename)
             uploads = ReviewUploads(id=next_id,
