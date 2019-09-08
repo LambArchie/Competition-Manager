@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+{% endblock %}
+
 {% block app_content %}
     <h1>{{ review.name }}</h1>
     <a class="btn btn-secondary" href="{{ url_for('competition.review_files', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">
@@ -15,7 +24,7 @@
             <a href="{{ url_for('user.user_profile', username=user.username) }}">
                 {{ user.username }}
             </a>
-            Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ review.machineTime }}">{{ humanTime }}</a>
+            Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ review.timestamp }}">{{ humanTime }}</a>
             </span>
         </div>  
         <div class="col-auto">
