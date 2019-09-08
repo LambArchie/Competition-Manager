@@ -8,13 +8,6 @@
     {% endif %}
 {% endblock %}
 
-{% import "_google_analytics.html" as google %}
-
-{% block scripts %}
-  {{super()}}
-  {{google.uanalytics(config['GOOGLE_ANALYTICS_ID'])}}
-{% endblock %}
-
 {% block navbar %}
     <nav class="navbar navbar-expand-sm bg-light navbar-light">
         <a class="navbar-brand" href="{{ url_for('auth.index') }}">Competition Manager</a>

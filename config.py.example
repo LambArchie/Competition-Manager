@@ -8,7 +8,6 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess!-123' # Please Change before starting
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
-    GOOGLE_ANALYTICS_ID = ""
 
     CAPTCHA_ENABLED = True # Add keys or disable
     RECAPTCHA_PUBLIC_KEY = ""
