@@ -107,8 +107,8 @@ def review_overview(comp_id, cat_id, review_id):
     body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=review.user_id).first_or_404()
     timestamp = arrowGet(review.timestamp).humanize()
-    return render_template('competition/review.html', review=review, body=body,
-                           user=user, cat_id=cat_id, humanTime=timestamp)
+    return render_template('competition/review.html', title=review.name, review=review,
+                           body=body, user=user, cat_id=cat_id, humanTime=timestamp)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -145,7 +145,7 @@ def review_edit(comp_id, cat_id, review_id):
         flash('Review edited successfully')
         return redirect(url_for('competition.review_overview',
                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
-    return render_template('competition/reviewEdit.html', form=form)
+    return render_template('competition/reviewEdit.html', title='Review Edit', form=form)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/upload', methods=['GET', 'POST'])
 @login_required
