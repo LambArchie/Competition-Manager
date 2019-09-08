@@ -11,12 +11,14 @@
 
 {% block app_content %}
     <h1>{{ review.name }}</h1>
-    <a class="btn btn-secondary" href="{{ url_for('competition.review_files', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">
-        Uploads <span class="badge badge-light">9</span>
-        <span class="sr-only">uploads</span>
-    </a>
-    <br>
-    <br>
+    {% if not uploadsCount|int == 0 %}
+        <a class="btn btn-secondary" href="{{ url_for('competition.review_files', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">
+            Uploads <span class="badge badge-light">{{ uploadsCount }}</span>
+            <span class="sr-only">uploads</span>
+        </a>
+        <br>
+        <br>
+    {% endif %}
     {{ body|safe }}
     <div class="row text-muted">
         <div class="col-auto mr-auto">

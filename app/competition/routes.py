@@ -120,8 +120,9 @@ def review_overview(comp_id, cat_id, review_id):
     body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=review.user_id).first_or_404()
     timestamp = arrowGet(review.timestamp).humanize()
+    uploadsCount = ReviewUploads.query.filter_by(review_id=review_id).count()
     return render_template('competition/review.html', title=review.name, review=review,
-                           body=body, user=user, cat_id=cat_id, humanTime=timestamp)
+                           body=body, user=user, cat_id=cat_id, humanTime=timestamp, uploadsCount=uploadsCount)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/delete', methods=['GET', 'POST'])
 @login_required
