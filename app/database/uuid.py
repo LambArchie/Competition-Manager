@@ -1,5 +1,6 @@
 """
 Creates a custom dataclass for uuid
+Taken from https://docs.sqlalchemy.org/en/13/core/custom_types.html#backend-agnostic-guid-type
 """
 import uuid
 from sqlalchemy.types import TypeDecorator, CHAR
