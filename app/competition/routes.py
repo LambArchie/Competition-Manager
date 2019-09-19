@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from app import db, review_uploads
 from app.database.models import Competition, Category, Review, ReviewUploads, User
 from app.competition import bp
-from app.competition.forms import CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm, ReviewEditForm, ReviewUploadForm
+from app.competition.forms import CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm, ReviewEditForm, ReviewUploadForm, review_edit_categories_form
 
 @bp.route('/')
 @login_required
@@ -160,6 +160,34 @@ def review_edit(comp_id, cat_id, review_id):
         return redirect(url_for('competition.review_overview',
                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
     return render_template('competition/reviewEdit.html', title='Review Edit', form=form)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/edit/categories', methods=['GET', 'POST'])
+@login_required
+def review_edit_category(comp_id, cat_id, review_id):
+    """Allows assigning categories"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    categories = Category.query.filter_by(comp_id=comp_id)
+    form = review_edit_categories_form(review, categories)
+    if not review.check_category(cat_id):
+        abort(404)
+    if request.method == 'GET':
+        return render_template('competition/reviewCategoryEdit.html', title='Edit Category', form=form)
+    if form.validate_on_submit():
+        for _, checkbox in enumerate(form):
+            try:
+                int(checkbox.name)
+            except ValueError:
+                break
+            else:
+                if review.check_category(int(checkbox.name)) != checkbox.data:
+                    category = Category.query.filter_by(id=int(checkbox.name)).filter_by(comp_id=comp_id).first_or_404()
+                    if checkbox.data:
+                        review.categories.append(category)
+                    else:
+                        review.categories.remove(category)
+        db.session.commit()
+        flash('Review Categories updated successfully')
+        return redirect(url_for('competition.competition_overview', comp_id=comp_id))
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/upload', methods=['GET', 'POST'])
 @login_required
