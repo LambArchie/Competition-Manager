@@ -121,8 +121,10 @@ def review_overview(comp_id, cat_id, review_id):
     user = User.query.filter_by(id=review.user_id).first_or_404()
     timestamp = arrowGet(review.timestamp).humanize()
     uploadsCount = ReviewUploads.query.filter_by(review_id=review_id).count()
+    owner = current_user.id == user.id
     return render_template('competition/review.html', title=review.name, review=review,
-                           body=body, user=user, cat_id=cat_id, humanTime=timestamp, uploadsCount=uploadsCount)
+                           body=body, user=user, cat_id=cat_id, humanTime=timestamp,
+                           uploadsCount=uploadsCount, owner=owner)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -131,7 +133,7 @@ def review_delete(comp_id, cat_id, review_id):
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
     if not review.check_category(cat_id):
         abort(404)
-    if User.query.filter_by(id=review.user_id).first() is None:
+    if int(current_user.id) != int(review.user_id):
         abort(403)
     db.session.delete(review)
     db.session.commit()
@@ -146,7 +148,7 @@ def review_edit(comp_id, cat_id, review_id):
     form = ReviewEditForm()
     if not review.check_category(cat_id):
         abort(404)
-    if User.query.filter_by(id=review.user_id).first() is None:
+    if int(current_user.id) != int(review.user_id):
         abort(403)
     if request.method == 'GET':
         form.name.data = review.name
@@ -170,6 +172,8 @@ def review_edit_category(comp_id, cat_id, review_id):
     form = review_edit_categories_form(review, categories)
     if not review.check_category(cat_id):
         abort(404)
+    if int(current_user.id) != int(review.user_id):
+        abort(403)
     if request.method == 'GET':
         return render_template('competition/reviewCategoryEdit.html', title='Edit Category', form=form)
     if form.validate_on_submit():
@@ -197,7 +201,7 @@ def review_upload(comp_id, cat_id, review_id):
     form = ReviewUploadForm()
     if not review.check_category(cat_id):
         abort(404)
-    if User.query.filter_by(id=review.user_id).first() is None:
+    if int(current_user.id) != int(review.user_id):
         abort(403)
     if request.method == 'POST' and 'fileUpload' in request.files:
         if form.validate_on_submit():
@@ -229,8 +233,6 @@ def review_files(comp_id, cat_id, review_id):
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
     if not review.check_category(cat_id):
         abort(404)
-    if User.query.filter_by(id=review.user_id).first() is None:
-        abort(403)
     uploads = ReviewUploads.query.filter_by(review_id=review_id)
     return render_template('competition/reviewFiles.html', title='Attached Files', uploads=uploads, comp_id=comp_id, cat_id=cat_id, review_id=review_id)
 
@@ -241,7 +243,5 @@ def review_download_redirect(comp_id, cat_id, review_id, file_id):
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
     if not review.check_category(cat_id):
         abort(404)
-    if User.query.filter_by(id=review.user_id).first() is None:
-        abort(403)
     uploads = ReviewUploads.query.filter_by(review_id=review_id).filter_by(id=file_id).first_or_404()
     return redirect(url_for('competition.file_download', uuid=str(uploads.uuid), filename=uploads.filename))

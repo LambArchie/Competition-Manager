@@ -28,12 +28,14 @@
             </a>
             Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ review.timestamp }}">{{ humanTime }}</a>
             </span>
-        </div>  
+        </div>
+        {% if owner|int == 1 %}
         <div class="col-auto">
             <div class="btn-group" role="group" aria-label="Change Review">
                 <a href="{{ url_for('competition.review_edit', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>
                 <a href="{{ url_for('competition.review_upload', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}" role="button" class="btn btn-outline-primary btn-sm">Upload</a>
                 <a href="{{ url_for('competition.review_delete', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}" role="button" class="btn btn-outline-danger btn-sm">Delete</a>
         </div>
+        {% endif %}
     </div>
 {% endblock %}
