@@ -9,9 +9,10 @@ from bleach import clean
 from bleach_whitelist import markdown_tags, markdown_attrs
 from werkzeug.utils import secure_filename
 from app import db, review_uploads
-from app.database.models import Competition, Category, Review, ReviewUploads, User
+from app.database.models import Competition, Category, Review, ReviewUploads, User, Votes
 from app.competition import bp
-from app.competition.forms import CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm, ReviewEditForm, ReviewUploadForm, review_edit_categories_form
+from app.competition.forms import (CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm,
+                                   ReviewEditForm, ReviewUploadForm, review_edit_categories_form, ReviewVotingForm)
 
 @bp.route('/')
 @login_required
@@ -245,3 +246,27 @@ def review_download_redirect(comp_id, cat_id, review_id, file_id):
         abort(404)
     uploads = ReviewUploads.query.filter_by(review_id=review_id).filter_by(id=file_id).first_or_404()
     return redirect(url_for('competition.file_download', uuid=str(uploads.uuid), filename=uploads.filename))
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/voting', methods=['GET', 'POST'])
+@login_required
+def review_voting(comp_id, cat_id, review_id):
+    """Allows you to vote"""
+    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    if not review.check_category(cat_id):
+        abort(404)
+    if current_user.reviewer == 0:
+        abort(403)
+    form = ReviewVotingForm()
+    if form.validate_on_submit():
+        vote = Votes(score=form.score.data,
+                     comments=form.comment.data,
+                     user_id=int(current_user.id),
+                     comp_id=int(comp_id),
+                     cat_id=int(cat_id),
+                     review_id=int(review_id))
+        db.session.add(vote)
+        db.session.commit()
+        flash('Successfully Voted')
+        return redirect(url_for('competition.review_overview',
+                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
+    return render_template('competition/reviewVoting.html', title='Voting', form=form)

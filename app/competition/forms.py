@@ -3,8 +3,8 @@ Controls forms in competitions
 """
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, SubmitField, TextAreaField, BooleanField
-from wtforms.validators import DataRequired, Length
+from wtforms import StringField, SubmitField, TextAreaField, BooleanField, IntegerField
+from wtforms.validators import DataRequired, Length, NumberRange
 from app import review_uploads
 
 class CompetitionCreateForm(FlaskForm):
@@ -46,6 +46,12 @@ class ReviewUploadForm(FlaskForm):
     """Upload an Avatar"""
     fileUpload = FileField('File', validators=[FileRequired(), FileAllowed(review_uploads, 'File type not allowed')])
     submit = SubmitField('Upload File')
+
+class ReviewVotingForm(FlaskForm):
+    """Upload an Avatar"""
+    score = IntegerField('Score', validators=[NumberRange(min=0, max=10)])
+    comment = TextAreaField('Comment', validators=[DataRequired(), Length(min=1, max=10000)])
+    submit = SubmitField('Vote')
 
 class BlankForm(FlaskForm):
     """Suppost to be blank"""
