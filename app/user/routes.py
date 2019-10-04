@@ -2,11 +2,12 @@
 Controls which pages load and what is shown on each
 """
 from os import path, remove
+from arrow import get as arrowGet
 from flask import render_template, flash, redirect, url_for, request, send_from_directory, current_app, abort
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 from app import db, avatar_uploads
-from app.database.models import User
+from app.database.models import User, Review
 from app.user import bp
 from app.user.forms import EditProfileForm, UploadAvatarForm
 
@@ -15,11 +16,9 @@ from app.user.forms import EditProfileForm, UploadAvatarForm
 def user_profile(username):
     """Makes dynamic user pages"""
     user = User.query.filter_by(username=username).first_or_404()
-    reviews = [
-        {'author': user, 'body': 'Test reviews #1'},
-        {'author': user, 'body': 'Test reviews #2'}
-    ]
-    return render_template('users/user.html', title=user.username, user=user, reviews=reviews)
+    reviews = Review.query.filter_by(user_id=user.id).all()
+    timestamp = arrowGet(user.last_seen).humanize()
+    return render_template('users/user.html', title=user.username, user=user, reviews=reviews, last_seen=timestamp)
 
 @bp.route('/<username>/avatar')
 def avatar(username):

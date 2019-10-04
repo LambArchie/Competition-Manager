@@ -26,7 +26,7 @@
             <a href="{{ url_for('user.user_profile', username=user.username) }}">
                 {{ user.username }}
             </a>
-            Last Modified: <a href="#" data-toggle="tooltip" data-placement="top" title="{{ review.timestamp }}">{{ humanTime }}</a>
+            Last Modified: <a href="#" class="text-reset text-decoration-none" data-toggle="tooltip" data-placement="top" title="{{ review.timestamp }}">{{ humanTime }}</a>
             </span>
         </div>
         {% if owner|int == 1 %}

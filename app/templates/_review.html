@@ -6,12 +6,13 @@
                 </a>
             </td>
             <td>
-                <a href="{{ url_for('user.user_profile', username=review.author.username) }}">
-                    {{ review.author.username }}
+                <a href="{{ url_for('competition.review_overview', comp_id=review.comp_id, cat_id=review.categories[0].id, review_id=review.id) }}">
+                    {{ review.name }}
                 </a>
-                says:
                 <br>
+                <div>
                 {{ review.body }}
+                </div>
             </td>
         </tr>
     </table>
