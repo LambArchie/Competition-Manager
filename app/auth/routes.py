@@ -2,7 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, current_app, g
+from flask import render_template, flash, redirect, url_for, request, current_app, g, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
@@ -55,7 +55,7 @@ def logout():
 def register():
     """Registration page"""
     if current_app.config['DISABLE_PUBLIC_REGISTRATION']:
-        return render_template('errors/403.html')
+        abort(403)
     elif current_user.is_authenticated:
         return redirect(url_for('auth.index'))
     form = RegistrationForm()
