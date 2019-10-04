@@ -16,5 +16,8 @@
 {% endblock %}
 
 {% block app_content %}
+    <p class="float-right" style="margin-top:1rem">
+        <a href="{{ url_for('competition.review_edit_category', comp_id=comp_id, cat_id=cat_id, review_id=review_id) }}">Edit Categories</a>
+    </p>
     {% include '_form.html' %}
 {% endblock %}
