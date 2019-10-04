@@ -28,7 +28,7 @@ def create_user():
     """Allows creating a user"""
     data = request.get_json() or {}
     if (('username' not in data) or ('email' not in data) or ('password' not in data) or
-            ('admin' not in data)):
+            ('admin' not in data) or ('reviewer' not in data)):
         return bad_request('must include username, email, password and admin fields')
     if g.current_user.admin is False:
         return error_response(403, "not admin user")
@@ -40,6 +40,10 @@ def create_user():
         data['admin'] = bool(strtobool(data['admin']))
     except ValueError:
         return bad_request('admin is not boolean')
+    try:
+        data['reviewer'] = bool(strtobool(data['reviewer']))
+    except ValueError:
+        return bad_request('reviewer is not boolean')
     user = User()
     user.from_json(data, new_user=True)
     db.session.add(user)

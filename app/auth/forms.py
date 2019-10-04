@@ -20,6 +20,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     admin = BooleanField('Admin')
+    reviewer = BooleanField('Reviewer')
     recaptcha = RecaptchaField()
     submit = SubmitField('Register')
 

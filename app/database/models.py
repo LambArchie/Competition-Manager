@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     avatar = db.Column(db.String(70), default="")
     admin = db.Column(db.Boolean, default=False)
+    reviewer = db.Column(db.Boolean, default=False)
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
 
@@ -61,12 +62,13 @@ class User(UserMixin, db.Model):
             "email": self.email,
             "id": self.id,
             "lastSeen": self.last_seen,
+            "reviewer": self.reviewer,
             "username": self.username
         }
 
     def from_json(self, data, new_user=False):
         """Creates or modifies user"""
-        for field in ['username', 'email', 'admin']:
+        for field in ['username', 'email', 'admin', 'reviewer']:
             if field in data:
                 setattr(self, field, data[field])
         if new_user and 'password' in data:
@@ -182,3 +184,17 @@ class ReviewUploads(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<ReviewUploads {}>'.format(self.uuid)
+
+class Votes(db.Model):
+    """Contains voting information"""
+    id = db.Column(db.Integer, primary_key=True)
+    comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
+    cat_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    score = db.Column(db.Integer)
+    comments = db.Column(db.String(10000))
+
+    def __repr__(self):
+        """Printable return"""
+        return '<Votes {}>'.format(self.id)

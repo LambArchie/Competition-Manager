@@ -60,10 +60,11 @@ def register():
         return redirect(url_for('auth.index'))
     form = RegistrationForm()
     del form.admin # Hides option to make user admin
+    del form.reviewer # Hides option to make user admin
     if current_app.config['CAPTCHA_ENABLED'] is False:
         del form.recaptcha
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, admin=False)
+        user = User(username=form.username.data, email=form.email.data, admin=False, reviewer=False)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

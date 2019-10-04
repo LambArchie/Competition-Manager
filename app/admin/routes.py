@@ -28,7 +28,8 @@ def admin_register():
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data,
-                    admin=bool(form.admin.data)
+                    admin=bool(form.admin.data),
+                    reviewer=bool(form.reviewer.data)
                     )
         user.set_password(form.password.data)
         db.session.add(user)
