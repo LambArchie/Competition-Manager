@@ -54,4 +54,4 @@ class ReviewVotingForm(FlaskForm):
     submit = SubmitField('Vote')
 
 class BlankForm(FlaskForm):
-    """Suppost to be blank"""
+    """Supposed to be blank"""

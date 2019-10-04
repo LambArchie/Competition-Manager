@@ -1,78 +1,18 @@
 """
-Controls which pages load and what is shown on each
+Controls pages related to reviews
 """
 from arrow import get as arrowGet
-from flask import render_template, flash, redirect, url_for, abort, request, current_app, send_from_directory, make_response
+from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 from markdown import markdown
 from bleach import clean
 from bleach_whitelist import markdown_tags, markdown_attrs
 from werkzeug.utils import secure_filename
 from app import db, review_uploads
-from app.database.models import Competition, Category, Review, ReviewUploads, User, Votes
+from app.database.models import Category, Review, ReviewUploads, User, Votes
 from app.competition import bp
-from app.competition.forms import (CompetitionCreateForm, CategoryCreateForm, ReviewCreateForm,
-                                   ReviewEditForm, ReviewUploadForm, review_edit_categories_form, ReviewVotingForm)
-
-@bp.route('/')
-@login_required
-def index():
-    """Makes dynamic page listing all competitions"""
-    comps = [competition.to_json() for competition in Competition.query.all()]
-    return render_template('competition/index.html', title="Competitions", competitions=comps)
-
-@bp.route('/create', methods=['GET', 'POST'])
-@login_required
-def competition_create():
-    """Creates competitions"""
-    form = CompetitionCreateForm()
-    if form.validate_on_submit():
-        competition = Competition(name=form.name.data,
-                                  body=form.body.data
-                                 )
-        db.session.add(competition)
-        db.session.commit()
-        flash('Competition created successfully')
-        return redirect(url_for('competition.competition_overview', comp_id=competition.id))
-    return render_template('competition/competitionCreate.html', title='Competition Create', form=form)
-
-@bp.route('/file/<uuid>/<filename>')
-@login_required
-def file_download(uuid, filename):
-    """Sends file"""
-    if not secure_filename(uuid) == uuid:
-        abort(404)
-    uploads = ReviewUploads.query.filter_by(uuid=uuid).first_or_404()
-    if not filename == uploads.filename:
-        abort(404)
-    r = make_response(send_from_directory(current_app.config['UPLOADS_DEFAULT_DEST'] + "reviews/", uuid))
-    r.headers['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename)
-    return r
-
-@bp.route('/<int:comp_id>')
-@login_required
-def competition_overview(comp_id):
-    """Makes dynamic competition pages"""
-    competition = Competition.query.filter_by(id=comp_id).first_or_404()
-    categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
-    return render_template('competition/competition.html', title=competition.name, name=competition.name,
-                           body=competition.body, categories=categories, id=comp_id)
-
-@bp.route('/<int:comp_id>/create', methods=['GET', 'POST'])
-@login_required
-def category_create(comp_id):
-    """Create categories"""
-    form = CategoryCreateForm()
-    if form.validate_on_submit():
-        category = Category(name=form.name.data,
-                            body=form.body.data,
-                            comp_id=comp_id
-                            )
-        db.session.add(category)
-        db.session.commit()
-        flash('Category created successfully')
-        return redirect(url_for('competition.category_overview', comp_id=comp_id, cat_id=category.id))
-    return render_template('competition/categoryCreate.html', title='Category Create', form=form)
+from app.competition.forms import (ReviewCreateForm, ReviewEditForm, ReviewUploadForm,
+                                   ReviewVotingForm)
 
 @bp.route('/<int:comp_id>/<int:cat_id>')
 @login_required
@@ -121,11 +61,11 @@ def review_overview(comp_id, cat_id, review_id):
     body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=review.user_id).first_or_404()
     timestamp = arrowGet(review.timestamp).humanize()
-    uploadsCount = ReviewUploads.query.filter_by(review_id=review_id).count()
+    uploads_count = ReviewUploads.query.filter_by(review_id=review_id).count()
     owner = current_user.id == user.id
     return render_template('competition/review.html', title=review.name, review=review,
                            body=body, user=user, cat_id=cat_id, humanTime=timestamp,
-                           uploadsCount=uploadsCount, owner=owner)
+                           uploadsCount=uploads_count, owner=owner)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -158,41 +98,22 @@ def review_edit(comp_id, cat_id, review_id):
         review.name = form.name.data
         review.body = form.body.data
         db.session.commit()
-
         flash('Review edited successfully')
         return redirect(url_for('competition.review_overview',
                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
-    return render_template('competition/reviewEdit.html', title='Review Edit', form=form)
+    return render_template('competition/reviewEdit.html', title='Review Edit', form=form,
+                           comp_id=comp_id, cat_id=cat_id, review_id=review.id)
 
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/edit/categories', methods=['GET', 'POST'])
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/files')
 @login_required
-def review_edit_category(comp_id, cat_id, review_id):
-    """Allows assigning categories"""
+def review_files(comp_id, cat_id, review_id):
+    """Shows all attached files"""
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
-    categories = Category.query.filter_by(comp_id=comp_id)
-    form = review_edit_categories_form(review, categories)
     if not review.check_category(cat_id):
         abort(404)
-    if int(current_user.id) != int(review.user_id):
-        abort(403)
-    if request.method == 'GET':
-        return render_template('competition/reviewCategoryEdit.html', title='Edit Category', form=form)
-    if form.validate_on_submit():
-        for _, checkbox in enumerate(form):
-            try:
-                int(checkbox.name)
-            except ValueError:
-                break
-            else:
-                if review.check_category(int(checkbox.name)) != checkbox.data:
-                    category = Category.query.filter_by(id=int(checkbox.name)).filter_by(comp_id=comp_id).first_or_404()
-                    if checkbox.data:
-                        review.categories.append(category)
-                    else:
-                        review.categories.remove(category)
-        db.session.commit()
-        flash('Review Categories updated successfully')
-        return redirect(url_for('competition.competition_overview', comp_id=comp_id))
+    uploads = ReviewUploads.query.filter_by(review_id=review_id)
+    return render_template('competition/reviewFiles.html', title='Attached Files', uploads=uploads, comp_id=comp_id, cat_id=cat_id, review_id=review_id)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/upload', methods=['GET', 'POST'])
 @login_required
@@ -227,26 +148,6 @@ def review_upload(comp_id, cat_id, review_id):
         flash('File failed to upload')
     return render_template('competition/reviewUpload.html', title='Upload Files', form=form)
 
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/files')
-@login_required
-def review_files(comp_id, cat_id, review_id):
-    """Shows all attached files"""
-    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
-    if not review.check_category(cat_id):
-        abort(404)
-    uploads = ReviewUploads.query.filter_by(review_id=review_id)
-    return render_template('competition/reviewFiles.html', title='Attached Files', uploads=uploads, comp_id=comp_id, cat_id=cat_id, review_id=review_id)
-
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/files/<int:file_id>')
-@login_required
-def review_download_redirect(comp_id, cat_id, review_id, file_id):
-    """Redirects you to the download url"""
-    review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
-    if not review.check_category(cat_id):
-        abort(404)
-    uploads = ReviewUploads.query.filter_by(review_id=review_id).filter_by(id=file_id).first_or_404()
-    return redirect(url_for('competition.file_download', uuid=str(uploads.uuid), filename=uploads.filename))
-
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/voting', methods=['GET', 'POST'])
 @login_required
 def review_voting(comp_id, cat_id, review_id):
@@ -268,5 +169,5 @@ def review_voting(comp_id, cat_id, review_id):
         db.session.commit()
         flash('Successfully Voted')
         return redirect(url_for('competition.review_overview',
-                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
+                                comp_id=comp_id, cat_id=cat_id, review_id=review.id))
     return render_template('competition/reviewVoting.html', title='Voting', form=form)

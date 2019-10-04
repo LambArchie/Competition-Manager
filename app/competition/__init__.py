@@ -5,4 +5,4 @@ from flask import Blueprint
 
 bp = Blueprint('competition', __name__)
 
-from app.competition import routes, forms
+from app.competition import competition, category, review, files, forms
