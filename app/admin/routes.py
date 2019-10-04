@@ -15,11 +15,19 @@ def admin():
     """Shows default admin page if got permissions"""
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html')
-    return render_template('admin/admin.html', title="Users")
+    return render_template('admin/admin.html', title="Admin")
 
-@bp.route('/register', methods=['GET', 'POST'])
+@bp.route('/users')
 @login_required
-def admin_register():
+def user_management():
+    """Shows default admin page if got permissions"""
+    if (current_user.admin is False) or (current_user.admin is None):
+        return render_template('errors/403.html')
+    return render_template('admin/userTable.html', title="User Management")
+
+@bp.route('/users/register', methods=['GET', 'POST'])
+@login_required
+def register():
     """Registration page"""
     if (current_user.admin is False) or (current_user.admin is None):
         return render_template('errors/403.html'), 403
@@ -40,6 +48,6 @@ def admin_register():
 
 @bp.route('/users/get')
 @login_required
-def admin_users():
+def api_users():
     """Dummy function, calls other function"""
     return get_users()

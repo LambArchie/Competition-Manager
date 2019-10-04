@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+<!--Datatables-->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.bootstrap4.min.css" integrity="sha384-EkHEUZ6lErauT712zSr0DZ2uuCmi3DoQj6ecNdHQXpMpFNGAQ48WjfXCE5n20W+R" crossorigin="anonymous"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.bootstrap4.min.css" integrity="sha384-OLZx0O9PR6mUkYxy5tjpEYCKNt+XHYFUgTNrjk6PikePywBxU9chg3Bw2iTDtt1U" crossorigin="anonymous"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.1.4/css/fixedHeader.bootstrap4.min.css" integrity="sha384-WCvWgurF5s3iQOhbC89lPn7E9F0QnmdzbG4MOluQuDFxCarl/3LXKgCeQKvjf+dF" crossorigin="anonymous"/>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js" integrity="sha384-yib/J8n+cev8VyEYY+4A3nSvnqCRhEkxUQhVFp8X+YuIXd0qhT3rTYXqel0zWzni" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js" integrity="sha384-htFkmzBKFrwO7EbvHZPvJXWg0sJIkPPUTBDe6LXOU2ghApFVGQx9++EDSrKMZtHE" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js" integrity="sha384-qNRjPXKOnea7MmtbXG6HLwVyoGNFsu7ntdDOFOt3FS4vmj4MWUKyyKMjRKu0Hr4h" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js" integrity="sha384-rgWRqC0OFPisxlUvl332tiM/qmaNxnlY46eksSZD84t+s2vZlqGeHrncwIRX7CGp" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.bootstrap4.min.js" integrity="sha384-uiSTMvD1kcI19sAHJDVf68medP9HA2E2PzGis9Efmfsdb8p9+mvbQNgFhzii1MEX" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js" integrity="sha384-iuMWo+ZoS1VepZMhnsiTt4GMFUcBlrIofXPssxpFBjzASinAB+mK4Kc/ePpzM4TX" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.bootstrap4.min.js" integrity="sha384-D36Bd08fsynYPtpfHuAx5odG6zzSPqgA0DdnQK4ENUk4HKLMmSTXM61H2xx0Jhs0" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js" integrity="sha384-Pl8RVCqSvsApnng2TEtrl1lHWlEozdPYTpk35W5LeFsrUsPk64XprIZXQOUq4hGj" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js" integrity="sha384-XB54OBl3rOOjrhqlr+qwWqLv0GRnzVGFYKHPwdJnah4TyB7vQuYckQSsxQxGOA8d" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.4/js/dataTables.fixedHeader.min.js" integrity="sha384-DP8EXf4dvRiKlHBBCZbWEn23u7ygJtZAZ2DEx5uLT488gjTw75Ewj9j17Dh+sZ/C" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        $('#users').DataTable( {
+            "processing": true,
+            "ajax": {url:"{{ url_for('admin.api_users') }}",
+                    dataSrc:""
+                    },
+            // add column definitions to map your json to the table                                           
+            "columns": [
+                {data: "id"},
+                {data: "username"},
+                {data: "email"},
+                {data: "lastSeen"},
+                {data: "admin"},
+                {data: "reviewer"}
+            ],
+            // export
+            //dom: 'lfrtipB',
+            dom: "<'row'<'col-sm-12 col-md-auto'l><'col-sm-12 col-md-3 mr-auto'B><'col-sm-12 col-md-auto'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            buttons: [
+                //'csv', 'excel', 'pdf', 'print'
+                { extend: 'csv', className: 'btn-sm'},
+                { extend: 'excel', className: 'btn-sm'},
+                { extend: 'pdf', className: 'btn-sm'},
+                { extend: 'print', className: 'btn-sm'}
+            ]
+        } );
+    });
+</script>
+{% endblock %}
+
+{% block app_content %}
+    <table id="users" class="table table-striped" style="width:100%" >
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Last Seen</th>
+                <th>Is Admin</th>      
+                <th>Is Reviewer</th>                           
+            </tr>
+        </thead> 
+    </table>
+    <p id="register" ><a href="{{ url_for('admin.register') }}">Register New User</a></p>
+{% endblock %}
