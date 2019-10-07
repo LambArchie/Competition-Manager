@@ -44,7 +44,8 @@ def review_edit_categories_form(review, categories):
 
 class ReviewUploadForm(FlaskForm):
     """Upload an Avatar"""
-    fileUpload = FileField('File', validators=[FileRequired(), FileAllowed(review_uploads, 'File type not allowed')])
+    fileUpload = FileField('File', validators=[FileRequired(), FileAllowed(
+        review_uploads, 'File type not allowed')])
     submit = SubmitField('Upload File')
 
 class ReviewVotingForm(FlaskForm):

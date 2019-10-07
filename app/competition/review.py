@@ -1,13 +1,13 @@
 """
 Controls pages related to reviews
 """
-from arrow import get as arrowGet
 from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
+from werkzeug.utils import secure_filename
 from markdown import markdown
+from arrow import get as arrowGet
 from bleach import clean
 from bleach_whitelist import markdown_tags, markdown_attrs
-from werkzeug.utils import secure_filename
 from app import db, review_uploads
 from app.database.models import Category, Review, ReviewUploads, User, Votes
 from app.competition import bp
@@ -104,7 +104,6 @@ def review_edit(comp_id, cat_id, review_id):
     return render_template('competition/reviewEdit.html', title='Review Edit', form=form,
                            comp_id=comp_id, cat_id=cat_id, review_id=review.id)
 
-
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/files')
 @login_required
 def review_files(comp_id, cat_id, review_id):
@@ -113,7 +112,8 @@ def review_files(comp_id, cat_id, review_id):
     if not review.check_category(cat_id):
         abort(404)
     uploads = ReviewUploads.query.filter_by(review_id=review_id)
-    return render_template('competition/reviewFiles.html', title='Attached Files', uploads=uploads, comp_id=comp_id, cat_id=cat_id, review_id=review_id)
+    return render_template('competition/reviewFiles.html', title='Attached Files', uploads=uploads,
+                           comp_id=comp_id, cat_id=cat_id, review_id=review_id)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/upload', methods=['GET', 'POST'])
 @login_required
@@ -127,7 +127,8 @@ def review_upload(comp_id, cat_id, review_id):
         abort(403)
     if request.method == 'POST' and 'fileUpload' in request.files:
         if form.validate_on_submit():
-            uploads = ReviewUploads.query.order_by(ReviewUploads.id.desc()).filter_by(review_id=review_id).first()
+            uploads = ReviewUploads.query.order_by(ReviewUploads.id.desc()).filter_by(
+                review_id=review_id).first()
             if uploads is None:
                 next_id = 1
             else:

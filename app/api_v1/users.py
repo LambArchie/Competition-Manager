@@ -14,5 +14,4 @@ def get_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         return jsonify(user.to_json())
-    else:
-        return error_response(404, "user id doesn't exist")
+    return error_response(404, "user id doesn't exist")

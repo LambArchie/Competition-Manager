@@ -14,8 +14,8 @@ def competition_overview(comp_id):
     """Makes dynamic competition pages"""
     competition = Competition.query.filter_by(id=comp_id).first_or_404()
     categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
-    return render_template('competition/competition.html', title=competition.name, name=competition.name,
-                           body=competition.body, categories=categories, id=comp_id)
+    return render_template('competition/competition.html', title=competition.name,
+                           competition=competition, categories=categories, id=comp_id)
 
 @bp.route('/<int:comp_id>/create', methods=['GET', 'POST'])
 @login_required
@@ -30,7 +30,8 @@ def category_create(comp_id):
         db.session.add(category)
         db.session.commit()
         flash('Category created successfully')
-        return redirect(url_for('competition.category_overview', comp_id=comp_id, cat_id=category.id))
+        return redirect(url_for('competition.category_overview', comp_id=comp_id,
+                                cat_id=category.id))
     return render_template('competition/categoryCreate.html', title='Category Create', form=form)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/edit/categories', methods=['GET', 'POST'])

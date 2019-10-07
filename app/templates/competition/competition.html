@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>{{ name }}</h1>
-    <p>{{ body }}</p>
+    <h1>{{ competition.name }}</h1>
+    <p>{{ competition.body }}</p>
     <br>
     <p>Categories:</p>
     {% for category in categories %}

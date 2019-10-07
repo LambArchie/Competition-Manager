@@ -28,4 +28,5 @@ def competition_create():
         db.session.commit()
         flash('Competition created successfully')
         return redirect(url_for('competition.competition_overview', comp_id=competition.id))
-    return render_template('competition/competitionCreate.html', title='Competition Create', form=form)
+    return render_template('competition/competitionCreate.html', title='Competition Create',
+                           form=form)
