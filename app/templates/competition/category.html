@@ -1,12 +1,36 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<!--Font Awesome-->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+{% endblock %}
 {% block app_content %}
     <h1>{{ name }}</h1>
     <p>{{ body }}</p>
     <br>
     <p>Reviews:</p>
+    {% set count = 0 %}
     {% for review in reviews %}
-        <p><a href="{{ url_for('competition.review_overview', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">{{ review.name }}</a></p>
+        <div class="row">
+            <div class="col-auto mr-auto"><a href="{{ url_for('competition.review_overview', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">{{ review.name }}</a></div>
+            <div class="col-auto"><ul class="rating">
+                {% set vars = {'scoreToGo': (scores[loop.index-1] / 2), 'count': 5} %}
+                {% for i in range(vars.scoreToGo|round(0, 'floor')|int) %}
+                    {% if vars.update({'scoreToGo': vars.scoreToGo - 1}) %}{% endif %}
+                    {% if vars.update({'count': vars.count - 1}) %}{% endif %}
+                    <i class="fas fa-star"></i>
+                {% endfor %}
+                {% if vars.scoreToGo|round(1) >= 0.5 %}
+                    {% if vars.update({'count': vars.count - 1}) %}{% endif %}
+                    <i class="fas fa-star-half-alt"></i>
+                {% endif %}
+                {% for i in range(vars.count) %}
+                    <i class="far fa-star"></i>
+                {% endfor %}
+                {{ scores[loop.index-1]|round(1) }}
+            </ul></div>
+        </div>
     {% endfor %}
     <br>
     <p><a href="{{ url_for('competition.review_create', comp_id=comp_id, cat_id=cat_id) }}">Create Review</a></p>

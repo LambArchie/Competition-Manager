@@ -20,14 +20,28 @@ def category_overview(comp_id, cat_id):
     """Makes dynamic categories pages"""
     category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
     reviews = Review.query.filter_by(comp_id=comp_id).all()
+    votes = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).all()
+    votes_count = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).count()
     cat_reviews = []
     for _, review in enumerate(reviews):
         for j in range(len(review.categories)):
             if review.categories[j].id == cat_id:
                 cat_reviews.append(review.to_json())
-
+    scores = []
+    for i in range(len(cat_reviews)):
+        score = 0
+        current_votes = 0
+        for j in range(votes_count):
+            if votes[j].review_id == reviews[i].id:
+                score = score + votes[j].score
+                current_votes = current_votes + 1
+        try:
+            average = score/current_votes
+        except ZeroDivisionError:
+            average = 0
+        scores.append(average)
     return render_template('competition/category.html', title=category.name, name=category.name,
-                           body=category.body, reviews=cat_reviews, comp_id=comp_id, cat_id=cat_id)
+                           body=category.body, reviews=cat_reviews, comp_id=comp_id, cat_id=cat_id, scores=scores)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/create', methods=['GET', 'POST'])
 @login_required
