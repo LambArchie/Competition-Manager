@@ -163,7 +163,7 @@ def review_upload(comp_id, cat_id, review_id):
         flash('File failed to upload')
     return render_template('competition/reviewUpload.html', title='Upload Files', form=form)
 
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/voting', methods=['GET', 'POST'])
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/vote', methods=['GET', 'POST'])
 @login_required
 def review_voting(comp_id, cat_id, review_id):
     """Allows you to vote"""
