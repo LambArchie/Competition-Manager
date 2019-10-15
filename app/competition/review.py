@@ -39,7 +39,7 @@ def category_overview(comp_id, cat_id):
             average = score/current_votes
         except ZeroDivisionError:
             average = 0
-        scores.append(average)
+        scores.append([average, current_votes])
     return render_template('competition/category.html', title=category.name, name=category.name,
                            body=category.body, reviews=cat_reviews, comp_id=comp_id, cat_id=cat_id, scores=scores)
 
