@@ -8,14 +8,8 @@
 {% block scripts %}
 {{super()}}
 <!-- SimpleMDE -->
-<script src="https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js" integrity="sha384-83rBTICYr+FwAC+A5t0ZYsWjTcPXibCe/NBSFLAgMPkwHBvIi02EcE9OShMsGCi3" crossorigin="anonymous"></script>
-<script type="text/javascript">
-    window.addEventListener("load", function(){
-        $('.col-md-4').removeClass('col-md-4').addClass('col-md-12');
-        var simplemde = new SimpleMDE({ element: document.getElementById("body") });
-        document.getElementById("body").required=false;
-    });
-</script>
+<script src="https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js" integrity="sha384-83rBTICYr+FwAC+A5t0ZYsWjTcPXibCe/NBSFLAgMPkwHBvIi02EcE9OShMsGCi3" crossorigin="anonymous" async></script>
+<script src="/static/js/initialiseSimpleMDE.min.js" integrity="sha384-UaqFLTmSfnRaybf+J9i9rjTSpiB07Clnynva1XZCpuTsj2bNnkHKQHjqtIx22Rkq" crossorigin="anonymous" async defer></script>
 {% endblock %}
 
 {% block app_content %}

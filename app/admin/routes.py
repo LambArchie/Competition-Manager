@@ -48,7 +48,7 @@ def register():
         return redirect(url_for('admin.admin'))
     return render_template('auth/register.html', title='Register', form=form)
 
-@bp.route('/users/get')
+@bp.route('/users/get') #Don't change, hardcoded in js
 @login_required
 def api_users():
     """Dummy function, calls other function"""
