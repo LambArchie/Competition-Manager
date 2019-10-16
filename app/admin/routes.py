@@ -21,7 +21,7 @@ def admin():
     check_permissions()
     return render_template('admin/admin.html', title="Admin")
 
-@bp.route('/users')
+@bp.route('/users/')
 @login_required
 def user_management():
     """Displays users in a table"""

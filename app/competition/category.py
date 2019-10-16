@@ -8,7 +8,7 @@ from app.database.models import Competition, Category, Review
 from app.competition import bp
 from app.competition.forms import CategoryCreateForm, review_edit_categories_form
 
-@bp.route('/<int:comp_id>')
+@bp.route('/<int:comp_id>/')
 @login_required
 def competition_overview(comp_id):
     """Makes dynamic competition pages"""

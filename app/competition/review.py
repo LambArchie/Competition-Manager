@@ -14,7 +14,7 @@ from app.competition import bp
 from app.competition.forms import (ReviewCreateForm, ReviewEditForm, ReviewUploadForm,
                                    ReviewVotingForm)
 
-@bp.route('/<int:comp_id>/<int:cat_id>')
+@bp.route('/<int:comp_id>/<int:cat_id>/')
 @login_required
 def category_overview(comp_id, cat_id):
     """Makes dynamic categories pages"""
@@ -64,7 +64,7 @@ def review_create(comp_id, cat_id):
                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
     return render_template('competition/reviewCreate.html', title='Review Create', form=form)
 
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>')
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:review_id>/')
 @login_required
 def review_overview(comp_id, cat_id, review_id):
     """Makes dynamic review pages"""

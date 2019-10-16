@@ -12,7 +12,7 @@ from app.database.models import User, Review
 from app.user import bp
 from app.user.forms import EditProfileForm, UploadAvatarForm
 
-@bp.route('/<username>')
+@bp.route('/<username>/')
 @login_required
 def user_profile(username):
     """Makes dynamic user pages"""
