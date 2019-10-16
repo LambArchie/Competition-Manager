@@ -168,6 +168,7 @@ def review_upload(comp_id, cat_id, review_id):
 def review_voting(comp_id, cat_id, review_id):
     """Allows you to vote"""
     review = Review.query.filter_by(id=review_id).filter_by(comp_id=comp_id).first_or_404()
+    category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
     if not review.check_category(cat_id):
         abort(404)
     if current_user.reviewer == 0:
@@ -185,4 +186,5 @@ def review_voting(comp_id, cat_id, review_id):
         flash('Successfully Voted')
         return redirect(url_for('competition.review_overview',
                                 comp_id=comp_id, cat_id=cat_id, review_id=review.id))
-    return render_template('competition/reviewVoting.html', title='Voting', form=form)
+    return render_template('competition/reviewVoting.html', title='Voting', form=form,
+                           cat=category, review=review)

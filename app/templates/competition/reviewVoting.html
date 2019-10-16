@@ -1,5 +1,16 @@
 {% extends "base.html" %}
+{% import '_wtf.html' as wtf %}
 
 {% block app_content %}
-    {% include '_form.html' %}
+    <div class="row">
+        <div class="col-md-4">
+            <h1>{{ review.name }} - {{ title }}</h1>
+            {{ wtf.quick_form(form) }}
+        </div>
+        <div class="col">
+            <h3>Category</h3>
+            <h5>{{ cat.name }}</h5>
+            <p class="font-weight-light">{{ cat.body }}</p>
+        </div>
+    </div>
 {% endblock %}
