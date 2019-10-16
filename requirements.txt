@@ -12,3 +12,4 @@ bleach
 bleach-whitelist
 python-dotenv
 pylint-flask
+gunicorn
