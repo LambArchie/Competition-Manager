@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/springy/2.8.0/springy.min.js" integrity="sha256-WmPKL3JQrpEu+5WvCq526urQCByODLWxLk4hLTZdzA0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/springy/2.8.0/springyui.min.js" integrity="sha256-p9lwSD4M2dEw39+oiqJdXwnrWKgUPUg63X4fTaA28Ck=" crossorigin="anonymous"></script>
+<script>
+var graphJSON = {{ json|safe }};
+
+(function() {
+  var canvas = document.getElementById('graph'),
+      context = canvas.getContext('2d');
+  window.addEventListener('resize', resizeCanvas, false);
+  function resizeCanvas() {
+    container = window.getComputedStyle(document.querySelector('.container'))
+    canvas.width = parseInt(container.getPropertyValue('width'), 10) - 
+                   parseInt(container.getPropertyValue('padding-left'), 10) -
+                   parseInt(container.getPropertyValue('padding-right'), 10);
+    canvas.height = window.innerHeight - $("#title").height() - 56 - 56;
+  }
+  resizeCanvas();
+})();
+
+jQuery(function(){
+  var graph = new Springy.Graph();
+  graph.loadJSON(graphJSON);
+  var springy = jQuery('#graph').springy({
+    graph: graph
+  });
+});</script>
+{% endblock %}
+
+{% block app_content %}
+    <h1 id="title">{{ title }}</h1>
+    <canvas id="graph" style="display: block;"></canvas>
+{% endblock %}

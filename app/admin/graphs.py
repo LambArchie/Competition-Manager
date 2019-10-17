@@ -16,6 +16,39 @@ def clean_text(text):
 @bp.route('/graphs/')
 @login_required
 def graphs():
+    """Overview page for graphs"""
+    check_permissions()
+    return render_template('admin/graphs.html', title="Graphs")
+
+@bp.route('/graphs/nousers')
+@login_required
+def graphs_nousers():
+    """Visual representation of reviews, categories and competitions"""
+    check_permissions()
+    competitions = Competition.query.all()
+    categories = Category.query.all()
+    reviews = Review.query.all()
+    nodes = []
+    edges = []
+    combined = {}
+    for _, competition in enumerate(competitions):
+        nodes.append(competition.name)
+    for _, category in enumerate(categories):
+        nodes.append(category.name)
+        temp = Competition.query.filter_by(id=category.comp_id).first().name
+        edges.append([temp, category.name])
+    for _, review in enumerate(reviews):
+        nodes.append(review.name)
+        for _, review_cat in enumerate(review.categories):
+            edges.append([review_cat.name, review.name])
+    combined['nodes'] = nodes
+    combined['edges'] = edges
+    nodes = clean_text(dumps(combined, ensure_ascii=False))
+    return render_template('admin/graph.html', title="Graph without Users", json=nodes)
+
+@bp.route('/graphs/users')
+@login_required
+def graphs_users():
     """Visual representation of reviews, categories, competitions and users"""
     check_permissions()
     users = User.query.all()
@@ -42,4 +75,4 @@ def graphs():
     combined['nodes'] = nodes
     combined['edges'] = edges
     nodes = clean_text(dumps(combined, ensure_ascii=False))
-    return render_template('admin/graphs.html', title="Admin", json=nodes)
+    return render_template('admin/graph.html', title="Graph with Users", json=nodes)
