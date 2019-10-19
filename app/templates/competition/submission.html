@@ -2,11 +2,7 @@
 
 {% block scripts %}
 {{super()}}
-<script type="text/javascript">
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-</script>
+<script src="/static/js/initialiseTooltip.min.js" integrity="sha384-dX23tlcG96awOEcssN/7WL2CN6J9qMY+tc4H2g13XLot37bTz1bbwqlg0+1fuXr+" crossorigin="anonymous" defer></script>
 {% endblock %}
 
 {% block app_content %}
