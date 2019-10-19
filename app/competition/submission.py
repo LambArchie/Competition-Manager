@@ -175,6 +175,8 @@ def submission_voting(comp_id, cat_id, submission_id):
         abort(404)
     if current_user.reviewer == 0:
         abort(403)
+    if current_user.id == submission.user_id:
+        abort(403)
     form = SubmissionVotingForm()
     if form.validate_on_submit():
         vote = Votes(score=form.score.data,
