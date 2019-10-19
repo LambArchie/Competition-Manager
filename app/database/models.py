@@ -26,6 +26,8 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
+    name = db.Column(db.String(64))
+    organisation = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
     submission = db.relationship('Submission', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
@@ -60,8 +62,10 @@ class User(UserMixin, db.Model):
         return {
             "admin": self.admin,
             "email": self.email,
+            "name": self.name,
             "id": self.id,
             "lastSeen": self.last_seen,
+            "organisation": self.organisation,
             "reviewer": self.reviewer,
             "username": self.username
         }

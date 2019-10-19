@@ -27,9 +27,10 @@ def token_get_users():
 def create_user():
     """Allows creating a user"""
     data = request.get_json() or {}
-    if (('username' not in data) or ('email' not in data) or ('password' not in data) or
+    if (('username' not in data) or ('email' not in data) or ('name' not in data) or
+            ('organisation' not in data) or ('password' not in data) or
             ('admin' not in data) or ('reviewer' not in data)):
-        return bad_request('must include username, email, password and admin fields')
+        return bad_request('must include username, email, name, organisation, password and admin fields')
     if g.current_user.admin is False:
         return error_response(403, "not admin user")
     if User.query.filter_by(username=data['username']).first():
