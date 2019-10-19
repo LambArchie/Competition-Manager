@@ -27,6 +27,8 @@ def register():
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data,
+                    name=form.name.data,
+                    organisation=form.organisation.data,
                     admin=bool(form.admin.data),
                     reviewer=bool(form.reviewer.data)
                     )

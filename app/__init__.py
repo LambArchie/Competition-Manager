@@ -18,7 +18,7 @@ login = LoginManager()
 migrate = Migrate()
 login.login_view = 'auth.login'
 avatar_uploads = UploadSet('avatars', IMAGES)
-review_uploads = UploadSet('reviews', AllExcept(SCRIPTS + EXECUTABLES + tuple('''
+submission_uploads = UploadSet('submissions', AllExcept(SCRIPTS + EXECUTABLES + tuple('''
                                                 docm docb dotm xlsm xltm xll xlam xla pptm potm ppsm
                                                 sldm swf app jar scr com msi pif hta cpl msc bat cmd
                                                 vb vbs vbe ps1 ps1xml ps2 ps2xml psc1 psc2 inf reg
@@ -35,7 +35,7 @@ def create_app(config_class=Config):
     login.init_app(app)
     migrate.init_app(app, db)
     configure_uploads(app, avatar_uploads)
-    configure_uploads(app, review_uploads)
+    configure_uploads(app, submission_uploads)
 
     from app.api_v1 import bp as api_v1_bp
     app.register_blueprint(api_v1_bp, url_prefix='/api/v1')

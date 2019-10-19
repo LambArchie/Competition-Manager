@@ -5,7 +5,7 @@ from json import dumps
 from bleach import clean
 from flask import render_template
 from flask_login import login_required
-from app.database.models import User, Competition, Category, Review
+from app.database.models import User, Competition, Category, Submission
 from app.admin import bp
 from app.admin.routes import check_permissions
 
@@ -23,11 +23,11 @@ def graphs():
 @bp.route('/graphs/nousers')
 @login_required
 def graphs_nousers():
-    """Visual representation of reviews, categories and competitions"""
+    """Visual representation of submissions, categories and competitions"""
     check_permissions()
     competitions = Competition.query.all()
     categories = Category.query.all()
-    reviews = Review.query.all()
+    submissions = Submission.query.all()
     nodes = []
     edges = []
     combined = {}
@@ -37,10 +37,10 @@ def graphs_nousers():
         nodes.append(category.name)
         temp = Competition.query.filter_by(id=category.comp_id).first().name
         edges.append([temp, category.name])
-    for _, review in enumerate(reviews):
-        nodes.append(review.name)
-        for _, review_cat in enumerate(review.categories):
-            edges.append([review_cat.name, review.name])
+    for _, submission in enumerate(submissions):
+        nodes.append(submission.name)
+        for _, submission_cat in enumerate(submission.categories):
+            edges.append([submission_cat.name, submission.name])
     combined['nodes'] = nodes
     combined['edges'] = edges
     nodes = clean_text(dumps(combined, ensure_ascii=False))
@@ -49,12 +49,12 @@ def graphs_nousers():
 @bp.route('/graphs/users')
 @login_required
 def graphs_users():
-    """Visual representation of reviews, categories, competitions and users"""
+    """Visual representation of submissions, categories, competitions and users"""
     check_permissions()
     users = User.query.all()
     competitions = Competition.query.all()
     categories = Category.query.all()
-    reviews = Review.query.all()
+    submissions = Submission.query.all()
     nodes = []
     edges = []
     combined = {}
@@ -66,12 +66,12 @@ def graphs_users():
         nodes.append(category.name)
         temp = Competition.query.filter_by(id=category.comp_id).first().name
         edges.append([temp, category.name])
-    for _, review in enumerate(reviews):
-        nodes.append(review.name)
-        for _, review_cat in enumerate(review.categories):
-            edges.append([review_cat.name, review.name])
-        temp = User.query.filter_by(id=review.user_id).first().username
-        edges.append([review.name, temp])
+    for _, submission in enumerate(submissions):
+        nodes.append(submission.name)
+        for _, submission_cat in enumerate(submission.categories):
+            edges.append([submission_cat.name, submission.name])
+        temp = User.query.filter_by(id=submission.user_id).first().username
+        edges.append([submission.name, temp])
     combined['nodes'] = nodes
     combined['edges'] = edges
     nodes = clean_text(dumps(combined, ensure_ascii=False))

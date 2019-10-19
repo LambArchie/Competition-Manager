@@ -1,0 +1,18 @@
+<table class="table table-hover">
+        <tr>
+            <td width="70px">
+                <a href="{{ url_for('user.user_profile', username=submission.author.username) }}">
+                    <img height="70px" width="70px" src="{{ submission.author.avatar_get() }}" />
+                </a>
+            </td>
+            <td>
+                <a href="{{ url_for('competition.submission_overview', comp_id=submission.comp_id, cat_id=submission.categories[0].id, submission_id=submission.id) }}">
+                    {{ submission.name }}
+                </a>
+                <br>
+                <div>
+                {{ submission.body }}
+                </div>
+            </td>
+        </tr>
+    </table>

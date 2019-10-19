@@ -9,11 +9,11 @@
     <h1>{{ name }}</h1>
     <p>{{ body }}</p>
     <br>
-    <p>Reviews:</p>
+    <p>Submissions:</p>
     {% set count = 0 %}
-    {% for review in reviews %}
+    {% for submission in submissions %}
         <div class="row">
-            <div class="col-auto mr-auto"><a href="{{ url_for('competition.review_overview', comp_id=review.comp_id, cat_id=cat_id, review_id=review.id) }}">{{ review.name }}</a></div>
+            <div class="col-auto mr-auto"><a href="{{ url_for('competition.submission_overview', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}">{{ submission.name }}</a></div>
             <div class="col-auto"><div class="rating">
                 {% set vars = {'scoreToGo': (scores[loop.index-1][0] / 2), 'count': 5} %}
                 {% for i in range(vars.scoreToGo|round(0, 'floor')|int) %}
@@ -34,6 +34,6 @@
         </div>
     {% endfor %}
     <br>
-    <p><a href="{{ url_for('competition.review_create', comp_id=comp_id, cat_id=cat_id) }}">Create Review</a></p>
+    <p><a href="{{ url_for('competition.submission_create', comp_id=comp_id, cat_id=cat_id) }}">Create Submission</a></p>
     <p><a href="{{ url_for('competition.competition_overview', comp_id=comp_id) }}">All Categories</a></p>
 {% endblock %}

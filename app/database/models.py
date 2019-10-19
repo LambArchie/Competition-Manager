@@ -11,10 +11,10 @@ from app import db, login
 from app.database.uuid import GUID
 
 db.GUID = GUID
-CATEGORY_REVIEW_ASSOC = db.Table('category_review_assoc',
-                                 db.Column('categories', db.Integer, db.ForeignKey('category.id')),
-                                 db.Column('reviews', db.Integer, db.ForeignKey('review.id'))
-                                )
+CATEGORY_SUBMISSION_ASSOC = db.Table('category_submission_assoc',
+                                     db.Column('categories', db.Integer, db.ForeignKey('category.id')),
+                                     db.Column('submissions', db.Integer, db.ForeignKey('submission.id'))
+                                     )
 
 @login.user_loader
 def load_user(user_id):
@@ -27,7 +27,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    review = db.relationship('Review', backref='author', lazy='dynamic')
+    submission = db.relationship('Submission', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     avatar = db.Column(db.String(70), default="")
     admin = db.Column(db.Boolean, default=False)
@@ -102,7 +102,7 @@ class Competition(db.Model):
     name = db.Column(db.String(64))
     body = db.Column(db.String(280))
     categories = db.relationship("Category")
-    reviews = db.relationship("Review")
+    submissions = db.relationship("Submission")
 
     def __repr__(self):
         """Printable return"""
@@ -136,8 +136,8 @@ class Category(db.Model):
             "name": self.name
         }
 
-class Review(db.Model):
-    """Controls the Review SQL table"""
+class Submission(db.Model):
+    """Controls the Submission SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     body = db.Column(db.String(10000))
@@ -145,12 +145,12 @@ class Review(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
     categories = db.relationship(
-        "Category", secondary=CATEGORY_REVIEW_ASSOC,
-        backref='reviews')
+        "Category", secondary=CATEGORY_SUBMISSION_ASSOC,
+        backref='submissions')
 
     def __repr__(self):
         """Printable return"""
-        return '<Review {}>'.format(self.body)
+        return '<Submission {}>'.format(self.body)
 
     def to_json(self):
         """Returns user objects for api creation"""
@@ -165,7 +165,7 @@ class Review(db.Model):
         }
 
     def check_category(self, category):
-        """Checks review is in category"""
+        """Checks submission is in category"""
         cat_correct = False
         for i in range(len(self.categories)):
             if category == self.categories[i].id:
@@ -173,24 +173,24 @@ class Review(db.Model):
                 break
         return cat_correct
 
-class ReviewUploads(db.Model):
+class SubmissionUploads(db.Model):
     """Contains filenames for Uploads
-    id is only unique per review"""
+    id is only unique per submission"""
     uuid = db.Column(db.GUID, primary_key=True, default=uuid4)
     id = db.Column(db.Integer)
     filename = db.Column(db.String(64))
-    review_id = db.Column(db.Integer, db.ForeignKey('review.id'))
+    submission_id = db.Column(db.Integer, db.ForeignKey('submission.id'))
 
     def __repr__(self):
         """Printable return"""
-        return '<ReviewUploads {}>'.format(self.uuid)
+        return '<SubmissionUploads {}>'.format(self.uuid)
 
 class Votes(db.Model):
     """Contains voting information"""
     id = db.Column(db.Integer, primary_key=True)
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
     cat_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    review_id = db.Column(db.Integer, db.ForeignKey('review.id'))
+    submission_id = db.Column(db.Integer, db.ForeignKey('submission.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     score = db.Column(db.Integer)
     comments = db.Column(db.String(10000))
