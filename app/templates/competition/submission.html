@@ -20,7 +20,7 @@
         <div class="col-auto mr-auto">
             <span class="align-middle">Created by
             <a href="{{ url_for('user.user_profile', username=user.username) }}">
-                {{ user.username }}
+                {{ user.name }}
             </a>
             Last Modified: <a href="#" class="text-reset text-decoration-none" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">{{ humanTime }}</a>
             </span>
