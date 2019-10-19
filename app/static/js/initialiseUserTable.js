@@ -7,6 +7,8 @@ $(document).ready(function() {
         // add column definitions to map your json to the table                                           
         "columns": [
             {data: "id"},
+            {data: "name"},
+            {data: "organisation"},
             {data: "username"},
             {data: "email"},
             {data: "lastSeen"},
