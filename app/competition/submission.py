@@ -22,6 +22,7 @@ def category_overview(comp_id, cat_id):
     submissions = Submission.query.filter_by(comp_id=comp_id).all()
     votes = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).all()
     votes_count = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).count()
+    admin = User.query.filter_by(username=current_user.username).first().admin
     cat_submissions = []
     for _, submission in enumerate(submissions):
         for j in range(len(submission.categories)):
@@ -42,7 +43,7 @@ def category_overview(comp_id, cat_id):
         scores.append([average, current_votes])
     return render_template('competition/category.html', title=category.name, name=category.name,
                            body=category.body, submissions=cat_submissions, comp_id=comp_id,
-                           cat_id=cat_id, scores=scores)
+                           cat_id=cat_id, scores=scores, admin=admin)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/create', methods=['GET', 'POST'])
 @login_required

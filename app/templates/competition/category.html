@@ -14,23 +14,25 @@
     {% for submission in submissions %}
         <div class="row">
             <div class="col-auto mr-auto"><a href="{{ url_for('competition.submission_overview', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}">{{ submission.name }}</a></div>
-            <div class="col-auto"><div class="rating">
-                {% set vars = {'scoreToGo': (scores[loop.index-1][0] / 2), 'count': 5} %}
-                {% for i in range(vars.scoreToGo|round(0, 'floor')|int) %}
-                    {% if vars.update({'scoreToGo': vars.scoreToGo - 1}) %}{% endif %}
-                    {% if vars.update({'count': vars.count - 1}) %}{% endif %}
-                    <i class="fas fa-star"></i>
-                {% endfor %}
-                {% if vars.scoreToGo|round(1) >= 0.5 %}
-                    {% if vars.update({'count': vars.count - 1}) %}{% endif %}
-                    <i class="fas fa-star-half-alt"></i>
-                {% endif %}
-                {% for i in range(vars.count) %}
-                    <i class="far fa-star"></i>
-                {% endfor %}
-                {{ scores[loop.index-1][0]|round(1) }}
-                <span class="text-muted">From {{ scores[loop.index-1][1] }} votes</span>
-            </div></div>
+            {% if admin %}
+                <div class="col-auto"><div class="rating">
+                    {% set vars = {'scoreToGo': (scores[loop.index-1][0] / 2), 'count': 5} %}
+                    {% for i in range(vars.scoreToGo|round(0, 'floor')|int) %}
+                        {% if vars.update({'scoreToGo': vars.scoreToGo - 1}) %}{% endif %}
+                        {% if vars.update({'count': vars.count - 1}) %}{% endif %}
+                        <i class="fas fa-star"></i>
+                    {% endfor %}
+                    {% if vars.scoreToGo|round(1) >= 0.5 %}
+                        {% if vars.update({'count': vars.count - 1}) %}{% endif %}
+                        <i class="fas fa-star-half-alt"></i>
+                    {% endif %}
+                    {% for i in range(vars.count) %}
+                        <i class="far fa-star"></i>
+                    {% endfor %}
+                    {{ scores[loop.index-1][0]|round(1) }}
+                    <span class="text-muted">From {{ scores[loop.index-1][1] }} votes</span>
+                </div></div>
+            {% endif %}
         </div>
     {% endfor %}
     <br>
