@@ -22,7 +22,6 @@ def before_request():
 
 @bp.route('/')
 @bp.route('/index')
-@login_required
 def index():
     """Landing page"""
     return render_template('index.html', title='Home')
