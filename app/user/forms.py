@@ -10,7 +10,10 @@ from app import avatar_uploads
 
 class EditProfileForm(FlaskForm):
     """Allows profile editing"""
-    username = StringField('Username', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired()])
+    organisation = StringField('Organisation', validators=[DataRequired(
+        message="If not appliable use N/A")], description="If not appliable use N/A")
+    username = StringField('Username')
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Edit Profile')
 

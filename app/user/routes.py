@@ -66,13 +66,17 @@ def edit_profile(username):
     """Profile edit page"""
     check_permissions(username)
     form = EditProfileForm(current_user.username, current_user.email)
+    form.username.render_kw = {'disabled': 'disabled'}
     if form.validate_on_submit():
-        current_user.username = form.username.data
+        current_user.name = form.name.data
+        current_user.organisation = form.organisation.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('user.edit_profile', username=current_user.username))
     elif request.method == 'GET':
+        form.name.data = current_user.name
+        form.organisation.data = current_user.organisation
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('users/edit_profile.html', title='Edit Profile', form=form)
