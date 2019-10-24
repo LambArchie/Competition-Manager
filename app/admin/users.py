@@ -24,7 +24,7 @@ def api_users():
     """Dummy function, calls other function"""
     return get_users()
 
-@bp.route('/users/user/<username>/edit', methods=['GET', 'POST'])
+@bp.route('/users/user/<username>/edit', methods=['GET', 'POST']) #Don't change, hardcoded in js
 @login_required
 def user_edit(username):
     """Allows admin to edit user information"""
