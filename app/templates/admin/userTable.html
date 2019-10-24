@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.bootstrap4.min.css" integrity="sha384-EkHEUZ6lErauT712zSr0DZ2uuCmi3DoQj6ecNdHQXpMpFNGAQ48WjfXCE5n20W+R" crossorigin="anonymous"/>
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.bootstrap4.min.css" integrity="sha384-OLZx0O9PR6mUkYxy5tjpEYCKNt+XHYFUgTNrjk6PikePywBxU9chg3Bw2iTDtt1U" crossorigin="anonymous"/>
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.4/css/fixedHeader.bootstrap4.min.css" integrity="sha384-WCvWgurF5s3iQOhbC89lPn7E9F0QnmdzbG4MOluQuDFxCarl/3LXKgCeQKvjf+dF" crossorigin="anonymous"/>
+<link rel="stylesheet" href="/static/css/dataTables.min.css" integrity="sha384-lDHWIhrmW45g4V1KVYeHC44Pndr3n/iBzcUYbKr90mTyA3FM4OycPiQXp15YZif9" crossorigin="anonymous"/>
 {% endblock %}
 {% block scripts %}
 {{super()}}
@@ -24,7 +25,7 @@
 {% endblock %}
 
 {% block app_content %}
-    <table id="users" class="table table-striped" style="width:100%" >
+    <table id="users" class="table table-striped text-wrap" style="width:100%" >
         <thead>
             <tr>
                 <th>ID</th>
