@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    {% include '_form.html' %}
+    <br>
+    <p><a href="{{ url_for('admin.user_pwreset', username=username) }}">Reset Password</a></p>
+{% endblock %}
