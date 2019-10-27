@@ -179,17 +179,26 @@ def submission_voting(comp_id, cat_id, sub_id):
     if current_user.id == submission.user_id:
         abort(403)
     form = SubmissionVotingForm()
+    previous_vote = Votes.query.filter_by(user_id=current_user.id).filter_by(id=sub_id).filter_by(
+        comp_id=comp_id).first()
     if form.validate_on_submit():
-        vote = Votes(score=form.score.data,
-                     comments=form.comment.data,
-                     user_id=int(current_user.id),
-                     comp_id=int(comp_id),
-                     cat_id=int(cat_id),
-                     submission_id=int(sub_id))
-        db.session.add(vote)
+        if previous_vote is None:
+            vote = Votes(score=form.score.data,
+                         comments=form.comment.data,
+                         user_id=int(current_user.id),
+                         comp_id=int(comp_id),
+                         cat_id=int(cat_id),
+                         submission_id=int(sub_id))
+            db.session.add(vote)
+        else:
+            previous_vote.score = form.score.data
+            previous_vote.comments = form.comment.data
         db.session.commit()
         flash('Successfully Voted')
         return redirect(url_for('competition.submission_page',
                                 comp_id=comp_id, cat_id=cat_id, sub_id=submission.id))
+    elif previous_vote is not None:
+        form.score.data = previous_vote.score
+        form.comment.data = previous_vote.comments
     return render_template('competition/submissionVoting.html', title='Voting', form=form,
                            cat=category, submission=submission)
