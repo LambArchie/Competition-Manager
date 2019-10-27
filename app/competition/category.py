@@ -10,8 +10,8 @@ from app.competition.forms import CategoryCreateForm, submission_edit_categories
 
 @bp.route('/<int:comp_id>/')
 @login_required
-def competition_overview(comp_id):
-    """Makes dynamic competition pages"""
+def categories_overview(comp_id):
+    """Lists all categories in a competition"""
     competition = Competition.query.filter_by(id=comp_id).first_or_404()
     categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
     return render_template('competition/competition.html', title=competition.name,
@@ -30,15 +30,15 @@ def category_create(comp_id):
         db.session.add(category)
         db.session.commit()
         flash('Category created successfully')
-        return redirect(url_for('competition.category_overview', comp_id=comp_id,
+        return redirect(url_for('competition.submissions_overview', comp_id=comp_id,
                                 cat_id=category.id))
-    return render_template('competition/categoryCreate.html', title='Category Create', form=form)
+    return render_template('competition/categoryCreate.html', title='Create Category', form=form)
 
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:submission_id>/edit/categories', methods=['GET', 'POST'])
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/edit/categories', methods=['GET', 'POST'])
 @login_required
-def submission_edit_category(comp_id, cat_id, submission_id):
-    """Allows assigning categories"""
-    submission = Submission.query.filter_by(id=submission_id).filter_by(comp_id=comp_id).first_or_404()
+def submission_edit_category(comp_id, cat_id, sub_id):
+    """Allows assigning categories to a submission"""
+    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
     categories = Category.query.filter_by(comp_id=comp_id)
     form = submission_edit_categories_form(submission, categories)
     if not submission.check_category(cat_id):
@@ -61,5 +61,5 @@ def submission_edit_category(comp_id, cat_id, submission_id):
                         submission.categories.remove(category)
         db.session.commit()
         flash('Submission categories updated successfully')
-        return redirect(url_for('competition.competition_overview', comp_id=comp_id))
+        return redirect(url_for('competition.categories_overview', comp_id=comp_id))
     return render_template('competition/submissionCategoryEdit.html', title='Edit Category', form=form)

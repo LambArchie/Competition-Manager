@@ -21,14 +21,14 @@ def file_download(uuid, filename):
     response.headers['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename)
     return response
 
-@bp.route('/<int:comp_id>/<int:cat_id>/<int:submission_id>/files/<int:file_id>')
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/files/<int:file_id>')
 @login_required
-def submission_download_redirect(comp_id, cat_id, submission_id, file_id):
+def submission_download_redirect(comp_id, cat_id, sub_id, file_id):
     """Redirects you to the download url"""
-    submission = Submission.query.filter_by(id=submission_id).filter_by(comp_id=comp_id).first_or_404()
+    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
-    uploads = SubmissionUploads.query.filter_by(submission_id=submission_id).filter_by(
+    uploads = SubmissionUploads.query.filter_by(submission_id=sub_id).filter_by(
         id=file_id).first_or_404()
     return redirect(url_for('competition.file_download', uuid=str(uploads.uuid),
                             filename=uploads.filename))

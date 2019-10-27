@@ -6,7 +6,7 @@
                 </a>
             </td>
             <td>
-                <a href="{{ url_for('competition.submission_overview', comp_id=submission.comp_id, cat_id=submission.categories[0].id, submission_id=submission.id) }}">
+                <a href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=submission.categories[0].id, sub_id=submission.id) }}">
                     {{ submission.name }}
                 </a>
                 <br>

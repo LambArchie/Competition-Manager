@@ -13,7 +13,7 @@
     {% set count = 0 %}
     {% for submission in submissions %}
         <div class="row">
-            <div class="col-auto mr-auto"><a href="{{ url_for('competition.submission_overview', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}">{{ submission.name }}</a></div>
+            <div class="col-auto mr-auto"><a href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">{{ submission.name }}</a></div>
             {% if admin %}
                 <div class="col-auto"><div class="rating">
                     {% set vars = {'scoreToGo': (scores[loop.index-1][0] / 2), 'count': 5} %}
@@ -37,5 +37,5 @@
     {% endfor %}
     <br>
     <p><a href="{{ url_for('competition.submission_create', comp_id=comp_id, cat_id=cat_id) }}">Create Submission</a></p>
-    <p><a href="{{ url_for('competition.competition_overview', comp_id=comp_id) }}">All Categories</a></p>
+    <p><a href="{{ url_for('competition.categories_overview', comp_id=comp_id) }}">All Categories</a></p>
 {% endblock %}

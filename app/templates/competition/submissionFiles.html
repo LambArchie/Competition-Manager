@@ -4,9 +4,9 @@
     <h1>Attachments</h1>
     <ul class="list-group list-group-flush">
     {% for upload in uploads %}
-        <a class="list-group-item" href="{{ url_for('competition.submission_download_redirect', comp_id=comp_id, cat_id=cat_id, submission_id=submission_id, file_id=upload.id) }}">{{ upload.filename }}</a>
+        <a class="list-group-item" href="{{ url_for('competition.submission_download_redirect', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, file_id=upload.id) }}">{{ upload.filename }}</a>
     {% endfor %}
     </ul>
     <br>
-    <a href="{{ url_for('competition.submission_upload', comp_id=comp_id, cat_id=cat_id, submission_id=submission_id) }}" role="button" class="btn btn-primary btn-sm">Upload File</a>
+    <a href="{{ url_for('competition.submission_upload', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}" role="button" class="btn btn-primary btn-sm">Upload File</a>
 {% endblock %}

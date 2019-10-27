@@ -8,7 +8,7 @@
 {% block app_content %}
     <h1>{{ submission.name }}</h1>
     {% if not uploadsCount|int == 0 %}
-        <a class="btn btn-secondary" href="{{ url_for('competition.submission_files', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}">
+        <a class="btn btn-secondary" href="{{ url_for('competition.submission_files', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
             Uploads <span class="badge badge-light">{{ uploadsCount }}</span>
             <span class="sr-only">uploads</span>
         </a>
@@ -28,14 +28,14 @@
         {% if owner|int == 1 %}
         <div class="col-auto">
             <div class="btn-group" role="group" aria-label="Change Submission">
-                <a href="{{ url_for('competition.submission_edit', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>
-                <a href="{{ url_for('competition.submission_upload', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Upload</a>
-                <a href="{{ url_for('competition.submission_delete', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}" role="button" class="btn btn-outline-danger btn-sm">Delete</a>
+                <a href="{{ url_for('competition.submission_edit', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>
+                <a href="{{ url_for('competition.submission_upload', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Upload</a>
+                <a href="{{ url_for('competition.submission_delete', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-danger btn-sm">Delete</a>
         </div></div>
         {% elif user.reviewer == 1 %}
         <div class="col-auto">
             <div class="btn-group" role="group" aria-label="Vote">
-                <a href="{{ url_for('competition.submission_voting', comp_id=submission.comp_id, cat_id=cat_id, submission_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Vote</a>
+                <a href="{{ url_for('competition.submission_voting', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Vote</a>
         </div></div>
         {% endif %}
     </div>
