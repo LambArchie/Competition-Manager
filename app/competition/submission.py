@@ -127,9 +127,10 @@ def submission_files(comp_id, cat_id, sub_id):
     submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
+    owner = (submission.user_id == current_user.id) #checks if true or not then sets owner
     uploads = SubmissionUploads.query.filter_by(submission_id=sub_id)
-    return render_template('competition/submissionFiles.html', title='Attached Files', uploads=uploads,
-                           comp_id=comp_id, cat_id=cat_id, sub_id=sub_id)
+    return render_template('competition/submissionFiles.html', title='Attached Files',
+                           uploads=uploads, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, owner=owner)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/upload', methods=['GET', 'POST'])
 @login_required

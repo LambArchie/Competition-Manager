@@ -8,5 +8,7 @@
     {% endfor %}
     </ul>
     <br>
-    <a href="{{ url_for('competition.submission_upload', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}" role="button" class="btn btn-primary btn-sm">Upload File</a>
+    {% if owner %}
+        <a href="{{ url_for('competition.submission_upload', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}" role="button" class="btn btn-primary btn-sm">Upload File</a>
+    {% endif %}
 {% endblock %}
