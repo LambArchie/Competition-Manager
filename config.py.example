@@ -17,6 +17,13 @@ class Config(object):
     DISABLE_PUBLIC_REGISTRATION = False # Can always create users from admin area
     BRAND_NAME = "Competition Manager"
 
+    # Passwords Settings
+    # Based of NIST guidelines https://pages.nist.gov/800-63-3/sp800-63b.html
+    # Can add custom requirements by editing app/auth/passwords.py
+    MIN_LENGTH = 12
+    HIBP_PW_CHECK = True # Uses https://haveibeenpwned.com/Passwords to check password 
+                         # has been in a data breach. Uses k-anonymity for security
+
     # Do not edit below this line unless you know what you are doing
     UPLOADS_DEFAULT_DEST = basedir + '/uploads/'
 

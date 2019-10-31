@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.database.models import User
+from app.auth.passwords import strength_check
 
 class LoginForm(FlaskForm):
     """Login Form fields"""
@@ -39,9 +40,21 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different email address.')
 
+    def validate_password(self, password):
+        """Calls function to check password"""
+        ans = strength_check(password.data)
+        if ans:
+            raise ValidationError(ans)
+
 class ChangePasswordForm(FlaskForm):
     """Change Your Password"""
     currentpassword = PasswordField('Current Password', validators=[DataRequired()])
     password = PasswordField('New Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Change Password')
+
+    def validate_password(self, password):
+        """Calls function to check password"""
+        ans = strength_check(password.data)
+        if not ans == 1:
+            raise ValidationError(ans)
