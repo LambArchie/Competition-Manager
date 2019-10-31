@@ -25,7 +25,7 @@
             Last Modified: <a href="#" class="text-reset text-decoration-none" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">{{ humanTime }}</a>
             </span>
         </div>
-        {% if owner|int == 1 %}
+        {% if owner %}
         <div class="col-auto">
             <div class="btn-group" role="group" aria-label="Change Submission">
                 <a href="{{ url_for('competition.submission_edit', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>

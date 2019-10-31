@@ -37,5 +37,8 @@
     {% endfor %}
     <br>
     <p><a href="{{ url_for('competition.submission_create', comp_id=comp_id, cat_id=cat_id) }}">Create Submission</a></p>
+    {% if admin %}
+        <p><a href="{{ url_for('competition.category_edit', comp_id=comp_id, cat_id=cat_id) }}">Edit Category</a></p>
+    {% endif %}
     <p><a href="{{ url_for('competition.categories_overview', comp_id=comp_id) }}">All Categories</a></p>
 {% endblock %}

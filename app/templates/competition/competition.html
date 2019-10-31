@@ -10,5 +10,8 @@
     {% endfor %}
     <br>
     <p><a href="{{ url_for('competition.category_create', comp_id=id) }}">Create Category</a></p>
+    {% if admin %}
+        <p><a href="{{ url_for('competition.competition_edit', comp_id=id) }}">Edit Competition</a></p>
+    {% endif %}
     <p><a href="{{ url_for('competition.competitions_overview') }}">Competitions</a></p>
 {% endblock %}

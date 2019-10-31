@@ -15,7 +15,8 @@ def categories_overview(comp_id):
     competition = Competition.query.filter_by(id=comp_id).first_or_404()
     categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
     return render_template('competition/competition.html', title=competition.name,
-                           competition=competition, categories=categories, id=comp_id)
+                           competition=competition, categories=categories, id=comp_id,
+                           admin=current_user.admin)
 
 @bp.route('/<int:comp_id>/create', methods=['GET', 'POST'])
 @login_required
