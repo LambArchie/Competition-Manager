@@ -1,7 +1,7 @@
 """
 Controls pages directly related to categories
 """
-from flask import render_template, flash, redirect, url_for, abort
+from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 from app import db
 from app.database.models import Competition, Category, Submission
@@ -33,6 +33,25 @@ def category_create(comp_id):
         return redirect(url_for('competition.submissions_overview', comp_id=comp_id,
                                 cat_id=category.id))
     return render_template('competition/categoryCreate.html', title='Create Category', form=form)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/edit', methods=['GET', 'POST'])
+@login_required
+def category_edit(comp_id, cat_id):
+    """Edits a submission"""
+    category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
+    form = CategoryForm()
+    if not bool(current_user.admin):
+        abort(403)
+    if request.method == 'GET':
+        form.name.data = category.name
+        form.body.data = category.body
+    if form.validate_on_submit():
+        category.name = form.name.data
+        category.body = form.body.data
+        db.session.commit()
+        flash('Category edited successfully')
+        return redirect(url_for('competition.submissions_overview', comp_id=comp_id, cat_id=cat_id))
+    return render_template('competition/categoryEdit.html', title='Edit Category', form=form)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/edit/categories', methods=['GET', 'POST'])
 @login_required

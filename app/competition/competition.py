@@ -1,8 +1,8 @@
 """
 Controls pages directly related to the overall competitions
 """
-from flask import render_template, flash, redirect, url_for
-from flask_login import login_required
+from flask import render_template, flash, redirect, url_for, request, abort
+from flask_login import login_required, current_user
 from app import db
 from app.database.models import Competition
 from app.competition import bp
@@ -30,3 +30,22 @@ def competition_create():
         return redirect(url_for('competition.categories_overview', comp_id=competition.id))
     return render_template('competition/competitionCreate.html', title='Create Competition',
                            form=form)
+
+@bp.route('/<int:comp_id>/edit', methods=['GET', 'POST'])
+@login_required
+def competition_edit(comp_id):
+    """Edits a submission"""
+    competition = Competition.query.filter_by(id=comp_id).first_or_404()
+    form = CompetitionForm()
+    if not bool(current_user.admin):
+        abort(403)
+    if request.method == 'GET':
+        form.name.data = competition.name
+        form.body.data = competition.body
+    if form.validate_on_submit():
+        competition.name = form.name.data
+        competition.body = form.body.data
+        db.session.commit()
+        flash('Competition edited successfully')
+        return redirect(url_for('competition.categories_overview', comp_id=comp_id))
+    return render_template('competition/competitionEdit.html', title='Edit Competition', form=form)
