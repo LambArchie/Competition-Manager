@@ -7,29 +7,24 @@ from wtforms import StringField, SubmitField, TextAreaField, BooleanField, Integ
 from wtforms.validators import DataRequired, Length, NumberRange
 from app import submission_uploads
 
-class CompetitionCreateForm(FlaskForm):
-    """Creates a Competition"""
+class CompetitionForm(FlaskForm):
+    """Creates or edits a Competition"""
     name = StringField('Name', validators=[DataRequired(), Length(min=1, max=64)])
     body = TextAreaField('Body', validators=[DataRequired(), Length(min=1, max=280)])
     submit = SubmitField('Submit')
 
-class CategoryCreateForm(FlaskForm):
-    """Creates a Category"""
+class CategoryForm(FlaskForm):
+    """Creates or edits a Category"""
     name = StringField('Name', validators=[DataRequired(), Length(min=1, max=64)])
     body = TextAreaField('Body', validators=[DataRequired(), Length(min=1, max=280)])
     submit = SubmitField('Submit')
 
-class SubmissionCreateForm(FlaskForm):
-    """Creates a Submission"""
+class SubmissionForm(FlaskForm):
+    """Creates or edits a Submission"""
     name = StringField('Name', validators=[DataRequired(), Length(min=1, max=64)])
     body = TextAreaField('Body', validators=[DataRequired(), Length(min=1, max=10000)])
     submit = SubmitField('Submit')
 
-class SubmissionEditForm(FlaskForm):
-    """Creates a Submission"""
-    name = StringField('Name', validators=[DataRequired(), Length(min=1, max=64)])
-    body = TextAreaField('Body', validators=[DataRequired(), Length(min=1, max=10000)])
-    submit = SubmitField('Submit')
 
 def submission_edit_categories_form(submission, categories):
     """Generates form"""

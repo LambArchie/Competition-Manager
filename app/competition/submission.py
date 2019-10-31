@@ -11,8 +11,7 @@ from bleach_whitelist import markdown_tags, markdown_attrs
 from app import db, submission_uploads
 from app.database.models import Category, Submission, SubmissionUploads, User, Votes
 from app.competition import bp
-from app.competition.forms import (SubmissionCreateForm, SubmissionEditForm, SubmissionUploadForm,
-                                   SubmissionVotingForm)
+from app.competition.forms import SubmissionForm, SubmissionUploadForm, SubmissionVotingForm
 
 @bp.route('/<int:comp_id>/<int:cat_id>/')
 @login_required
@@ -49,7 +48,7 @@ def submissions_overview(comp_id, cat_id):
 @login_required
 def submission_create(comp_id, cat_id):
     """Create a submission"""
-    form = SubmissionCreateForm()
+    form = SubmissionForm()
     if form.validate_on_submit():
         submission = Submission(name=form.name.data,
                                 body=form.body.data,
@@ -102,7 +101,7 @@ def submission_delete(comp_id, cat_id, sub_id):
 def submission_edit(comp_id, cat_id, sub_id):
     """Edits a submission"""
     submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
-    form = SubmissionEditForm()
+    form = SubmissionForm()
     if not submission.check_category(cat_id):
         abort(404)
     if int(current_user.id) != int(submission.user_id):

@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.database.models import Competition, Category, Submission
 from app.competition import bp
-from app.competition.forms import CategoryCreateForm, submission_edit_categories_form
+from app.competition.forms import CategoryForm, submission_edit_categories_form
 
 @bp.route('/<int:comp_id>/')
 @login_required
@@ -21,7 +21,7 @@ def categories_overview(comp_id):
 @login_required
 def category_create(comp_id):
     """Create categories"""
-    form = CategoryCreateForm()
+    form = CategoryForm()
     if form.validate_on_submit():
         category = Category(name=form.name.data,
                             body=form.body.data,
