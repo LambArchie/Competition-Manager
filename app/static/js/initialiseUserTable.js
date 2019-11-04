@@ -16,6 +16,9 @@ $(document).ready(function() {
             {data: "reviewer"},
             {targets: -1, data: null, defaultContent: "<a class='edit-user'>Edit</a>"}
         ],
+        fixedHeader: {
+            headerOffset: $('#outer-navbar').outerHeight()
+        },
         // export
         //dom: 'lfrtipB',
         dom: "<'row'<'col-sm-12 col-md-auto'l><'col-sm-12 col-md-3 mr-auto'B><'col-sm-12 col-md-auto'f>>" +

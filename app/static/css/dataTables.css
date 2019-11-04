@@ -1,3 +1,9 @@
 table td {
-    word-wrap:break-word
+    word-wrap: break-word;
+}
+
+#users {
+    display: block;
+    overflow-x: auto;
+    width: 100% !important;
 }
