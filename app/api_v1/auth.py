@@ -1,6 +1,7 @@
 """
 Manages API Auth
 """
+from functools import wraps
 from flask import g
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from app.database.models import User
@@ -33,3 +34,18 @@ def verify_token(token):
 def token_auth_error():
     """Error if unauthorized"""
     return error_response(401)
+
+def permission_required(permission):
+    """Checks if user has the correct permissions"""
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if permission == 'admin':
+                if not g.current_user.admin:
+                    return error_response(403, "missing permission {}".format(permission))
+            elif permission == 'reviewer':
+                if not g.current_user.reviewer:
+                    return error_response(403, "missing permission {}".format(permission))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
