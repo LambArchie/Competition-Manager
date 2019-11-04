@@ -16,5 +16,10 @@
     <p class="float-right" style="margin-top:1rem">
         <a href="{{ url_for('competition.submission_edit_category', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">Edit Categories</a>
     </p>
+    <noscript>
+            Graphical editor unavailable as javascript is disabled
+            <br>
+            Markdown formatting is used if you want advance features
+    </noscript>
     {% include '_form.html' %}
 {% endblock %}
