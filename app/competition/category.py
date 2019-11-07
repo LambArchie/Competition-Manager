@@ -7,6 +7,7 @@ from app import db
 from app.database.models import Competition, Category, Submission
 from app.competition import bp
 from app.competition.forms import CategoryForm, submission_edit_categories_form
+from app.admin.routes import check_permissions
 
 @bp.route('/<int:comp_id>/')
 @login_required
@@ -22,6 +23,7 @@ def categories_overview(comp_id):
 @login_required
 def category_create(comp_id):
     """Create categories"""
+    check_permissions()
     form = CategoryForm()
     if form.validate_on_submit():
         category = Category(name=form.name.data,
@@ -41,8 +43,7 @@ def category_edit(comp_id, cat_id):
     """Edits a submission"""
     category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
     form = CategoryForm()
-    if not bool(current_user.admin):
-        abort(403)
+    check_permissions()
     if request.method == 'GET':
         form.name.data = category.name
         form.body.data = category.body

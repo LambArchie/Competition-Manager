@@ -6,5 +6,7 @@
         <p><a href="{{ url_for('competition.categories_overview', comp_id=competition.id) }}">{{ competition.name }}</a></p>
     {% endfor %}
     <br>
-    <p><a href="{{ url_for('competition.competition_create') }}">Create Competition</a></p>
+    {% if admin %}
+        <p><a href="{{ url_for('competition.competition_create') }}">Create Competition</a></p>
+    {% endif %}
 {% endblock %}
