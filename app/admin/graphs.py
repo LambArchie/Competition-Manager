@@ -1,17 +1,11 @@
 """
 Controls graph pages
 """
-from json import dumps
-from bleach import clean
 from flask import render_template
 from flask_login import login_required
 from app.database.models import User, Competition, Category, Submission
 from app.admin import bp
 from app.admin.routes import check_permissions
-
-def clean_text(text):
-    """Removes all HTML tags"""
-    return clean(text, strip=True)
 
 @bp.route('/graphs/')
 @login_required
@@ -43,8 +37,7 @@ def graphs_nousers():
             edges.append([submission_cat.name, submission.name])
     combined['nodes'] = nodes
     combined['edges'] = edges
-    nodes = clean_text(dumps(combined, ensure_ascii=False))
-    return render_template('admin/graph.html', title="Graph without Users", json=nodes)
+    return render_template('admin/graph.html', title="Graph without Users", json=combined)
 
 @bp.route('/graphs/users')
 @login_required
@@ -74,5 +67,4 @@ def graphs_users():
         edges.append([submission.name, temp])
     combined['nodes'] = nodes
     combined['edges'] = edges
-    nodes = clean_text(dumps(combined, ensure_ascii=False))
-    return render_template('admin/graph.html', title="Graph with Users", json=nodes)
+    return render_template('admin/graph.html', title="Graph with Users", json=combined)
