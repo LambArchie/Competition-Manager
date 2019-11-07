@@ -1,7 +1,7 @@
 """
 Controls graph pages
 """
-from flask import render_template
+from flask import render_template, jsonify
 from flask_login import login_required
 from app.database.models import User, Competition, Category, Submission
 from app.admin import bp
@@ -18,6 +18,20 @@ def graphs():
 @login_required
 def graphs_nousers():
     """Visual representation of submissions, categories and competitions"""
+    check_permissions()
+    return render_template('admin/graph.html', title="Graph without Users")
+
+@bp.route('/graphs/users')
+@login_required
+def graphs_users():
+    """Visual representation of submissions, categories, competitions and users"""
+    check_permissions()
+    return render_template('admin/graph.html', title="Graph with Users")
+
+@bp.route('/graphs/nousers/json')
+@login_required
+def json_nousers():
+    """Gives JSON of submissions, categories and competitions with links"""
     check_permissions()
     competitions = Competition.query.all()
     categories = Category.query.all()
@@ -37,12 +51,12 @@ def graphs_nousers():
             edges.append([submission_cat.name, submission.name])
     combined['nodes'] = nodes
     combined['edges'] = edges
-    return render_template('admin/graph.html', title="Graph without Users", json=combined)
+    return jsonify(combined)
 
-@bp.route('/graphs/users')
+@bp.route('/graphs/users/json')
 @login_required
-def graphs_users():
-    """Visual representation of submissions, categories, competitions and users"""
+def json_users():
+    """Gives JSON of submissions, categories, competitions and users with links"""
     check_permissions()
     users = User.query.all()
     competitions = Competition.query.all()
@@ -67,4 +81,4 @@ def graphs_users():
         edges.append([submission.name, temp])
     combined['nodes'] = nodes
     combined['edges'] = edges
-    return render_template('admin/graph.html', title="Graph with Users", json=combined)
+    return jsonify(combined)
