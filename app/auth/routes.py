@@ -9,6 +9,7 @@ from app import db
 from app.database.models import User
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm, ChangePasswordForm
+from app.auth.setup import check_setup
 
 @bp.before_app_request
 def before_request():
@@ -57,6 +58,9 @@ def register():
         abort(403)
     elif current_user.is_authenticated:
         return redirect(url_for('auth.index'))
+    if check_setup():
+        flash("Please complete initial setup first")
+        return redirect(url_for('auth.initial_setup'))
     form = RegistrationForm()
     del form.admin # Hides option to make user admin
     del form.reviewer # Hides option to make user admin
