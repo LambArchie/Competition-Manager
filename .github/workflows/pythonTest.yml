@@ -30,9 +30,9 @@ jobs:
         flake8 . --count --exit-zero --statistics
     - name: Lint with pylint
       run: |
-        pip install pylint pylint-flask pylint_flask_sqlalchemy
-        # never stop pylint if there is errors
-        pylint --exit-zero --load-plugins pylint_flask,pylint_flask_sqlalchemy app --max-line-length=127
+        pip install pylint pylint-flask pylint_flask_sqlalchemy pylint-exit
+        # pylint will stop the build if fatal or usage errors where detected
+        pylint --load-plugins pylint_flask,pylint_flask_sqlalchemy --max-line-length=127 app || pylint-exit $?
     - name: Test with pytest
       run: |
         pip install pytest
