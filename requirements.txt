@@ -13,3 +13,4 @@ bleach
 bleach-whitelist
 python-dotenv
 gunicorn
+flake8
