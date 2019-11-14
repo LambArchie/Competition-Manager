@@ -17,7 +17,7 @@ def strength_check(password):
         check = pwned_passwords_check(password)
         if check != 0:
             return "Password has been leaked {} times before".format(check)
-    return 1
+    return 0
 
 def pwned_passwords_check(password):
     """Uses pwned passwords api"""
