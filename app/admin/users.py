@@ -57,6 +57,7 @@ def user_pwreset(username):
     del form.currentpassword
     if form.validate_on_submit():
         user.set_password(form.password.data)
+        user.revoke_token()
         db.session.commit()
         flash('Password reset successfully')
         return redirect(url_for('admin.user_management'))

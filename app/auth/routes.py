@@ -89,6 +89,7 @@ def change_password():
             flash('Same as existing password')
         else:
             user.set_password(form.password.data)
+            user.revoke_token()
             db.session.commit()
             flash('Your password has been changed successfully.')
             return redirect(url_for('user.user_profile', username=current_user.username))
