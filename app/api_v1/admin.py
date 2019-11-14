@@ -2,11 +2,11 @@
 Admin API Routes
 """
 from distutils.util import strtobool
-from flask import jsonify, g, request
+from flask import jsonify, request
 from app import db
 from app.api_v1 import bp
 from app.api_v1.auth import token_auth, permission_required
-from app.api_v1.errors import bad_request, error_response
+from app.api_v1.errors import bad_request
 from app.database.models import User
 
 def get_users():
@@ -27,9 +27,9 @@ def token_get_users():
 def create_user():
     """Allows creating a user"""
     data = request.get_json() or {}
-    if (('username' not in data) or ('email' not in data) or ('name' not in data) or
-            ('organisation' not in data) or ('password' not in data) or
-            ('admin' not in data) or ('reviewer' not in data)):
+    if (('username' not in data) or ('email' not in data) or ('name' not in data)
+            or ('organisation' not in data) or ('password' not in data)
+            or ('admin' not in data) or ('reviewer' not in data)):
         return bad_request('must include username, email, name, organisation, password and admin fields')
     if User.query.filter_by(username=data['username']).first():
         return bad_request('please use a different username')

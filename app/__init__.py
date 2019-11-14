@@ -71,5 +71,3 @@ def create_app(config_class=Config):
         app.logger.info('Microblog startup')
 
     return app
-
-from app.database import models

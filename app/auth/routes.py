@@ -62,8 +62,8 @@ def register():
         flash("Please complete initial setup first")
         return redirect(url_for('auth.initial_setup'))
     form = RegistrationForm()
-    del form.admin # Hides option to make user admin
-    del form.reviewer # Hides option to make user admin
+    del form.admin  # Hides option to make user admin
+    del form.reviewer  # Hides option to make user admin
     if current_app.config['CAPTCHA_ENABLED'] is False:
         del form.recaptcha
     if form.validate_on_submit():

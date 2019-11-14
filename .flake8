@@ -1,6 +1,7 @@
 [flake8]
-exclude = .git,__pycache__,venv,migrations,logs,.github,uploads
+ignore = E302, W503
 max-complexity = 10
 max-line-length = 127
 count = True
 statistics = True
+exclude = .git,__pycache__,venv,migrations,logs,.github,uploads

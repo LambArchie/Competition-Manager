@@ -24,8 +24,8 @@ def pwned_passwords_check(password):
     pw_hash = sha1(password.encode()).hexdigest()
     hash_prefix = pw_hash[:5]
     hash_suffix = pw_hash[5:].upper()
-    response = Request(url=PWNED_PASSWORD_API+hash_prefix, headers={
-                'User-Agent': 'Competition Manager'})
+    response = Request(url=PWNED_PASSWORD_API + hash_prefix, headers={
+        'User-Agent': 'Competition Manager'})
     for line in urlopen(response).read().decode().split('\r\n'):
         suffix, count = line.split(":")
         if suffix == hash_suffix:

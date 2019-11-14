@@ -25,8 +25,7 @@ def competition_create():
     form = CompetitionForm()
     if form.validate_on_submit():
         competition = Competition(name=form.name.data,
-                                  body=form.body.data
-                                 )
+                                  body=form.body.data)
         db.session.add(competition)
         db.session.commit()
         flash('Competition created successfully')

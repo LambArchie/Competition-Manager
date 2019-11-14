@@ -35,7 +35,7 @@ def submissions_overview(comp_id, cat_id):
                 score = score + votes[j].score
                 current_votes = current_votes + 1
         try:
-            average = score/current_votes
+            average = score / current_votes
         except ZeroDivisionError:
             average = 0
         scores.append([average, current_votes])
@@ -125,7 +125,7 @@ def submission_files(comp_id, cat_id, sub_id):
     submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
-    owner = (submission.user_id == current_user.id) #checks if true or not then sets owner
+    owner = (submission.user_id == current_user.id)  # Checks if true or not then sets owner
     uploads = SubmissionUploads.query.filter_by(submission_id=sub_id)
     return render_template('competition/submissionFiles.html', title='Attached Files',
                            uploads=uploads, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, owner=owner)
@@ -147,14 +147,14 @@ def submission_upload(comp_id, cat_id, sub_id):
             if uploads is None:
                 next_id = 1
             else:
-                next_id = uploads.id+1 #ids are per submission
+                next_id = uploads.id + 1  # id's are per submission
             file_obj = request.files['fileUpload']
             file_name = secure_filename(file_obj.filename)
             uploads = SubmissionUploads(id=next_id,
                                         filename=file_name,
                                         submission_id=int(sub_id))
             db.session.add(uploads)
-            db.session.flush() #Needed so uuid generated
+            db.session.flush()  # Needed so uuid generated
             disk_name = str(uploads.uuid)
             submission_uploads.save(file_obj, name=disk_name)
             db.session.commit()

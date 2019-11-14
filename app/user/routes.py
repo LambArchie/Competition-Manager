@@ -46,7 +46,7 @@ def upload_avatar(username):
         if form.validate_on_submit():
             user = User.query.filter_by(username=current_user.username).first()
             if (user.avatar != "") and (path.exists(
-                    current_app.config['UPLOADS_DEFAULT_DEST']+"avatars/"+user.avatar)):
+                    current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)):
                 remove(current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)
                 user.avatar_filename("")
             file_obj = request.files['avatar']

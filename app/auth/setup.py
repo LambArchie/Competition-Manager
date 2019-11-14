@@ -25,8 +25,8 @@ def initial_setup():
     """Performs first time setup"""
     if check_setup():
         form = RegistrationForm()
-        del form.admin # Forces first user to be admin
-        del form.reviewer # Forces first user to be a reviewer
+        del form.admin  # Forces first user to be admin
+        del form.reviewer  # Forces first user to be a reviewer
         del form.recaptcha
         if form.validate_on_submit():
             user = User(name=form.name.data,

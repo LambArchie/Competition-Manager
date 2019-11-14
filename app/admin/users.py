@@ -18,14 +18,14 @@ def user_management():
     check_permissions()
     return render_template('admin/userTable.html', title="User Management")
 
-@bp.route('/users/get') #Don't change, hardcoded in js
+@bp.route('/users/get')  # Don't change, hardcoded in js
 @login_required
 def api_users():
     """Dummy function, calls other function"""
     check_permissions()
     return get_users()
 
-@bp.route('/users/user/<username>/edit', methods=['GET', 'POST']) #Don't change, hardcoded in js
+@bp.route('/users/user/<username>/edit', methods=['GET', 'POST'])  # Don't change, hardcoded in js
 @login_required
 def user_edit(username):
     """Allows admin to edit user information"""
