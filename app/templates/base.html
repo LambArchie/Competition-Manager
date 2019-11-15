@@ -8,8 +8,13 @@
     {% endif %}
 {% endblock %}
 
+{% block body_attribs %}
+class="d-flex flex-column h-100" style="height: 100%;"
+{% endblock %}
+
 {% block navbar %}
-    <nav id="outer-navbar" class="navbar sticky-top navbar-expand-sm bg-light navbar-light">
+    <header class="mb-auto">
+    <nav id="outer-navbar" class="navbar sticky-top navbar-expand-md navbar-light">
         <a class="navbar-brand" href="{{ url_for('auth.index') }}">Competition Manager</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -43,6 +48,7 @@
             </ul>
         </div>
     </nav>
+    </header>
 {% endblock %}
 
 {% block content %}
