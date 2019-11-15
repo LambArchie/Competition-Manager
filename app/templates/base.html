@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block body_attribs %}
-class="d-flex flex-column h-100" style="height: 100%;"
+class="d-flex flex-column h-100"
 {% endblock %}
 
 {% block navbar %}
@@ -51,9 +51,18 @@ class="d-flex flex-column h-100" style="height: 100%;"
     </header>
 {% endblock %}
 
+{% block footer %}
+    <footer class="footer">
+        <div class="container">
+            <hr>
+            <p>&copy; 2019 <a href="https://github.com/LambArchie/Competition-Manager">Competition Manager Authors</a></p>
+        </div>
+    </footer>
+{% endblock %}
+
 {% block content %}
     <br>
-    <div class="container">
+    <div class="container flex-grow-1">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
