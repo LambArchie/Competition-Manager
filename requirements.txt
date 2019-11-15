@@ -2,7 +2,7 @@ wheel
 flask
 arrow
 bootstrap-flask
-flask-login>=0.3.0
+flask-login
 flask-migrate
 flask-sqlalchemy
 flask-httpauth
