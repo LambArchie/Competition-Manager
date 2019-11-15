@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#users').DataTable( {
+    var users_js = $('#users').DataTable( {
         "processing": true,
         "ajax": {url:"/admin/users/get",
                 dataSrc:""
@@ -38,5 +38,8 @@ $(document).ready(function() {
                 a[0].href = "user/" + row.cells[3].textContent + "/edit";
             };
         }
+    });
+    new $.fn.dataTable.FixedHeader( users_js, {
+        "offsetTop": $('#outer-navbar .navbar').height()
     });
 });
