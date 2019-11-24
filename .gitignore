@@ -129,5 +129,5 @@ dmypy.json
 
 app.db
 uploads/
-config.py
+*.env
 logs/
