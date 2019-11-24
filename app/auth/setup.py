@@ -13,7 +13,7 @@ def check_setup():
     try:
         if User.query.count() == 0:
             return 1
-    except sqlalchemy.exc.OperationalError:
+    except (sqlalchemy.exc.OperationalError, sqlalchemy.exc.ProgrammingError):
         print("Creating databases")
         db.create_all()
         db.session.commit()

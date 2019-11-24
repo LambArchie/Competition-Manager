@@ -1,4 +1,5 @@
 wheel
+psycopg2-binary
 flask
 arrow
 bootstrap-flask
