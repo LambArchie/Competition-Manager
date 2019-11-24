@@ -1,6 +1,15 @@
 # Competition Manager
 
-## Setup
+## Docker Setup
+```bash
+# Create/Edit .env to the config wanted
+# Edit docker-compose.yml to change the DB password
+# RECOMMENDED: Put a reverse-proxy which can serve HTTPS in front of the application
+# E.g. traefik, nginx, caddy, haproxy. Recommened to also put in docker-compose.yml
+docker-compose up
+```
+
+## Traditional Setup
 ```bash
 # Install python modules using pip. Use venv if not only machines purpose
 pip3 install -r requirements.txt
