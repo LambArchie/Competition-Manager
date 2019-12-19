@@ -57,25 +57,29 @@ class User(UserMixin, db.Model):
         """Sets avatar name"""
         self.avatar = filename
 
-    def to_json(self):
+    def to_json(self, admin=True):
         """Returns user objects for api creation"""
-        return {
-            "admin": self.admin,
-            "email": self.email,
+        user = {
             "name": self.name,
             "id": self.id,
             "lastSeen": self.last_seen,
             "organisation": self.organisation,
-            "reviewer": self.reviewer,
             "username": self.username
         }
+        if admin == True:
+            user.update({
+                "admin": self.admin,
+                "email": self.email,
+                "reviewer": self.reviewer,
+            })
+        return user
 
     def from_json(self, data, new_user=False):
         """Creates or modifies user"""
-        for field in ['username', 'email', 'admin', 'reviewer']:
+        for field in ['name', 'username', 'organisation', 'email', 'admin', 'reviewer']:
             if field in data:
                 setattr(self, field, data[field])
-        if new_user and 'password' in data:
+        if 'password' in data:
             self.set_password(data['password'])
 
     def get_token(self, expires_in=3600):

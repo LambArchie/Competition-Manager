@@ -6,7 +6,7 @@ from flask import jsonify, request
 from app import db
 from app.api_v1 import bp
 from app.api_v1.auth import token_auth, permission_required
-from app.api_v1.errors import bad_request
+from app.api_v1.errors import bad_request, error_response
 from app.database.models import User
 
 def get_users():
@@ -21,7 +21,7 @@ def token_get_users():
     """Dummy function, calls other function"""
     return get_users()
 
-@bp.route('/admin/users', methods=['POST'])
+@bp.route('/admin/users/create', methods=['POST'])
 @token_auth.login_required
 @permission_required('admin')
 def create_user():
@@ -50,3 +50,44 @@ def create_user():
     response = jsonify(user.to_json())
     response.status_code = 201
     return response
+
+@bp.route('/admin/users/<int:user_id>', methods=['GET'])
+@token_auth.login_required
+def get_user_admin(user_id):
+    """Returns user from id"""
+    user = User.query.filter_by(id=user_id).first()
+    if user is not None:
+        return jsonify(user.to_json())
+    return error_response(404, "user id doesn't exist")
+
+@bp.route('/admin/users/<int:user_id>', methods=['PUT'])
+@token_auth.login_required
+@permission_required('admin')
+def edit_user(user_id):
+    """Changes user details"""
+    user = User.query.filter_by(id=user_id).first()
+    if user is not None:
+        data = request.get_json() or {}
+        print(data)
+        if 'username' in data and data['username'] != user.username \
+          and User.query.filter_by(username=data['username']).first():
+            return bad_request('please use a different username')
+        if 'email' in data and data['email'] != user.email \
+          and User.query.filter_by(email=data['email']).first():
+            return bad_request('please use a different email')
+        user.from_json(data, new_user=False)
+        db.session.commit()
+        return jsonify(user.to_json())
+    return error_response(404, "user id doesn't exist")
+
+@bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
+@token_auth.login_required
+@permission_required('admin')
+def delete_user(user_id):
+    """Deletes selected user"""
+    user = User.query.filter_by(id=user_id).first()
+    if user is not None:
+        db.session.delete(user)
+        db.session.commit()
+        return '', 200
+    return error_response(404, "user id doesn't exist")

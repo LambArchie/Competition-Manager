@@ -13,5 +13,5 @@ def get_user(user_id):
     """Returns user from id"""
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
-        return jsonify(user.to_json())
+        return jsonify(user.to_json(admin=False))
     return error_response(404, "user id doesn't exist")
