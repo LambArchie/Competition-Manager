@@ -10,7 +10,7 @@ class Config(object):
     Default settings, set variable in .env or set enviromental variables to edit
     """
     # Set or every restart users will have to relogin
-    # Use random string. E.g. python -c "mport os; os.urandom(24).hex()"
+    # Use random string. E.g. python -c "import os; os.urandom(24).hex()"
     SECRET_KEY = environ.get('SECRET_KEY') or urandom(24).hex()
     # Use an external db for all production use, sqlite for dev only
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL') or \
