@@ -9,8 +9,14 @@ RUN apk del postgresql-dev build-base && \
 FROM python:3.8-alpine as base
 WORKDIR /app
 RUN addgroup --gid 61000 docker && \
-    adduser --disabled-password --gecos "" --ingroup docker --no-create-home --uid 61000 --home "/app" docker
+    adduser --disabled-password --gecos "" --ingroup docker --no-create-home --uid 61000 --home "/app" docker && \
+    mkdir /app/logs /app/uploads && \
+    chown -R docker:docker /app
 COPY --from=builder /install /usr/local
+RUN apk update && \
+    apk add --no-cache postgresql-dev
+COPY --chown=docker:docker requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY --chown=docker:docker . .
 VOLUME /app/logs
 VOLUME /app/uploads

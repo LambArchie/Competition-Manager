@@ -13,7 +13,7 @@ def strength_check(password):
     check = length_check(password)
     if check != 0:
         return check
-    if current_app.config['HIBP_PW_CHECK']:
+    if current_app.config['HIBP_PW_CHECK'] is True:
         check = pwned_passwords_check(password)
         if check != 0:
             return "Password has been leaked {} times before".format(check)
@@ -34,6 +34,6 @@ def pwned_passwords_check(password):
 
 def length_check(password):
     """Checks minimum length, gets value from config"""
-    if len(password) < current_app.config['MIN_LENGTH']:
+    if len(password) < int(current_app.config['MIN_LENGTH']):
         return "Needs to be {} characters long".format(current_app.config['MIN_LENGTH'])
     return 0

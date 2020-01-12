@@ -68,7 +68,6 @@ def edit_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         data = request.get_json() or {}
-        print(data)
         if 'username' in data and data['username'] != user.username \
           and User.query.filter_by(username=data['username']).first():
             return bad_request('please use a different username')
