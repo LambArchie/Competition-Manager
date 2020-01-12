@@ -1,8 +1,16 @@
-FROM python:3.8-slim
+FROM python:3.8-alpine as builder
+RUN apk update && \
+    apk add --no-cache postgresql-dev build-base
+COPY requirements.txt .
+RUN pip install --no-cache-dir --install-option="--prefix=/install" -r requirements.txt
+RUN apk del postgresql-dev build-base && \
+    rm -rf /var/cache/apk/*
+
+FROM python:3.8-alpine as base
 WORKDIR /app
-RUN groupadd -g 61000 docker; useradd -g 61000 -l -M -s /bin/nologin -u 61000 docker; mkdir /app/logs /app/uploads; chown -R docker:docker /app
-COPY --chown=docker:docker requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN addgroup --gid 61000 docker && \
+    adduser --disabled-password --gecos "" --ingroup docker --no-create-home --uid 61000 --home "/app" docker
+COPY --from=builder /install /usr/local
 COPY --chown=docker:docker . .
 VOLUME /app/logs
 VOLUME /app/uploads

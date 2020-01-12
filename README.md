@@ -24,8 +24,14 @@ docker-compose up
 ### Traditional
 #### Prerequisites
 * Python 3 (3.7 and above only is offically supported)
-* Pip is installed for the python version above
-* Postgres if running in production
+    * `pip` & `venv` for the same version above
+* Postgres (if using in production)
+    * Requirements to install psycopg2
+    * `libpq-dev`
+    * `build-essentials`
+    * `gcc`
+    * `python3-dev` (for the version of python used e.g. `python3.7-dev`)
+    * *If cannot install above replace psycopg2 in `requirements.txt` with psycopg2-binary. However random segfaults may occur as described on [psycopg2 blog](http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/)*
 #### Setup
 * To change the config edit `.env` or set it as an enviromental variable
 * To use postgres 
@@ -33,7 +39,7 @@ docker-compose up
     * To use another database provider change `DATABASE_URL` to the relevant [SQLAlchemy value](https://docs.sqlalchemy.org/en/13/dialects/). However at this time, apart from postgres and SQLite no active support will be given to the other database providers.
 ```bash
 git clone https://github.com/LambArchie/Competition-Manager.git
-# venv is recommened to ensure dependances are not automatically updated
+# venv is recommened to ensure dependances are not updated by other applications
 python3 -m venv venv
 source venv/bin/activate
 # Install python modules using pip.
