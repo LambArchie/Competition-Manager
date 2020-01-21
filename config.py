@@ -30,7 +30,7 @@ class Config(object):
     CAPTCHA_ENABLED = environ.get('CAPTCHA_ENABLED') or "False"
     RECAPTCHA_PUBLIC_KEY = environ.get('RECAPTCHA_PUBLIC_KEY')
     RECAPTCHA_PRIVATE_KEY = environ.get('RECAPTCHA_PRIVATE_KEY')
-    MIN_LENGTH = environ.get('MIN_LENGTH') or 12
+    MIN_LENGTH = environ.get('MIN_LENGTH') or 8
     # Uses https://haveibeenpwned.com/Passwords to check password
     # has been in a data breach. Uses k-anonymity for security
     HIBP_PW_CHECK = environ.get('HIBP_PW_CHECK') or "True"
