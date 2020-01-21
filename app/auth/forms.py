@@ -56,5 +56,5 @@ class ChangePasswordForm(FlaskForm):
     def validate_password(self, password):
         """Calls function to check password"""
         ans = strength_check(password.data)
-        if not ans == 1:
+        if ans != 0:
             raise ValidationError(ans)
