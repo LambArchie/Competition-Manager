@@ -161,7 +161,7 @@ def submission_upload(comp_id, cat_id, sub_id):
             flash('File Uploaded')
             return redirect(url_for('competition.submission_page',
                                     comp_id=comp_id, cat_id=cat_id, sub_id=submission.id))
-        flash('File failed to upload')
+        flash('File failed to upload', 'error')
     return render_template('competition/submissionUpload.html', title='Upload Files', form=form)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/vote', methods=['GET', 'POST'])

@@ -57,7 +57,7 @@ def upload_avatar(username):
             db.session.commit()
             flash('Avatar updated')
             return redirect(url_for('user.user_profile', username=current_user.username))
-        flash('Avatar not uploaded')
+        flash('Avatar not uploaded', 'error')
     return render_template('users/upload_avatar.html', title='Upload Avatar', form=form)
 
 @bp.route('/<username>/edit_profile', methods=['GET', 'POST'])

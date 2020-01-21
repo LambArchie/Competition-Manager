@@ -36,7 +36,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Invalid username or password', 'error')
             return redirect(url_for('auth.login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -59,7 +59,7 @@ def register():
     elif current_user.is_authenticated:
         return redirect(url_for('auth.index'))
     if check_setup():
-        flash("Please complete initial setup first")
+        flash('Please complete initial setup first', 'info')
         return redirect(url_for('auth.initial_setup'))
     form = RegistrationForm()
     del form.admin  # Hides option to make user admin
@@ -88,9 +88,9 @@ def change_password():
     if form.validate_on_submit():
         user = User.query.filter_by(username=current_user.username).first()
         if not user.check_password(form.currentpassword.data):
-            flash('Wrong current password')
+            flash('Wrong current password', 'error')
         elif form.password.data == form.currentpassword.data:
-            flash('Same as existing password')
+            flash('Same as existing password', 'info')
         else:
             user.set_password(form.password.data)
             user.revoke_token()
