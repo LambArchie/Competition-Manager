@@ -37,6 +37,8 @@ def user_edit(username):
         user.organisation = form.organisation.data
         user.username = form.username.data
         user.email = form.email.data
+        user.admin = form.admin.data
+        user.reviewer = form.reviewer.data
         db.session.commit()
         flash('Updated successfully')
         return redirect(url_for('admin.user_management'))
@@ -45,6 +47,8 @@ def user_edit(username):
         form.organisation.data = user.organisation
         form.username.data = user.username
         form.email.data = user.email
+        form.admin.data = user.admin
+        form.reviewer.data = user.reviewer
     return render_template('admin/edit_profile.html', title='Edit Profile', form=form, username=username)
 
 @bp.route('/users/user/<username>/pwreset', methods=['GET', 'POST'])

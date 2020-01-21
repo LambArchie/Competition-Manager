@@ -67,6 +67,8 @@ def edit_profile(username):
     check_permissions(username)
     form = EditProfileForm(current_user.username, current_user.email)
     form.username.render_kw = {'disabled': 'disabled'}
+    form.admin.render_kw = {'disabled': 'disabled'}
+    form.reviewer.render_kw = {'disabled': 'disabled'}
     if form.validate_on_submit():
         current_user.name = form.name.data
         current_user.organisation = form.organisation.data
@@ -79,4 +81,6 @@ def edit_profile(username):
         form.organisation.data = current_user.organisation
         form.username.data = current_user.username
         form.email.data = current_user.email
+        form.admin.data = current_user.admin
+        form.reviewer.data = current_user.reviewer
     return render_template('users/edit_profile.html', title='Edit Profile', form=form)

@@ -3,7 +3,7 @@ Controls forms for user control
 """
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import ValidationError, DataRequired, Email
 from app.database.models import User
 from app import avatar_uploads
@@ -15,6 +15,8 @@ class EditProfileForm(FlaskForm):
         message="If not appliable use N/A")], description="If not appliable use N/A")
     username = StringField('Username')
     email = StringField('Email', validators=[DataRequired(), Email()])
+    admin = BooleanField("Is Admin?")
+    reviewer = BooleanField("Is Reviewer?")
     submit = SubmitField('Edit Profile')
 
     def __init__(self, original_username, original_email, *args, **kwargs):
