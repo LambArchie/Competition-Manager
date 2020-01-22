@@ -17,7 +17,7 @@
     {%- endblock scripts_top %}
     {%- endblock head %}
   </head>
-  <body{% block body_attribs %}{% endblock body_attribs %}>
+  <body class="{% block body_attribs %}{% endblock body_attribs %}">
     <div class="container d-flex flex-column pb-0 pt-3 h-100">
       {% block body -%}
       {% block navbar %}

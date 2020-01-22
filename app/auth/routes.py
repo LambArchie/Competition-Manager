@@ -21,17 +21,11 @@ def before_request():
     else:
         g.current_user.admin = False
 
-@bp.route('/')
-@bp.route('/index')
-def index():
-    """Landing page"""
-    return render_template('index.html', title='Home')
-
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login page"""
     if current_user.is_authenticated:
-        return redirect(url_for('auth.index'))
+        return redirect(url_for('home.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -41,7 +35,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('auth.index')
+            next_page = url_for('home.index')
         return redirect(next_page)
     return render_template('auth/login.html', title='Sign In', form=form)
 
@@ -49,7 +43,7 @@ def login():
 def logout():
     """Logout page"""
     logout_user()
-    return redirect(url_for('auth.index'))
+    return redirect(url_for('home.index'))
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -57,7 +51,7 @@ def register():
     if current_app.config['DISABLE_PUBLIC_REGISTRATION']:
         abort(403)
     elif current_user.is_authenticated:
-        return redirect(url_for('auth.index'))
+        return redirect(url_for('home.index'))
     if check_setup():
         flash('Please complete initial setup first', 'info')
         return redirect(url_for('auth.initial_setup'))

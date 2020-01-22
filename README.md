@@ -51,3 +51,10 @@ gunicorn --bind 0.0.0.0:5000 CompetitionManger:app
 ## Post Setup
 * Go to `/setup` to register the initial admin account
 * Put a reverse-proxy which can serve HTTPS in front of the application <br> For example traefik, nginx, caddy, haproxy. This is also recommended for the docker image
+
+## Customising
+### Homepage Editing
+* Create a file at `app/home/templates/custom-index.html` and this will be used instead of the default homepage.
+* I have includes two other hompages which can be customised to suit your needs.
+    * Carousel contains a slideshow. To add images to it place files in `app/home/files/img/`
+    * Cover uses the background image found at `app/home/files/img/background.jpg`. The file used can be changed by editing cover.css then minifying and updating the integrity inside `custom-index.html`

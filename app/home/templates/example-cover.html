@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+## background should be placed at files/background.jpg
+## to change path change cover.css, minify and update the integrity
+{% block body_attribs %}
+{{super()}}
+background
+{% endblock %}
+
+## workaround to avoid using js. browsers prefer first class with override
+{% block navbar_attribs %}
+navbar-dark
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<!-- Homepage Custom CSS -->
+<link rel="stylesheet" href="{{ url_for('home.static',filename='cover.min.css') }}" integrity="sha384-NSAkDuYu/s4q/Ncl7v8wtd9L6UGB/qyDdXP1Fdsb/vzzObet4jDrSTj/Zm2Ldcvf" crossorigin="anonymous"/>
+{% endblock %}
+navbar-dark 
+{% block app_content %}
+<div class="row h-100 justify-content-center align-items-center">
+    <main role="main" class="inner cover col-md-6 text-center text-light main-text">
+        <h1 class="cover-heading">{{ config['BRAND_NAME'] }} Competition Manager</h1>
+        <p class="lead">Allows you to view, create & vote on different competitions. Allows submitting the same submission to multiple categories allowing it to be judged seperately. Vote totals are hidden till the end to minimise bias.</p>
+        <p class="lead">
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-lg btn-secondary">Login</a>
+            {% else %}
+                <a href="{{ url_for('competition.competitions_overview') }}" class="btn btn-lg btn-secondary">View Competitions</a>
+            {% endif %}
+        </p>
+    </main>
+</div>
+{% endblock %}

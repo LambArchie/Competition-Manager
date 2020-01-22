@@ -9,20 +9,20 @@
 {% endblock %}
 
 {% block body_attribs %}
-class="d-flex flex-column h-100"
+d-flex flex-column h-100
 {% endblock %}
 
 {% block navbar %}
     <header class="mb-auto">
-    <nav id="outer-navbar" class="navbar sticky-top navbar-expand-md navbar-light">
-        <a class="navbar-brand" href="{{ url_for('auth.index') }}">Competition Manager</a>
+    <nav id="outer-navbar" class="{% block navbar_attribs %}{% endblock %}navbar sticky-top navbar-expand-md navbar-light">
+        <a class="navbar-brand" href="{{ url_for('home.index') }}">Competition Manager</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('auth.index') }}">Home</a></li>
+                    <a class="nav-link" href="{{ url_for('home.index') }}">Home</a></li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('competition.competitions_overview') }}">Competitions</a></li>
                 {% if current_user.admin == True %}
@@ -53,7 +53,7 @@ class="d-flex flex-column h-100"
 
 {% block footer %}
     <footer class="footer">
-        <div class="container">
+        <div class="container text-muted">
             <hr>
             <p>&copy; 2019 <a href="https://github.com/LambArchie/Competition-Manager">Competition Manager Authors</a></p>
         </div>
