@@ -17,6 +17,7 @@ db = SQLAlchemy()
 login = LoginManager()
 migrate = Migrate()
 login.login_view = 'auth.login'
+login.login_message_category = 'error'
 avatar_uploads = UploadSet('avatars', IMAGES)
 submission_uploads = UploadSet('submissions', AllExcept(SCRIPTS + EXECUTABLES + tuple('''
                                                 docm docb dotm xlsm xltm xll xlam xla pptm potm ppsm
