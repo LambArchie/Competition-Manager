@@ -21,6 +21,14 @@ def before_request():
     else:
         g.current_user.admin = False
 
+@bp.after_app_request
+def after_request(response):
+    """Code which is run just before sending the request to the client"""
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login page"""
