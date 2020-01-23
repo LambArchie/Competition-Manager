@@ -3,6 +3,20 @@
 {% block app_content %}
     {% include '_form.html' %}
     <br>
+    <details open="">
+        <summary>
+            Password Requirements
+        </summary>
+        <p>
+            A minimum length of {{ config['MIN_LENGTH'] }} is required.
+            {% if config['HIBP_PW_CHECK'] %}
+            <br>
+            Your password will also be checked if it was found in any data breaches.
+            To do this a service is used called <a href="https://haveibeenpwned.com/Passwords">Pwned Passwords (A service from HIBP)</a>.
+            Your password is not sent to their servers as <a href="https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#cloudflareprivacyandkanonymity">k-Anonymity</a> is used. 
+            {% endif %}
+        </p>
+    </details>
     <details>
         <summary>
             Extra Information for Reviewers
