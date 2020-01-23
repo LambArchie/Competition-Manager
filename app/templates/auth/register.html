@@ -2,4 +2,20 @@
 
 {% block app_content %}
     {% include '_form.html' %}
+    <br>
+    <details>
+        <summary>
+            Extra Information for Reviewers
+        </summary>
+        <p>
+            Please 
+            {% if config['SUPPORT_EMAIL'] is not none %}
+            email<a href="mailto:{{ config['SUPPORT_EMAIL'] }}">support</a>
+            {% else %}
+            contact support
+            {% endif %}
+            after creating your account with your username.
+            If needed you may be asked for proof.
+        </p>
+    </details>
 {% endblock %}

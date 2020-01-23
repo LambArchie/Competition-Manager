@@ -3,5 +3,10 @@
 {% block app_content %}
     {% include '_form.html' %}
     <br>
-    <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register!</a></p>
+    <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register!</a>
+    {% if config['SUPPORT_EMAIL'] is not none %}
+    <br>
+    Forgot your password?  <a href="mailto:{{ config['SUPPORT_EMAIL'] }}">Contact support for help</a>
+    {% endif %}
+    </p>
 {% endblock %}

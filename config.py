@@ -25,6 +25,7 @@ class Config(object):
     # Can always create user in admin area
     DISABLE_PUBLIC_REGISTRATION = environ.get('DISABLE_PUBLIC_REGISTRATION') or "False"
     BRAND_NAME = environ.get('BRAND_NAME') or ""
+    SUPPORT_EMAIL = environ.get('SUPPORT_EMAIL')
 
     # Security
     CAPTCHA_ENABLED = environ.get('CAPTCHA_ENABLED') or "False"
