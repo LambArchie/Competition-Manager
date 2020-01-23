@@ -21,7 +21,7 @@ class Config(object):
     # Use an external db for all production use, sqlite for dev only
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL') or \
         'sqlite:///' + path.join(basedir, 'app.db')
-    MAX_UPLOAD_SIZE = environ.get('MAX_UPLOAD_SIZE') or 4 # MiB
+    MAX_UPLOAD_SIZE = environ.get('MAX_UPLOAD_SIZE') or 30 # MiB
     # Can always create user in admin area
     DISABLE_PUBLIC_REGISTRATION = environ.get('DISABLE_PUBLIC_REGISTRATION') or "False"
     BRAND_NAME = environ.get('BRAND_NAME') or ""

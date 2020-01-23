@@ -8,7 +8,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from flask_uploads import UploadSet, configure_uploads, AllExcept, EXECUTABLES, IMAGES, SCRIPTS
+from flask_uploads import UploadSet, configure_uploads, IMAGES, DEFAULTS, AUDIO, ARCHIVES
 from flask_bootstrap import Bootstrap
 from config import Config
 
@@ -19,13 +19,9 @@ migrate = Migrate()
 login.login_view = 'auth.login'
 login.login_message_category = 'error'
 avatar_uploads = UploadSet('avatars', IMAGES)
-submission_uploads = UploadSet('submissions', AllExcept(SCRIPTS + EXECUTABLES + tuple('''
-                                                docm docb dotm xlsm xltm xll xlam xla pptm potm ppsm
-                                                sldm swf app jar scr com msi pif hta cpl msc bat cmd
-                                                vb vbs vbe ps1 ps1xml ps2 ps2xml psc1 psc2 inf reg
-                                                ws wsf msh msh1 msh2 mshxml msh1xml msh2xml jse py
-                                                bash cgi 386 torrent vscript asp cer csr drv sys cpl
-                                                crt htaccess htpasswd lnk ksh url pyc'''.split())))
+submission_uploads = UploadSet('submissions', DEFAULTS + AUDIO + ARCHIVES +
+                               tuple('''psd xcf ai eps opus mp4 mkv mov wmv mpg avi m4v webm
+                               tiff tif odt vsd vss vdx vsx vsdx vssx'''.split()))
 
 def create_app(config_class=Config):
     """Initialises the app"""
