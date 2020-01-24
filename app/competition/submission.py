@@ -156,7 +156,8 @@ def submission_upload(comp_id, cat_id, sub_id):
             db.session.add(uploads)
             db.session.flush()  # Needed so uuid generated
             disk_name = str(uploads.uuid)
-            submission_uploads.save(file_obj, name=disk_name)
+            # File extension has to be appended to pass checks
+            submission_uploads.save(file_obj, name=disk_name + '.')
             db.session.commit()
             flash('File Uploaded')
             return redirect(url_for('competition.submission_page',

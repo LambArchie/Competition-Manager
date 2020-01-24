@@ -16,8 +16,11 @@ def file_download(uuid, filename):
     uploads = SubmissionUploads.query.filter_by(uuid=uuid).first_or_404()
     if not filename == uploads.filename:
         abort(404)
+    extension = uploads.filename.split('.')[-1]
+    if not secure_filename(extension) == extension:
+        abort(404)
     response = make_response(send_from_directory(
-        current_app.config['UPLOADS_DEFAULT_DEST'] + "submissions/", uuid))
+        current_app.config['UPLOADS_DEFAULT_DEST'] + "submissions/", uuid + "." + extension))
     response.headers['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename)
     return response
 
