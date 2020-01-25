@@ -119,6 +119,7 @@ def submission_edit(comp_id, cat_id, sub_id):
     if form.validate_on_submit():
         submission.name = form.name.data
         submission.body = form.body.data
+        submission.timestamp = datetime.utcnow()
         db.session.commit()
         flash('Submission edited successfully')
         return redirect(url_for('competition.submission_page',
