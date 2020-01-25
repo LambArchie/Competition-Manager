@@ -4,7 +4,7 @@
 version: "3"
 services:
   competition-manager:
-    image: competition-manager:latest
+    image: lambarchie/competition-manager:latest
     container_name: competition-manager
     ports:
       - 80:5000
