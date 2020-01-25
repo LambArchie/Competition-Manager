@@ -13,7 +13,8 @@ from app.admin.routes import check_permissions
 @login_required
 def competitions_overview():
     """Lists all competitions"""
-    comps = [competition.to_json() for competition in Competition.query.all()]
+    comps = [competition.to_json() for competition in Competition.query.order_by(
+        Competition.id.desc()).all()]
     return render_template('competition/index.html', title="Competitions", competitions=comps,
                            admin=current_user.admin)
 

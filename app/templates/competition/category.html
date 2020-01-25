@@ -1,44 +1,63 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script src="/static/js/initialiseTooltip.min.js" integrity="sha384-dX23tlcG96awOEcssN/7WL2CN6J9qMY+tc4H2g13XLot37bTz1bbwqlg0+1fuXr+" crossorigin="anonymous" defer></script>
+{% endblock %}
+
 {% block styles %}
 {{super()}}
 <!--Font Awesome-->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
 {% endblock %}
+
 {% block app_content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.competitions_overview') }}">Competitions</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.categories_overview', comp_id=comp_id) }}">{{ comp_name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ name }}</li>
+        </ol>
+    </nav>
     <h1>{{ name }}</h1>
     <p>{{ body }}</p>
     <br>
-    <p>Submissions:</p>
+    <h4>Submissions</h4>
+    <div class="card-columns">
     {% set count = 0 %}
     {% for submission in submissions %}
-        <div class="row">
-            <div class="col-auto mr-auto"><a href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">{{ submission.name }}</a></div>
-            {% if admin %}
-                <div class="col-auto"><div class="rating">
-                    {% set vars = {'scoreToGo': (scores[loop.index-1][0] / 2), 'count': 5} %}
-                    {% for i in range(vars.scoreToGo|round(0, 'floor')|int) %}
-                        {% if vars.update({'scoreToGo': vars.scoreToGo - 1}) %}{% endif %}
-                        {% if vars.update({'count': vars.count - 1}) %}{% endif %}
-                        <i class="fas fa-star"></i>
-                    {% endfor %}
-                    {% if vars.scoreToGo|round(1) >= 0.5 %}
-                        {% if vars.update({'count': vars.count - 1}) %}{% endif %}
-                        <i class="fas fa-star-half-alt"></i>
+        <a class="text-reset" href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
+            <div class="card"><div class="card-body">
+                <h5 class="card-title">{{ submission.name }}</h5>
+                <div class="card-text mb-1"><small class="text-muted">
+                    <a href="#" class="text-reset text-decoration-none" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">Last updated {{ submission.humantime }}</a>
+                    {% if admin %}
+                        <div class="rating mb-1">
+                            {% set vars = {'scoreToGo': (scores[loop.index-1][0] / 2), 'count': 5} %}
+                            {% for i in range(vars.scoreToGo|round(0, 'floor')|int) %}
+                                {% if vars.update({'scoreToGo': vars.scoreToGo - 1}) %}{% endif %}
+                                {% if vars.update({'count': vars.count - 1}) %}{% endif %}
+                                <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% if vars.scoreToGo|round(1) >= 0.5 %}
+                                {% if vars.update({'count': vars.count - 1}) %}{% endif %}
+                                <i class="fas fa-star-half-alt"></i>
+                            {% endif %}
+                            {% for i in range(vars.count) %}
+                                <i class="far fa-star"></i>
+                            {% endfor %}
+                            {{ scores[loop.index-1][0]|round(1) }}
+                            <span class="text-muted">From {{ scores[loop.index-1][1] }} votes</span>
+                        </div>
                     {% endif %}
-                    {% for i in range(vars.count) %}
-                        <i class="far fa-star"></i>
-                    {% endfor %}
-                    {{ scores[loop.index-1][0]|round(1) }}
-                    <span class="text-muted">From {{ scores[loop.index-1][1] }} votes</span>
-                </div></div>
-            {% endif %}
-        </div>
+                </small></div>
+            </div></div>
+        </a>
     {% endfor %}
+    </div>
     <br>
     <p><a href="{{ url_for('competition.submission_create', comp_id=comp_id, cat_id=cat_id) }}">Create Submission</a></p>
     {% if admin %}
         <p><a href="{{ url_for('competition.category_edit', comp_id=comp_id, cat_id=cat_id) }}">Edit Category</a></p>
     {% endif %}
-    <p><a href="{{ url_for('competition.categories_overview', comp_id=comp_id) }}">All Categories</a></p>
 {% endblock %}

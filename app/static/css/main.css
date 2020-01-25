@@ -13,3 +13,17 @@
 body, html {
     height: 100%;
 }
+
+.list-group-flush .list-group-item:first-child {
+    border-top: 0;
+}
+
+.list-group-object-name {
+    color: black
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .card-columns{
+        column-count: 2!important;
+    }
+}

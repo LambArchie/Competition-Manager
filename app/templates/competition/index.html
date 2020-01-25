@@ -2,9 +2,18 @@
 
 {% block app_content %}
     <h1>Competitions</h1>
+    <p>
+        List of all the Competitions available<br>
+        Please choose the competition you wish to enter
+    </p>
+    <div class="list-group list-group-flush">
     {% for competition in competitions %}
-        <p><a href="{{ url_for('competition.categories_overview', comp_id=competition.id) }}">{{ competition.name }}</a></p>
+        <a class="list-group-item list-group-item-action" href="{{ url_for('competition.categories_overview', comp_id=competition.id) }}">
+            <p class="mb-1 list-group-object-name">{{ competition.name }}</p>
+            <small class="text-muted">{{ competition.body }}</small>
+        </a>
     {% endfor %}
+    </div>
     <br>
     {% if admin %}
         <p><a href="{{ url_for('competition.competition_create') }}">Create Competition</a></p>

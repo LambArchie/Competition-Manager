@@ -6,6 +6,14 @@
 {% endblock %}
 
 {% block app_content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.competitions_overview') }}">Competitions</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.categories_overview', comp_id=submission.comp_id) }}">{{ comp_name }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.submissions_overview', comp_id=submission.comp_id, cat_id=cat_id) }}">{{ cat_name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ submission.name }}</li>
+        </ol>
+    </nav>
     <h1>{{ submission.name }}</h1>
     {% if not uploadsCount|int == 0 %}
         <a class="btn btn-secondary" href="{{ url_for('competition.submission_files', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">

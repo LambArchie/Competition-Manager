@@ -1,6 +1,7 @@
 """
 Controls pages related to submissions
 """
+from datetime import datetime
 from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -9,7 +10,7 @@ from arrow import get as arrowGet
 from bleach import clean
 from bleach_whitelist import markdown_tags, markdown_attrs
 from app import db, submission_uploads
-from app.database.models import Category, Submission, SubmissionUploads, User, Votes
+from app.database.models import Competition, Category, Submission, SubmissionUploads, User, Votes
 from app.competition import bp
 from app.competition.forms import SubmissionForm, SubmissionUploadForm, SubmissionVotingForm
 
@@ -18,20 +19,23 @@ from app.competition.forms import SubmissionForm, SubmissionUploadForm, Submissi
 def submissions_overview(comp_id, cat_id):
     """Lists all submissions in found in the category and competition"""
     category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
-    submissions = Submission.query.filter_by(comp_id=comp_id).all()
+    submissions = Submission.query.filter_by(comp_id=comp_id).order_by(Submission.timestamp.desc()).all()
     votes = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).all()
     votes_count = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).count()
+    comp_name = Competition.query.filter_by(id=comp_id).value('name')
     cat_submissions = []
     for _, submission in enumerate(submissions):
         for j in range(len(submission.categories)):
             if submission.categories[j].id == cat_id:
-                cat_submissions.append(submission.to_json())
+                json = submission.to_json()
+                json['humantime'] = arrowGet(submission.timestamp).humanize()
+                cat_submissions.append(json)
     scores = []
     for i in range(len(cat_submissions)):
         score = 0
         current_votes = 0
         for j in range(votes_count):
-            if votes[j].submission_id == submissions[i].id:
+            if votes[j].submission_id == cat_submissions[i].get('id'):
                 score = score + votes[j].score
                 current_votes = current_votes + 1
         try:
@@ -40,8 +44,9 @@ def submissions_overview(comp_id, cat_id):
             average = 0
         scores.append([average, current_votes])
     return render_template('competition/category.html', title=category.name, name=category.name,
-                           body=category.body, submissions=cat_submissions, comp_id=comp_id,
-                           cat_id=cat_id, scores=scores, admin=current_user.admin)
+                           body=category.body, submissions=cat_submissions, scores=scores,
+                           comp_id=comp_id, comp_name=comp_name, cat_id=cat_id,
+                           admin=current_user.admin, )
 
 @bp.route('/<int:comp_id>/<int:cat_id>/create', methods=['GET', 'POST'])
 @login_required
@@ -77,8 +82,11 @@ def submission_page(comp_id, cat_id, sub_id):
     timestamp = arrowGet(submission.timestamp).humanize()
     uploads_count = SubmissionUploads.query.filter_by(submission_id=sub_id).count()
     owner = current_user.id == user.id
-    return render_template('competition/submission.html', title=submission.name, submission=submission,
-                           body=body, user=user, cat_id=cat_id, humanTime=timestamp,
+    comp_name = Competition.query.filter_by(id=comp_id).value('name')
+    cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
+    return render_template('competition/submission.html', title=submission.name,
+                           submission=submission, body=body, user=user, cat_id=cat_id,
+                           cat_name=cat_name, comp_name=comp_name, humanTime=timestamp,
                            uploadsCount=uploads_count, owner=owner)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/delete', methods=['GET', 'POST'])
