@@ -187,8 +187,8 @@ def submission_voting(comp_id, cat_id, sub_id):
     if current_user.id == submission.user_id:
         abort(403)
     form = SubmissionVotingForm()
-    previous_vote = Votes.query.filter_by(user_id=current_user.id).filter_by(id=sub_id).filter_by(
-        comp_id=comp_id).first()
+    previous_vote = Votes.query.filter_by(user_id=current_user.id).filter_by(submission_id=sub_id).filter_by(
+        comp_id=comp_id).filter_by(cat_id=cat_id).first()
     if form.validate_on_submit():
         if previous_vote is None:
             vote = Votes(score=form.score.data,
