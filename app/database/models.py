@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
     """Controls the User SQL Table"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    email = db.Column(db.String(128), index=True, unique=True)
     name = db.Column(db.String(64))
     organisation = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
@@ -108,7 +108,7 @@ class Competition(db.Model):
     """Controls Competition SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    body = db.Column(db.String(280))
+    body = db.Column(db.String(1024))
     categories = db.relationship("Category")
     submissions = db.relationship("Submission")
 
@@ -128,7 +128,7 @@ class Category(db.Model):
     """Controls Categories SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    body = db.Column(db.String(280))
+    body = db.Column(db.String(1024))
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
 
     def __repr__(self):
@@ -148,7 +148,7 @@ class Submission(db.Model):
     """Controls the Submission SQL table"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    body = db.Column(db.String(10000))
+    body = db.Column(db.String(32768))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comp_id = db.Column(db.Integer, db.ForeignKey('competition.id'))
@@ -201,7 +201,7 @@ class Votes(db.Model):
     submission_id = db.Column(db.Integer, db.ForeignKey('submission.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     score = db.Column(db.Integer)
-    comments = db.Column(db.String(10000))
+    comments = db.Column(db.String(8192))
 
     def __repr__(self):
         """Printable return"""

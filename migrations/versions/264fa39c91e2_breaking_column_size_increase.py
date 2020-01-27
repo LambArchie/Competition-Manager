@@ -1,8 +1,8 @@
-"""breaking
+"""breaking - column size increase
 
-Revision ID: 820fccf1a389
+Revision ID: 264fa39c91e2
 Revises: 
-Create Date: 2019-10-19 19:31:35.490514
+Create Date: 2020-01-27 18:15:23.530134
 
 """
 from alembic import op
@@ -12,7 +12,7 @@ from app.database.uuid import GUID
 sa.GUID = GUID
 
 # revision identifiers, used by Alembic.
-revision = '820fccf1a389'
+revision = '264fa39c91e2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,13 +23,13 @@ def upgrade():
     op.create_table('competition',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('body', sa.String(length=280), nullable=True),
+    sa.Column('body', sa.String(length=1024), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=True),
-    sa.Column('email', sa.String(length=120), nullable=True),
+    sa.Column('email', sa.String(length=128), nullable=True),
     sa.Column('name', sa.String(length=64), nullable=True),
     sa.Column('organisation', sa.String(length=64), nullable=True),
     sa.Column('password_hash', sa.String(length=128), nullable=True),
@@ -47,7 +47,7 @@ def upgrade():
     op.create_table('category',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('body', sa.String(length=280), nullable=True),
+    sa.Column('body', sa.String(length=1024), nullable=True),
     sa.Column('comp_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['comp_id'], ['competition.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -55,7 +55,7 @@ def upgrade():
     op.create_table('submission',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('body', sa.String(length=10000), nullable=True),
+    sa.Column('body', sa.String(length=32768), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('comp_id', sa.Integer(), nullable=True),
@@ -85,7 +85,7 @@ def upgrade():
     sa.Column('submission_id', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('score', sa.Integer(), nullable=True),
-    sa.Column('comments', sa.String(length=10000), nullable=True),
+    sa.Column('comments', sa.String(length=8192), nullable=True),
     sa.ForeignKeyConstraint(['cat_id'], ['category.id'], ),
     sa.ForeignKeyConstraint(['comp_id'], ['competition.id'], ),
     sa.ForeignKeyConstraint(['submission_id'], ['submission.id'], ),
