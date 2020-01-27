@@ -2,7 +2,6 @@
 Sets up the application on first launch
 """
 from flask import render_template, flash, redirect, url_for, abort
-import sqlalchemy
 from app import db
 from app.database.models import User
 from app.auth import bp
@@ -10,13 +9,7 @@ from app.auth.forms import RegistrationForm
 
 def check_setup():
     """Checks if setup has already been completed"""
-    try:
-        if User.query.count() == 0:
-            return 1
-    except (sqlalchemy.exc.OperationalError, sqlalchemy.exc.ProgrammingError):
-        print("Creating databases")
-        db.create_all()
-        db.session.commit()
+    if User.query.count() == 0:
         return 1
     return 0
 

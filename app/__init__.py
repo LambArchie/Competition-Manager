@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 from flask_login import LoginManager
 from flask_uploads import UploadSet, configure_uploads, IMAGES, DEFAULTS, AUDIO, ARCHIVES
 from flask_bootstrap import Bootstrap
@@ -33,6 +33,11 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     configure_uploads(app, avatar_uploads)
     configure_uploads(app, submission_uploads)
+
+    with app.app_context():
+        # Upgrades DB to latest schema if available
+        # Also auto creates tables needed in the DB
+        upgrade(directory="migrations")
 
     from app.api_v1 import bp as api_v1_bp
     app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
@@ -64,10 +69,11 @@ def create_app(config_class=Config):
         file_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s '
             '[in %(pathname)s:%(lineno)d]'))
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.DEBUG)
         app.logger.addHandler(file_handler)
+        logging.getLogger('sqlalchemy').addHandler(file_handler)
 
-        app.logger.setLevel(logging.INFO)
+        app.logger.setLevel(logging.DEBUG)
         app.logger.info('Microblog startup')
 
     return app
