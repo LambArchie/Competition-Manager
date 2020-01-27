@@ -1,7 +1,9 @@
 """
 Sets up the application on first launch
 """
+from os import environ
 from flask import render_template, flash, redirect, url_for, abort
+from sqlalchemy import exc
 from app import db
 from app.database.models import User
 from app.auth import bp
@@ -9,8 +11,16 @@ from app.auth.forms import RegistrationForm
 
 def check_setup():
     """Checks if setup has already been completed"""
-    if User.query.count() == 0:
-        return 1
+    try:
+        if User.query.count() == 0:
+            return 1
+    except (exc.OperationalError, exc.ProgrammingError):
+        if "PYTEST_CURRENT_TEST" in environ:
+            # Pytest doesn't automatically create the db for its setup test
+            db.create_all()
+            db.session.commit()
+            return 1
+        print("Database wasn't automatically setup. Run 'flask db upgrade' to fix")
     return 0
 
 @bp.route('/setup', methods=['GET', 'POST'])
