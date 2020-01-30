@@ -11,7 +11,7 @@ from app.database.models import User
 
 def get_users():
     """Returns all users details in json"""
-    users = [user.to_json() for user in User.query.all()]
+    users = [user.to_json(admin=True) for user in User.query.all()]
     return jsonify(users)
 
 @bp.route('/admin/users', methods=['GET'])
@@ -44,10 +44,10 @@ def create_user():
     except ValueError:
         return bad_request('reviewer is not boolean')
     user = User()
-    user.from_json(data, new_user=True)
+    user.from_json(data, admin=True)
     db.session.add(user)
     db.session.commit()
-    response = jsonify(user.to_json())
+    response = jsonify(user.to_json(admin=True))
     response.status_code = 201
     return response
 
@@ -57,7 +57,7 @@ def get_user_admin(user_id):
     """Returns user from id"""
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
-        return jsonify(user.to_json())
+        return jsonify(user.to_json(admin=True))
     return error_response(404, "user id doesn't exist")
 
 @bp.route('/admin/users/<int:user_id>', methods=['PUT'])
@@ -74,9 +74,9 @@ def edit_user(user_id):
         if 'email' in data and data['email'] != user.email \
           and User.query.filter_by(email=data['email']).first():
             return bad_request('please use a different email')
-        user.from_json(data, new_user=False)
+        user.from_json(data, admin=True)
         db.session.commit()
-        return jsonify(user.to_json())
+        return jsonify(user.to_json(admin=True))
     return error_response(404, "user id doesn't exist")
 
 @bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
