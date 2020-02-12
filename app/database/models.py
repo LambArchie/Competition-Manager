@@ -58,7 +58,7 @@ class User(UserMixin, db.Model):
         self.avatar = filename
 
     def to_json(self, admin=False):
-        """Returns user objects for api creation"""
+        """Returns the user object for the api"""
         user = {
             "name": self.name,
             "id": self.id,
@@ -117,7 +117,7 @@ class Competition(db.Model):
         return '<Competition {}>'.format(self.body)
 
     def to_json(self):
-        """Returns user objects for api creation"""
+        """Returns the competition object for the api"""
         return {
             "body": self.body,
             "id": self.id,
@@ -136,7 +136,7 @@ class Category(db.Model):
         return '<Category {}>'.format(self.body)
 
     def to_json(self):
-        """Returns user objects for api creation"""
+        """Returns the category object for the api"""
         return {
             "body": self.body,
             "comp_id": self.comp_id,
@@ -160,23 +160,31 @@ class Submission(db.Model):
         """Printable return"""
         return '<Submission {}>'.format(self.body)
 
-    def to_json(self):
-        """Returns user objects for api creation"""
-        return {
-            "body": self.body,
-            "cat_id": self.id,
-            "comp_id": self.comp_id,
+    def to_json(self, detail=True):
+        """Returns the submission object for the api"""
+        submission = {
             "id": self.id,
             "name": self.name,
             "timestamp": self.timestamp,
             "user_id": self.user_id
         }
+        if detail:
+            categories = []
+            for _, category in enumerate(self.categories):
+                categories.append(category.id)
+            submission.update({
+                "body": self.body,
+                "categories": categories,
+                "comp_id": self.comp_id
+                })
+        return submission
 
-    def check_category(self, category):
-        """Checks submission is in category"""
+    def check_category(self, cat_check):
+        """Checks the submission is in category"""
         cat_correct = False
-        for i in range(len(self.categories)):
-            if category == self.categories[i].id:
+        categories = self.categories
+        for _, category in enumerate(categories):
+            if cat_check == category.id:
                 cat_correct = True
                 break
         return cat_correct
@@ -193,6 +201,15 @@ class SubmissionUploads(db.Model):
         """Printable return"""
         return '<SubmissionUploads {}>'.format(self.uuid)
 
+    def to_json(self):
+        """Returns the uploads object for the api"""
+        return {
+            "uuid": self.uuid,
+            "id": self.id,
+            "filename": self.filename,
+            "sub_id": self.submission_id
+        }
+
 class Votes(db.Model):
     """Contains voting information"""
     id = db.Column(db.Integer, primary_key=True)
@@ -206,3 +223,15 @@ class Votes(db.Model):
     def __repr__(self):
         """Printable return"""
         return '<Votes {}>'.format(self.id)
+
+    def to_json(self):
+        """Returns the vote object for the api"""
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "sub_id": self.submission_id,
+            "cat_id": self.cat_id,
+            "comp_id": self.comp_id,
+            "score": self.score,
+            "comments": self.comments
+        }
