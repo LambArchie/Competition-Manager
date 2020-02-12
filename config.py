@@ -1,15 +1,10 @@
 """Controls the config of the application"""
 from os import environ, path, urandom
+from distutils.util import strtobool
 from dotenv import load_dotenv
 
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
-
-# Converts passed booleans to the correct format
-def str2bool(v):
-    if str(v).lower() in ("yes", "true", "t", "1"):
-        return True
-    return False
 
 class Config(object):
     """
@@ -37,9 +32,9 @@ class Config(object):
     HIBP_PW_CHECK = environ.get('HIBP_PW_CHECK') or "True"
 
     # Only change below if know what you are doing
-    DISABLE_PUBLIC_REGISTRATION = str2bool(DISABLE_PUBLIC_REGISTRATION)
-    CAPTCHA_ENABLED = str2bool(CAPTCHA_ENABLED)
-    HIBP_PW_CHECK = str2bool(HIBP_PW_CHECK)
+    DISABLE_PUBLIC_REGISTRATION = bool(strtobool(DISABLE_PUBLIC_REGISTRATION))
+    CAPTCHA_ENABLED = bool(strtobool(CAPTCHA_ENABLED))
+    HIBP_PW_CHECK = bool(strtobool(HIBP_PW_CHECK))
     UPLOADS_DEFAULT_DEST = basedir + '/uploads/'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAX_CONTENT_LENGTH = float(MAX_UPLOAD_SIZE) * 1024 * 1024  # Flask-Uploads need in bytes
