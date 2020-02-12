@@ -1,5 +1,6 @@
 wheel
 psycopg2
+werkzeug<1.0.0 # flask-uploads breaks on 1.0.0, will remove when fixed
 flask
 arrow
 bootstrap-flask
