@@ -20,8 +20,6 @@ def submissions_overview(comp_id, cat_id):
     """Lists all submissions in found in the category and competition"""
     category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
     submissions = Submission.query.filter_by(comp_id=comp_id).order_by(Submission.timestamp.desc()).all()
-    votes = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).all()
-    votes_count = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).count()
     comp_name = Competition.query.filter_by(id=comp_id).value('name')
     cat_submissions = []
     for _, submission in enumerate(submissions):
@@ -31,18 +29,21 @@ def submissions_overview(comp_id, cat_id):
                 json['humantime'] = arrowGet(submission.timestamp).humanize()
                 cat_submissions.append(json)
     scores = []
-    for i in range(len(cat_submissions)):
-        score = 0
-        current_votes = 0
-        for j in range(votes_count):
-            if votes[j].submission_id == cat_submissions[i].get('id'):
-                score = score + votes[j].score
-                current_votes = current_votes + 1
-        try:
-            average = score / current_votes
-        except ZeroDivisionError:
-            average = 0
-        scores.append([average, current_votes])
+    if current_user.admin:
+        votes = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).all()
+        votes_count = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).count()
+        for _, sub in enumerate(cat_submissions):
+            score = 0
+            current_votes = 0
+            for j in range(votes_count):
+                if votes[j].submission_id == sub.get('id'):
+                    score = score + votes[j].score
+                    current_votes = current_votes + 1
+            try:
+                average = score / current_votes
+            except ZeroDivisionError:
+                average = 0
+            scores.append([average, current_votes])
     return render_template('competition/category.html', title=category.name, name=category.name,
                            body=category.body, submissions=cat_submissions, scores=scores,
                            comp_id=comp_id, comp_name=comp_name, cat_id=cat_id,
