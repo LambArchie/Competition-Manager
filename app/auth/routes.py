@@ -24,7 +24,7 @@ def before_request():
 @bp.after_app_request
 def after_request(response):
     """Code which is run just before sending the request to the client"""
-    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-Frame-Options"] = "deny"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
