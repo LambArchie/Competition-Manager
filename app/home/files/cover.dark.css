@@ -1,7 +1,5 @@
 .background {
     background: rgba(0, 0, 0, 0) url('/files/img/background.jpg') repeat fixed center center / cover;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
 }
 
 .main-text {
@@ -14,4 +12,8 @@
 
 .right-button {
     margin-left: 5px;
+}
+
+.footer-custom {
+    text-shadow: 0px 0px 6px rgba(0,0,0,0.7);
 }

@@ -1,0 +1,20 @@
+.background {
+    background: rgba(255, 255, 255, 0) url('/files/img/background.jpg') repeat fixed center center / cover;
+}
+
+.main-text {
+    background: rgb(232, 230, 233, 0.8);
+    border-radius: 10px;
+}
+
+.left-button {
+    margin-right: 5px;
+}
+
+.right-button {
+    margin-left: 5px;
+}
+
+.footer-custom {
+    text-shadow: 0px 0px 6px rgba(255,255,255,0.7);
+}

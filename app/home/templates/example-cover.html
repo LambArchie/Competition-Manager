@@ -8,21 +8,23 @@ background
 {% endblock %}
 
 ## workaround to avoid using js. browsers prefer first class with override
-## to change text colours on the homepage change this (navbar-dark) & text-light
+## if background picture is dark change this to navbar-dark and replace text-dark with text-light below
+## also swap the css being loaded to the dark variant
 {% block navbar_attribs %}
-navbar-dark
+navbar-light
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <!-- Homepage Custom CSS -->
-<link rel="stylesheet" href="{{ url_for('home.static',filename='cover.min.css') }}" integrity="sha384-MQZ3CfB3OQnrsYgD1BW6/rBVqusNk/ZxMbT5nJLt2qlFbCZ7u9QG0SeJNA3CIR1L" crossorigin="anonymous"/>
+<!--<link rel="stylesheet" href="{{ url_for('home.static',filename='cover.dark.min.css') }}" integrity="sha384-kPo8f7nz9FP1d7L24v2QFTJPCTpy0doFDcCEKxfBSURqoaYjQbnhZhFMsSGD8C1s" crossorigin="anonymous"/>-->
+<link rel="stylesheet" href="{{ url_for('home.static',filename='cover.light.min.css') }}" integrity="sha384-Q7o4A9NU18daUT1UDsUkQH0kEks+AMhZTUlp9PKU3I20o1UPVbES87CPYeTXWVbQ" crossorigin="anonymous"/>
 {% endblock %}
-navbar-dark 
+
 {% block app_content %}
 <div class="row h-100 justify-content-center align-items-center">
-    <main role="main" class="inner cover col-md-6 text-center text-light main-text">
-        <h1 class="cover-heading">{{ config['BRAND_NAME'] }} Competition Manager</h1>
+    <main role="main" class="inner main-text cover col-md-6 text-center text-dark">
+        <h1 class="cover-heading display-3 text-break">{{ config['BRAND_NAME'] }} Competition Manager</h1>
         <p class="lead">Allows you to view, create & vote on different competitions. Allows submitting the same submission to multiple categories allowing it to be judged seperately. Vote totals are hidden till the end to minimise bias.</p>
         <p class="lead">
             {% if current_user.is_anonymous %}
@@ -38,12 +40,12 @@ navbar-dark
 
 {% block footer %}
 <footer class="footer">
-    <div class="container text-white">
+    <div class="container footer-custom">
         <hr>
-        <p class="text-left">&copy; 2019-2020 <a class="text-white" href="https://github.com/LambArchie/Competition-Manager">Competition Manager Authors</a>
-        <!-- If you need to attribute image place credits in placeholder below
-        <br class="d-xl-none">
-        <span class="float-xl-right">
+        <p class="text-left">&copy; 2019-2020 <a class="text-dark" href="https://github.com/LambArchie/Competition-Manager">Competition Manager Authors</a>
+        <!-- If you need to attribute an image replace the credits below-->
+        <!--<br class="d-md-none">
+        <span class="float-md-right ">
             PLACEHOLDER
         </span>-->
         </p>
