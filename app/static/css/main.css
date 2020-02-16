@@ -27,3 +27,7 @@ body, html {
         column-count: 2!important;
     }
 }
+
+.letter-spacing-2 {
+    letter-spacing: 2px;
+}

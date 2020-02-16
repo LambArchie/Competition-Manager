@@ -30,9 +30,9 @@
     <br>
     {% endif %}
     <div class="text-center">
-        <small><a href="#" style="letter-spacing: 2px;" class="text-muted text-decoration-none text-uppercase" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">{{ humanTime }}</a></small>
+        <small><a href="#" class="text-muted text-decoration-none text-uppercase letter-spacing-2" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">{{ humanTime }}</a></small>
         <h1 class="display-4 text-break">{{ submission.name }}</h1>
-        <a style="letter-spacing: 2px;" class="text-muted text-decoration-none text-uppercase text-uppercase" href="{{ url_for('user.user_profile', username=user.username) }}">
+        <a class="text-muted text-decoration-none text-uppercase text-uppercase letter-spacing-2" href="{{ url_for('user.user_profile', username=user.username) }}">
             <img class="rounded-circle border border-dark mr-2" height="40px" width="40px" src="{{ submission.author.avatar_get() }}" />
             <small>{{ user.name }}</small>
         </a>
