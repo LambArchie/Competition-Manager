@@ -80,7 +80,7 @@ def submission_page(comp_id, cat_id, sub_id):
     body = markdown(submission.body, output_format="html5")
     body = clean(body, markdown_tags, markdown_attrs)
     user = User.query.filter_by(id=submission.user_id).first_or_404()
-    timestamp = arrowGet(submission.timestamp).humanize()
+    timestamp = arrowGet(submission.timestamp).format('D MMMM YYYY')
     uploads_count = SubmissionUploads.query.filter_by(submission_id=sub_id).count()
     owner = current_user.id == user.id
     comp_name = Competition.query.filter_by(id=comp_id).value('name')
@@ -137,8 +137,11 @@ def submission_files(comp_id, cat_id, sub_id):
         abort(404)
     owner = (submission.user_id == current_user.id)  # Checks if true or not then sets owner
     uploads = SubmissionUploads.query.filter_by(submission_id=sub_id)
+    comp_name = Competition.query.filter_by(id=comp_id).value('name')
+    cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
     return render_template('competition/submissionFiles.html', title='Attached Files',
-                           uploads=uploads, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, owner=owner)
+                           uploads=uploads, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, owner=owner,
+                           sub_name=submission.name, cat_name=cat_name, comp_name=comp_name)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/upload', methods=['GET', 'POST'])
 @login_required

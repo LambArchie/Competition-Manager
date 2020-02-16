@@ -14,36 +14,43 @@
         <li class="breadcrumb-item active" aria-current="page">{{ submission.name }}</li>
         </ol>
     </nav>
-    <h1>{{ submission.name }}</h1>
     {% if not uploadsCount|int == 0 %}
-        <a class="btn btn-secondary" href="{{ url_for('competition.submission_files', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
-            Uploads <span class="badge badge-light">{{ uploadsCount }}</span>
-            <span class="sr-only">uploads</span>
-        </a>
-        <br>
-        <br>
-    {% endif %}
-    {{ body|safe }}
-    <div class="row text-muted">
-        <div class="col-auto mr-auto">
-            <span class="align-middle">Created by
-            <a href="{{ url_for('user.user_profile', username=user.username) }}">
-                {{ user.name }}
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="submission-tab" href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
+                Submission
             </a>
-            Last Modified: <a href="#" class="text-reset text-decoration-none" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">{{ humanTime }}</a>
-            </span>
-        </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="uploads-tab" href="{{ url_for('competition.submission_files', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
+                Uploads <span class="badge badge-light">{{ uploadsCount }}</span>
+            </a>
+        </li>
+    </ul>
+    <br>
+    {% endif %}
+    <div class="text-center">
+        <small><a href="#" style="letter-spacing: 2px;" class="text-muted text-decoration-none text-uppercase" data-toggle="tooltip" data-placement="top" title="{{ submission.timestamp }}">{{ humanTime }}</a></small>
+        <h1 class="display-4 text-break">{{ submission.name }}</h1>
+        <a style="letter-spacing: 2px;" class="text-muted text-decoration-none text-uppercase text-uppercase" href="{{ url_for('user.user_profile', username=user.username) }}">
+            <img class="rounded-circle border border-dark mr-2" height="40px" width="40px" src="{{ submission.author.avatar_get() }}" />
+            <small>{{ user.name }}</small>
+        </a>
+    </div>
+    <br>
+    {{ body|safe }}
+    <div class="row text-muted justify-content-center text-lg-center">
         {% if owner %}
-        <div class="col-auto">
+        <div class="col">
             <div class="btn-group" role="group" aria-label="Change Submission">
-                <a href="{{ url_for('competition.submission_edit', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Edit</a>
-                <a href="{{ url_for('competition.submission_upload', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Upload</a>
-                <a href="{{ url_for('competition.submission_delete', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-danger btn-sm">Delete</a>
+                <a href="{{ url_for('competition.submission_edit', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary">Edit</a>
+                <a href="{{ url_for('competition.submission_upload', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary">Upload</a>
+                <a href="{{ url_for('competition.submission_delete', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-danger">Delete</a>
         </div></div>
         {% elif user.reviewer == 1 %}
-        <div class="col-auto">
+        <div class="col">
             <div class="btn-group" role="group" aria-label="Vote">
-                <a href="{{ url_for('competition.submission_voting', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary btn-sm">Vote</a>
+                <a href="{{ url_for('competition.submission_voting', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}" role="button" class="btn btn-outline-primary">Vote</a>
         </div></div>
         {% endif %}
     </div>

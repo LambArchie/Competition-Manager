@@ -1,6 +1,28 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.competitions_overview') }}">Competitions</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.categories_overview', comp_id=comp_id) }}">{{ comp_name }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.submissions_overview', comp_id=comp_id, cat_id=cat_id) }}">{{ cat_name }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('competition.submission_page', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">{{ sub_name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Uploads</li>
+        </ol>
+    </nav>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" id="submission-tab" href="{{ url_for('competition.submission_page', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">
+                Submission
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" id="uploads-tab" href="{{ url_for('competition.submission_files', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">
+                Uploads
+            </a>
+        </li>
+    </ul>
+    <br>
     <h1>Attachments</h1>
     <ul class="list-group list-group-flush">
     {% for upload in uploads %}
