@@ -1,0 +1,7 @@
+<a class="list-group-item list-group-item-action text-reset px-0" href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=submission.categories[0].id, sub_id=submission.id) }}">
+    <div class="d-flex w-100 justify-content-between">
+        <h4 class="mb-1">{{ submission.name }}</h4>
+        <small>{{ submission.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+    </div>
+    <p class="mb-1">{{ submission.body }}</p>
+</a>

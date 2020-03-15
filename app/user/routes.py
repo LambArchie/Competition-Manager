@@ -22,7 +22,7 @@ def check_permissions(username):
 def user_profile(username):
     """Makes dynamic user pages"""
     user = User.query.filter_by(username=username).first_or_404()
-    submissions = Submission.query.filter_by(user_id=user.id).all()
+    submissions = Submission.query.filter_by(user_id=user.id).order_by(Submission.timestamp.desc()).all()
     timestamp = arrowGet(user.last_seen).humanize()
     return render_template('users/user.html', title=user.username, user=user,
                            submissions=submissions, last_seen=timestamp)
