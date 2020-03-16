@@ -17,27 +17,36 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" id="uploads-tab" href="{{ url_for('competition.submission_files', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">
+            <a class="nav-link" id="uploads-tab" href="{{ url_for('competition.submission_files', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">
                 Uploads
             </a>
         </li>
-        {% if current_user.admin %}
-            <li class="nav-item">
-                <a class="nav-link" id="votes-overview-tab" href="{{ url_for('competition.submission_vote_overviewer', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">
-                    Votes Overview
-                </a>
-            </li>
-        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link active" id="votes-overview-tab" href="{{ url_for('competition.submission_vote_overviewer', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}">
+                Votes Overview
+            </a>
+        </li>
     </ul>
     <br>
-    <h1>Attachments</h1>
-    <ul class="list-group list-group-flush">
-    {% for upload in uploads %}
-        <a class="list-group-item" href="{{ url_for('competition.submission_download_redirect', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, file_id=upload.id) }}">{{ upload.filename }}</a>
-    {% endfor %}
-    </ul>
-    <br>
-    {% if owner %}
-        <a href="{{ url_for('competition.submission_upload', comp_id=comp_id, cat_id=cat_id, sub_id=sub_id) }}" role="button" class="btn btn-primary btn-sm">Upload File</a>
-    {% endif %}
+    <h1>Votes Overview</h1>
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Score (/10)</th>
+            <th scope="col">Comments</th>
+            <th scope="col">Reviewer</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for vote in votes %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ vote.score }}</td>
+                    <td>{{ vote.comments }}</td>
+                    <td><a class="text-reset" href="{{ url_for('user.user_profile', username=vote.username) }}">{{ vote.reviewer_name }}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

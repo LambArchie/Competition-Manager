@@ -26,6 +26,13 @@
                 Uploads <span class="badge badge-light">{{ uploadsCount }}</span>
             </a>
         </li>
+        {% if current_user.admin %}
+            <li class="nav-item">
+                <a class="nav-link" id="votes-overview-tab" href="{{ url_for('competition.submission_vote_overviewer', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
+                    Votes Overview
+                </a>
+            </li>
+        {% endif %}
     </ul>
     <br>
     {% endif %}

@@ -214,3 +214,22 @@ def submission_voting(comp_id, cat_id, sub_id):
         form.comment.data = previous_vote.comments
     return render_template('competition/submissionVoting.html', title='Voting', form=form,
                            cat=category, submission=submission)
+
+@bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/votes_overview', methods=['GET', 'POST'])
+@login_required
+def submission_vote_overviewer(comp_id, cat_id, sub_id):
+    """Lists how every reviewer has voted"""
+    if current_user.admin:
+        submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+        if not submission.check_category(cat_id):
+            abort(404)
+        votes = Votes.query.filter_by(comp_id=comp_id, cat_id=cat_id, submission_id=sub_id).all()
+        for i in range(len(votes)):
+            votes[i].reviewer_name = User.query.filter_by(id=votes[i].user_id).value('name')
+            votes[i].username = User.query.filter_by(id=votes[i].user_id).value('username')
+        comp_name = Competition.query.filter_by(id=comp_id).value('name')
+        cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
+        return render_template('competition/submissionVotesOverview.html', title='Vote Overview',
+                               votes=votes, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id,
+                               sub_name=submission.name, cat_name=cat_name, comp_name=comp_name)
+    abort(403)
