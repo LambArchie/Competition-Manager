@@ -5,4 +5,5 @@
     <br>
     <p><a href="{{ url_for('user.upload_avatar', username=current_user.username) }}">Upload Avatar</a></p>
     <p><a href="{{ url_for('auth.change_password') }}">Change Password</a></p>
+    <p><a href="{{ url_for('user.delete_account', username=current_user.username) }}">Delete Account</a></p>
 {% endblock %}

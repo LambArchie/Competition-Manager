@@ -7,7 +7,7 @@ from app import db
 from app.api_v1 import bp
 from app.api_v1.auth import token_auth, permission_required
 from app.api_v1.errors import bad_request, error_response
-from app.database.models import User
+from app.database.models import User, Submission
 
 def get_users():
     """Returns all users details in json"""
@@ -85,7 +85,10 @@ def edit_user(user_id):
 def delete_user(user_id):
     """Deletes selected user"""
     user = User.query.filter_by(id=user_id).first()
+    submissions = Submission.query.filter_by(user_id=user_id)
     if user is not None:
+        for _, submission in enumerate(submissions):
+            db.session.delete(submission)
         db.session.delete(user)
         db.session.commit()
         return '', 200

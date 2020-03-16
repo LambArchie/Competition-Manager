@@ -3,10 +3,27 @@ Controls forms for user control
 """
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
+from flask_login import current_user
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import ValidationError, DataRequired, Email
 from app.database.models import User
 from app import avatar_uploads
+
+class DeleteUserForm(FlaskForm):
+    """Deletes the user"""
+    password = StringField('Your Password', validators=[DataRequired()])
+    check = StringField('To verify, type "delete my account" below', validators=[DataRequired()])
+    submit = SubmitField('Delete Account')
+
+    def validate_password(self, password):
+        """Checks if the password entered is correct"""
+        if not current_user.check_password(password.data):
+            raise ValidationError('Incorrect Password')
+
+    def validate_check(self, check):
+        """Checks if """
+        if check.data != "delete my account":
+            raise ValidationError("Not typed correctly")
 
 class EditProfileForm(FlaskForm):
     """Allows profile editing"""
