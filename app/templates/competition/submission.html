@@ -14,7 +14,7 @@
         <li class="breadcrumb-item active" aria-current="page">{{ submission.name }}</li>
         </ol>
     </nav>
-    {% if not uploadsCount|int == 0 %}
+    {% if (not uploadsCount|int == 0) or current_user.admin %}
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link active" id="submission-tab" href="{{ url_for('competition.submission_page', comp_id=submission.comp_id, cat_id=cat_id, sub_id=submission.id) }}">
