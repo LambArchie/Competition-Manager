@@ -13,7 +13,8 @@ from app.admin.routes import check_permissions
 @login_required
 def categories_overview(comp_id):
     """Lists all categories in a competition"""
-    competition = Competition.query.filter_by(id=comp_id).first_or_404()
+    competition = db.session.execute("""SELECT name, body FROM competition WHERE id = :comp
+                                     LIMIT 1 OFFSET 0""", {'comp': comp_id}).fetchone()
     categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
     return render_template('competition/competition.html', title=competition.name,
                            competition=competition, categories=categories, id=comp_id,

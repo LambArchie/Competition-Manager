@@ -30,7 +30,8 @@ def user_profile(username):
 @bp.route('/<username>/avatar')
 def avatar(username):
     """Gets avatar if one is set else uses default"""
-    user = User.query.filter_by(username=username).first_or_404()
+    user = db.session.execute('SELECT avatar FROM user WHERE username = :username LIMIT 1 OFFSET 0',
+                              {'username': username}).fetchone()
     if user.avatar == "":
         return redirect("https://www.gravatar.com/avatar?d=identicon&s=128")
     return send_from_directory(

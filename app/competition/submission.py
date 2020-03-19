@@ -20,7 +20,8 @@ def submissions_overview(comp_id, cat_id):
     """Lists all submissions in found in the category and competition"""
     category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
     submissions = Submission.query.filter_by(comp_id=comp_id).order_by(Submission.timestamp.desc()).all()
-    comp_name = Competition.query.filter_by(id=comp_id).value('name')
+    comp_name = (db.session.execute('SELECT name FROM competition WHERE id = :id LIMIT 1 OFFSET 0',
+                                    {'id': comp_id}).fetchone())[0]
     cat_submissions = []
     for _, submission in enumerate(submissions):
         for j in range(len(submission.categories)):
@@ -30,14 +31,14 @@ def submissions_overview(comp_id, cat_id):
                 cat_submissions.append(json)
     scores = []
     if current_user.admin:
-        votes = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).all()
-        votes_count = Votes.query.filter_by(comp_id=comp_id).filter_by(cat_id=cat_id).count()
+        votes = db.session.execute("""SELECT score, submission_id FROM votes WHERE comp_id = :comp
+                                   AND cat_id = :cat""", {'comp': comp_id, 'cat': cat_id})
         for _, sub in enumerate(cat_submissions):
             score = 0
             current_votes = 0
-            for j in range(votes_count):
-                if votes[j].submission_id == sub.get('id'):
-                    score = score + votes[j].score
+            for vote in votes:
+                if vote.submission_id == sub.get('id'):
+                    score = score + vote.score
                     current_votes = current_votes + 1
             try:
                 average = score / current_votes
@@ -79,12 +80,16 @@ def submission_page(comp_id, cat_id, sub_id):
         abort(404)
     body = markdown(submission.body, output_format="html5")
     body = clean(body, markdown_tags, markdown_attrs)
-    user = User.query.filter_by(id=submission.user_id).first_or_404()
+    user = db.session.execute("""SELECT id, name, username, reviewer FROM user WHERE id = :id
+                             LIMIT 1 OFFSET 0""", {'id': submission.user_id}).fetchone()
     timestamp = arrowGet(submission.timestamp).format('D MMMM YYYY')
-    uploads_count = SubmissionUploads.query.filter_by(submission_id=sub_id).count()
+    uploads_count = (db.session.execute("""SELECT count(*) FROM submission_uploads WHERE
+                                        submission_id = :id""", {'id': sub_id}).fetchone())[0]
     owner = current_user.id == user.id
-    comp_name = Competition.query.filter_by(id=comp_id).value('name')
-    cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
+    comp_name = (db.session.execute('SELECT name FROM competition WHERE id = :id LIMIT 1 OFFSET 0',
+                                    {'id': comp_id}).fetchone())[0]
+    cat_name = (db.session.execute("""SELECT name FROM category WHERE id = :id AND comp_id = :comp
+                                   LIMIT 1 OFFSET 0""", {'id': cat_id, 'comp': comp_id}).fetchone())[0]
     return render_template('competition/submission.html', title=submission.name,
                            submission=submission, body=body, user=user, cat_id=cat_id,
                            cat_name=cat_name, comp_name=comp_name, humanTime=timestamp,
@@ -136,9 +141,12 @@ def submission_files(comp_id, cat_id, sub_id):
     if not submission.check_category(cat_id):
         abort(404)
     owner = (submission.user_id == current_user.id)  # Checks if true or not then sets owner
-    uploads = SubmissionUploads.query.filter_by(submission_id=sub_id)
-    comp_name = Competition.query.filter_by(id=comp_id).value('name')
-    cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
+    uploads = db.session.execute("""SELECT id, filename FROM submission_uploads WHERE
+                                 submission_id = :val""", {'val': sub_id})
+    comp_name = (db.session.execute('SELECT name FROM competition WHERE id = :id LIMIT 1 OFFSET 0',
+                                    {'id': comp_id}).fetchone())[0]
+    cat_name = (db.session.execute("""SELECT name FROM category WHERE id = :id AND comp_id = :comp
+                                   LIMIT 1 OFFSET 0""", {'id': cat_id, 'comp': comp_id}).fetchone())[0]
     return render_template('competition/submissionFiles.html', title='Attached Files',
                            uploads=uploads, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id, owner=owner,
                            sub_name=submission.name, cat_name=cat_name, comp_name=comp_name)
@@ -155,12 +163,12 @@ def submission_upload(comp_id, cat_id, sub_id):
         abort(403)
     if request.method == 'POST' and 'fileUpload' in request.files:
         if form.validate_on_submit():
-            uploads = SubmissionUploads.query.order_by(SubmissionUploads.id.desc()).filter_by(
-                submission_id=sub_id).first()
+            uploads = db.session.execute("""SELECT id FROM submission_uploads WHERE submission_id = :val
+                                         ORDER BY id DESC LIMIT 1 OFFSET 0""", {'val': sub_id}).fetchone()
             if uploads is None:
                 next_id = 1
             else:
-                next_id = uploads.id + 1  # id's are per submission
+                next_id = uploads[0] + 1  # id's are per submission
             file_obj = request.files['fileUpload']
             file_name = secure_filename(file_obj.filename)
             uploads = SubmissionUploads(id=next_id,
@@ -183,7 +191,8 @@ def submission_upload(comp_id, cat_id, sub_id):
 def submission_voting(comp_id, cat_id, sub_id):
     """Allows reviews to vote on a submission for that category"""
     submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
-    category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
+    category = db.session.execute("""SELECT name, body FROM category WHERE id = :cat AND comp_id = :comp
+                                  LIMIT 1 OFFSET 0""", {'cat': cat_id, 'comp': comp_id}).fetchone()
     if not submission.check_category(cat_id):
         abort(404)
     if current_user.reviewer == 0:
@@ -224,9 +233,10 @@ def submission_vote_overviewer(comp_id, cat_id, sub_id):
         if not submission.check_category(cat_id):
             abort(404)
         votes = Votes.query.filter_by(comp_id=comp_id, cat_id=cat_id, submission_id=sub_id).all()
-        for i in range(len(votes)):
-            votes[i].reviewer_name = User.query.filter_by(id=votes[i].user_id).value('name')
-            votes[i].username = User.query.filter_by(id=votes[i].user_id).value('username')
+        for _, vote in enumerate(votes):
+            vote.reviewer_name, vote.username = db.session.execute("""SELECT name, username FROM user
+                                                                   WHERE id = :id LIMIT 1 OFFSET 0""",
+                                                                   {'id': vote.user_id}).fetchone()
         comp_name = Competition.query.filter_by(id=comp_id).value('name')
         cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
         return render_template('competition/submissionVotesOverview.html', title='Vote Overview',
