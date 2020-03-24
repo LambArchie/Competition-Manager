@@ -1,6 +1,7 @@
 """
 Controls pages directly related to the overall competitions
 """
+from sqlalchemy.sql import text
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from app import db
@@ -13,8 +14,8 @@ from app.admin.routes import check_permissions
 @login_required
 def competitions_overview():
     """Lists all competitions"""
-    comps = [competition.to_json() for competition in Competition.query.order_by(
-        Competition.id.desc()).all()]
+    query = text("SELECT id, name, body FROM competition ORDER BY id DESC")
+    comps = [competition.to_json() for competition in db.session.query(Competition).from_statement(query).all()]
     return render_template('competition/index.html', title="Competitions", competitions=comps,
                            admin=current_user.admin)
 
@@ -38,7 +39,8 @@ def competition_create():
 @login_required
 def competition_edit(comp_id):
     """Edits a submission"""
-    competition = Competition.query.filter_by(id=comp_id).first_or_404()
+    query = text("SELECT id, name, body FROM competition WHERE id = :id LIMIT 1 OFFSET 0")
+    competition = db.session.query(Competition).from_statement(query).params(id=comp_id).first_or_404()
     form = CompetitionForm()
     check_permissions()
     if request.method == 'GET':

@@ -2,6 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from os import path, remove
+from sqlalchemy.sql import text
 from flask import (render_template, flash, redirect, url_for, request, send_from_directory,
                    current_app, abort)
 from flask_login import current_user, login_required
@@ -21,7 +22,8 @@ def check_permissions(username):
 @login_required
 def user_profile(username):
     """Makes dynamic user pages"""
-    user = User.query.filter_by(username=username).first_or_404()
+    query = text("SELECT id, username, name, last_seen FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(username=username).first_or_404()
     submissions = Submission.query.filter_by(user_id=user.id).order_by(Submission.timestamp.desc()).all()
     timestamp = arrowGet(user.last_seen).humanize()
     return render_template('users/user.html', title=user.username, user=user,
@@ -44,8 +46,10 @@ def delete_account(username):
     check_permissions(username)
     form = DeleteUserForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=username).first()
-        submissions = Submission.query.filter_by(user_id=user.id)
+        query = text("SELECT * FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+        user = db.session.query(User).from_statement(query).params(username=username).first()
+        query = text("SELECT * FROM submission WHERE user_id = :user_id")
+        submissions = db.session.query(Submission).from_statement(query).params(user_id=user.id).all()
         if user is not None:
             for _, submission in enumerate(submissions):
                 db.session.delete(submission)
@@ -89,7 +93,8 @@ def upload_avatar(username):
     form = UploadAvatarForm()
     if request.method == 'POST' and 'avatar' in request.files:
         if form.validate_on_submit():
-            user = User.query.filter_by(username=current_user.username).first()
+            query = text("SELECT id, avatar FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+            user = db.session.query(User).from_statement(query).params(username=username).first()
             if (user.avatar != "") and (path.exists(
                     current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)):
                 remove(current_app.config['UPLOADS_DEFAULT_DEST'] + "avatars/" + user.avatar)

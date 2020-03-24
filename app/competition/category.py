@@ -1,6 +1,7 @@
 """
 Controls pages directly related to categories
 """
+from sqlalchemy.sql import text
 from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 from app import db
@@ -15,7 +16,8 @@ def categories_overview(comp_id):
     """Lists all categories in a competition"""
     competition = db.session.execute("""SELECT name, body FROM competition WHERE id = :comp
                                      LIMIT 1 OFFSET 0""", {'comp': comp_id}).fetchone()
-    categories = [category.to_json() for category in Category.query.filter_by(comp_id=comp_id)]
+    query = text("SELECT name, body, id, comp_id FROM category WHERE comp_id = :comp_id")
+    categories = [category.to_json() for category in db.session.query(Category).from_statement(query).params(comp_id=comp_id).all()]
     return render_template('competition/competition.html', title=competition.name,
                            competition=competition, categories=categories, id=comp_id,
                            admin=current_user.admin)
@@ -42,7 +44,8 @@ def category_create(comp_id):
 @login_required
 def category_edit(comp_id, cat_id):
     """Edits a submission"""
-    category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id, name, body FROM category WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    category = db.session.query(Category).from_statement(query).params(id=cat_id, comp_id=comp_id).first_or_404()
     form = CategoryForm()
     check_permissions()
     if request.method == 'GET':
@@ -60,8 +63,10 @@ def category_edit(comp_id, cat_id):
 @login_required
 def submission_edit_category(comp_id, cat_id, sub_id):
     """Allows assigning categories to a submission"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
-    categories = Category.query.filter_by(comp_id=comp_id)
+    query = text("SELECT id, user_id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
+    query = text("SELECT id FROM category WHERE comp_id = :comp_id")
+    categories = db.session.query(Category).from_statement(query).params(comp_id=comp_id).all()
     form = submission_edit_categories_form(submission, categories)
     if not submission.check_category(cat_id):
         abort(404)
@@ -75,8 +80,8 @@ def submission_edit_category(comp_id, cat_id, sub_id):
                 break
             else:
                 if submission.check_category(int(checkbox.name)) != checkbox.data:
-                    category = (Category.query.filter_by(id=int(checkbox.name)).
-                                filter_by(comp_id=comp_id).first_or_404())
+                    query = text("SELECT id FROM category WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+                    category = db.session.query(Category).from_statement(query).params(id=int(checkbox.name), comp_id=comp_id).first_or_404()
                     if checkbox.data:
                         submission.categories.append(category)
                     else:

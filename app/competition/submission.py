@@ -2,6 +2,7 @@
 Controls pages related to submissions
 """
 from datetime import datetime
+from sqlalchemy.sql import text
 from flask import render_template, flash, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -10,7 +11,7 @@ from arrow import get as arrowGet
 from bleach import clean
 from bleach_whitelist import markdown_tags, markdown_attrs
 from app import db, submission_uploads
-from app.database.models import Competition, Category, Submission, SubmissionUploads, User, Votes
+from app.database.models import Category, Submission, SubmissionUploads, Votes
 from app.competition import bp
 from app.competition.forms import SubmissionForm, SubmissionUploadForm, SubmissionVotingForm
 
@@ -18,8 +19,10 @@ from app.competition.forms import SubmissionForm, SubmissionUploadForm, Submissi
 @login_required
 def submissions_overview(comp_id, cat_id):
     """Lists all submissions in found in the category and competition"""
-    category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
-    submissions = Submission.query.filter_by(comp_id=comp_id).order_by(Submission.timestamp.desc()).all()
+    query = text("SELECT id, name, body FROM category WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    category = db.session.query(Category).from_statement(query).params(id=cat_id, comp_id=comp_id).first_or_404()
+    query = text("SELECT id, timestamp, name, body FROM submission WHERE comp_id = :comp_id ORDER BY timestamp DESC")
+    submissions = db.session.query(Submission).from_statement(query).params(comp_id=comp_id).all()
     comp_name = (db.session.execute('SELECT name FROM competition WHERE id = :id LIMIT 1 OFFSET 0',
                                     {'id': comp_id}).fetchone())[0]
     cat_submissions = []
@@ -62,7 +65,8 @@ def submission_create(comp_id, cat_id):
                                 comp_id=int(comp_id)
                                 )
         db.session.add(submission)
-        category = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).first_or_404()
+        query = text("SELECT id FROM category WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+        category = db.session.query(Category).from_statement(query).params(id=cat_id, comp_id=comp_id).first_or_404()
         submission.categories.append(category)
         db.session.commit()
 
@@ -75,7 +79,8 @@ def submission_create(comp_id, cat_id):
 @login_required
 def submission_page(comp_id, cat_id, sub_id):
     """Retreives data for a specific submission"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id, user_id, name, body, timestamp FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
     body = markdown(submission.body, output_format="html5")
@@ -99,7 +104,8 @@ def submission_page(comp_id, cat_id, sub_id):
 @login_required
 def submission_delete(comp_id, cat_id, sub_id):
     """Deletes a submission"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id, user_id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
     if int(current_user.id) != int(submission.user_id):
@@ -113,7 +119,8 @@ def submission_delete(comp_id, cat_id, sub_id):
 @login_required
 def submission_edit(comp_id, cat_id, sub_id):
     """Edits a submission"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id, user_id, name, body, timestamp FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     form = SubmissionForm()
     if not submission.check_category(cat_id):
         abort(404)
@@ -129,15 +136,16 @@ def submission_edit(comp_id, cat_id, sub_id):
         db.session.commit()
         flash('Submission edited successfully')
         return redirect(url_for('competition.submission_page',
-                                comp_id=comp_id, cat_id=cat_id, sub_id=submission.id))
+                                comp_id=comp_id, cat_id=cat_id, sub_id=sub_id))
     return render_template('competition/submissionEdit.html', title='Edit Submission', form=form,
-                           comp_id=comp_id, cat_id=cat_id, sub_id=submission.id)
+                           comp_id=comp_id, cat_id=cat_id, sub_id=sub_id)
 
 @bp.route('/<int:comp_id>/<int:cat_id>/<int:sub_id>/files')
 @login_required
 def submission_files(comp_id, cat_id, sub_id):
     """Shows all attached files to the submission"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id, user_id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
     owner = (submission.user_id == current_user.id)  # Checks if true or not then sets owner
@@ -155,7 +163,8 @@ def submission_files(comp_id, cat_id, sub_id):
 @login_required
 def submission_upload(comp_id, cat_id, sub_id):
     """Allow documents to be attached to the submission"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     form = SubmissionUploadForm()
     if not submission.check_category(cat_id):
         abort(404)
@@ -182,7 +191,7 @@ def submission_upload(comp_id, cat_id, sub_id):
             db.session.commit()
             flash('File Uploaded')
             return redirect(url_for('competition.submission_page',
-                                    comp_id=comp_id, cat_id=cat_id, sub_id=submission.id))
+                                    comp_id=comp_id, cat_id=cat_id, sub_id=sub_id))
         flash('File failed to upload', 'error')
     return render_template('competition/submissionUpload.html', title='Upload Files', form=form)
 
@@ -190,7 +199,8 @@ def submission_upload(comp_id, cat_id, sub_id):
 @login_required
 def submission_voting(comp_id, cat_id, sub_id):
     """Allows reviews to vote on a submission for that category"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id, user_id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     category = db.session.execute("""SELECT name, body FROM category WHERE id = :cat AND comp_id = :comp
                                   LIMIT 1 OFFSET 0""", {'cat': cat_id, 'comp': comp_id}).fetchone()
     if not submission.check_category(cat_id):
@@ -217,7 +227,7 @@ def submission_voting(comp_id, cat_id, sub_id):
         db.session.commit()
         flash('Successfully Voted')
         return redirect(url_for('competition.submission_page',
-                                comp_id=comp_id, cat_id=cat_id, sub_id=submission.id))
+                                comp_id=comp_id, cat_id=cat_id, sub_id=sub_id))
     elif previous_vote is not None:
         form.score.data = previous_vote.score
         form.comment.data = previous_vote.comments
@@ -229,16 +239,20 @@ def submission_voting(comp_id, cat_id, sub_id):
 def submission_vote_overviewer(comp_id, cat_id, sub_id):
     """Lists how every reviewer has voted"""
     if current_user.admin:
-        submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+        query = text("SELECT id, name FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+        submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
         if not submission.check_category(cat_id):
             abort(404)
-        votes = Votes.query.filter_by(comp_id=comp_id, cat_id=cat_id, submission_id=sub_id).all()
+        query = text("SELECT id, user_id, score, comments FROM votes WHERE comp_id = :comp_id AND cat_id = :cat_id")
+        votes = db.session.query(Votes).from_statement(query).params(comp_id=comp_id, cat_id=cat_id).all()
         for _, vote in enumerate(votes):
             vote.reviewer_name, vote.username = db.session.execute("""SELECT name, username FROM user
                                                                    WHERE id = :id LIMIT 1 OFFSET 0""",
                                                                    {'id': vote.user_id}).fetchone()
-        comp_name = Competition.query.filter_by(id=comp_id).value('name')
-        cat_name = Category.query.filter_by(id=cat_id).filter_by(comp_id=comp_id).value('name')
+        comp_name = (db.session.execute('SELECT name FROM competition WHERE id = :id LIMIT 1 OFFSET 0',
+                                        {'id': comp_id}).fetchone())[0]
+        cat_name = (db.session.execute("""SELECT name FROM category WHERE id = :id AND comp_id = :comp
+                                   LIMIT 1 OFFSET 0""", {'id': cat_id, 'comp': comp_id}).fetchone())[0]
         return render_template('competition/submissionVotesOverview.html', title='Vote Overview',
                                votes=votes, comp_id=comp_id, cat_id=cat_id, sub_id=sub_id,
                                sub_name=submission.name, cat_name=cat_name, comp_name=comp_name)

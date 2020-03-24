@@ -2,6 +2,7 @@
 Controls which pages load and what is shown on each
 """
 from datetime import datetime
+from sqlalchemy.sql import text
 from flask import render_template, flash, redirect, url_for, request, current_app, g, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
@@ -36,7 +37,8 @@ def login():
         return redirect(url_for('home.index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        query = text("SELECT * FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+        user = db.session.query(User).from_statement(query).params(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'error')
             return redirect(url_for('auth.login'))
@@ -88,7 +90,8 @@ def change_password():
     """Change password form"""
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=current_user.username).first()
+        query = text("SELECT id FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+        user = db.session.query(User).from_statement(query).params(username=current_user.username).first()
         if not user.check_password(form.currentpassword.data):
             flash('Wrong current password', 'error')
         elif form.password.data == form.currentpassword.data:
