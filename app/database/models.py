@@ -5,6 +5,7 @@ import base64
 import os
 from datetime import datetime, timedelta
 from uuid import uuid4
+from sqlalchemy.sql import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
@@ -85,6 +86,7 @@ class User(UserMixin, db.Model):
     def get_token(self, expires_in=3600):
         """Generates a new token"""
         now = datetime.utcnow()
+        self.token_expiration = datetime.strptime(self.token_expiration, "%Y-%m-%d %H:%M:%S.%f")
         if self.token and self.token_expiration > now + timedelta(seconds=60):
             return self.token
         self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
@@ -99,8 +101,9 @@ class User(UserMixin, db.Model):
     @staticmethod
     def check_token(token):
         """Checks if token is currently valid for that user"""
-        user = User.query.filter_by(token=token).first()
-        if user is None or user.token_expiration < datetime.utcnow():
+        query = text("SELECT * FROM user WHERE token = :token LIMIT 1 OFFSET 0")
+        user = db.session.query(User).from_statement(query).params(token=token).first()
+        if user is None or datetime.strptime(user.token_expiration, "%Y-%m-%d %H:%M:%S.%f") < datetime.utcnow():
             return None
         return user
 

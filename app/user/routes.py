@@ -24,6 +24,7 @@ def user_profile(username):
     """Makes dynamic user pages"""
     query = text("SELECT id, username, name, last_seen FROM user WHERE username = :username LIMIT 1 OFFSET 0")
     user = db.session.query(User).from_statement(query).params(username=username).first_or_404()
+    # Below not changed to raw SQL as timestamp becomes a string not a datetime type
     submissions = Submission.query.filter_by(user_id=user.id).order_by(Submission.timestamp.desc()).all()
     timestamp = arrowGet(user.last_seen).humanize()
     return render_template('users/user.html', title=user.username, user=user,

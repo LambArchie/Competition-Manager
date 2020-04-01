@@ -1,9 +1,11 @@
 """
 Controls files/attachments
 """
+from sqlalchemy.sql import text
 from flask import redirect, url_for, abort, current_app, send_from_directory, make_response
 from flask_login import login_required
 from werkzeug.utils import secure_filename
+from app import db
 from app.database.models import Submission, SubmissionUploads
 from app.competition import bp
 
@@ -28,7 +30,8 @@ def file_download(uuid, filename):
 @login_required
 def submission_download_redirect(comp_id, cat_id, sub_id, file_id):
     """Redirects you to the download url"""
-    submission = Submission.query.filter_by(id=sub_id).filter_by(comp_id=comp_id).first_or_404()
+    query = text("SELECT id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     if not submission.check_category(cat_id):
         abort(404)
     uploads = SubmissionUploads.query.filter_by(submission_id=sub_id).filter_by(

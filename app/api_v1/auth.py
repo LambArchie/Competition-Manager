@@ -2,8 +2,10 @@
 Manages API Auth
 """
 from functools import wraps
+from sqlalchemy.sql import text
 from flask import g
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
+from app import db
 from app.database.models import User
 from app.api_v1.errors import error_response
 
@@ -13,7 +15,8 @@ token_auth = HTTPTokenAuth()
 @basic_auth.verify_password
 def verify_password(username, password):
     """Basic HTTP Auth checking"""
-    user = User.query.filter_by(username=username).first()
+    query = text("SELECT * FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(username=username).first()
     if user is None:
         return False
     g.current_user = user

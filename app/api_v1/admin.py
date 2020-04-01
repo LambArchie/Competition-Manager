@@ -2,6 +2,7 @@
 Admin API Routes
 """
 from distutils.util import strtobool
+from sqlalchemy.sql import text
 from flask import jsonify, request
 from app import db
 from app.api_v1 import bp
@@ -11,7 +12,7 @@ from app.database.models import User, Submission
 
 def get_users():
     """Returns all users details in json"""
-    users = [user.to_json(admin=True) for user in User.query.all()]
+    users = [user.to_json(admin=True) for user in db.session.query(User).from_statement(text("SELECT * FROM user")).all()]
     return jsonify(users)
 
 @bp.route('/admin/users', methods=['GET'])
@@ -31,9 +32,9 @@ def create_user():
             or ('organisation' not in data) or ('password' not in data)
             or ('admin' not in data) or ('reviewer' not in data)):
         return bad_request('must include username, email, name, organisation, password and admin fields')
-    if User.query.filter_by(username=data['username']).first():
+    if db.session.query(User).from_statement(text("SELECT username FROM user WHERE username = :username")).params(username=data['username']).first():
         return bad_request('please use a different username')
-    if User.query.filter_by(email=data['email']).first():
+    if db.session.query(User).from_statement(text("SELECT email FROM user WHERE username = :username")).params(email=data['email']).first():
         return bad_request('please use a different email address')
     try:
         data['admin'] = bool(strtobool(data['admin']))
@@ -55,7 +56,8 @@ def create_user():
 @token_auth.login_required
 def get_user_admin(user_id):
     """Returns user from id"""
-    user = User.query.filter_by(id=user_id).first()
+    query = text("SELECT * FROM user WHERE id = :id LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(id=user_id).first()
     if user is not None:
         return jsonify(user.to_json(admin=True))
     return error_response(404, "user id doesn't exist")
@@ -65,14 +67,15 @@ def get_user_admin(user_id):
 @permission_required('admin')
 def edit_user(user_id):
     """Changes user details"""
-    user = User.query.filter_by(id=user_id).first()
+    query = text("SELECT * FROM user WHERE id = :id LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(id=user_id).first()
     if user is not None:
         data = request.get_json() or {}
         if 'username' in data and data['username'] != user.username \
-          and User.query.filter_by(username=data['username']).first():
+          and db.session.query(User).from_statement(text("SELECT username FROM user WHERE username = :username")).params(username=data['username']).first():
             return bad_request('please use a different username')
         if 'email' in data and data['email'] != user.email \
-          and User.query.filter_by(email=data['email']).first():
+          and db.session.query(User).from_statement(text("SELECT email FROM user WHERE username = :username")).params(email=data['email']).first():
             return bad_request('please use a different email')
         user.from_json(data, admin=True)
         db.session.commit()
@@ -84,8 +87,10 @@ def edit_user(user_id):
 @permission_required('admin')
 def delete_user(user_id):
     """Deletes selected user"""
-    user = User.query.filter_by(id=user_id).first()
-    submissions = Submission.query.filter_by(user_id=user_id)
+    query = text("SELECT * FROM user WHERE id = :id LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(id=user_id).first()
+    query = text("SELECT * FROM submission WHERE user_id = :user_id")
+    submissions = db.session.query(Submission).from_statement(query).params(user_id=user_id)
     if user is not None:
         for _, submission in enumerate(submissions):
             db.session.delete(submission)

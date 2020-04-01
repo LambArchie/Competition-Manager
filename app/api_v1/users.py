@@ -1,7 +1,9 @@
 """
 Users API Routes
 """
+from sqlalchemy.sql import text
 from flask import jsonify
+from app import db
 from app.api_v1 import bp
 from app.api_v1.auth import token_auth
 from app.api_v1.errors import error_response
@@ -11,7 +13,8 @@ from app.database.models import User
 @token_auth.login_required
 def get_user(user_id):
     """Returns user from id"""
-    user = User.query.filter_by(id=user_id).first()
+    query = text("SELECT name, id, lastSeen, organisation, username, admin, email, reviewer FROM user WHERE id = :id")
+    user = db.session.query(User).from_statement(query).params(id=user_id).first()
     if user is not None:
         return jsonify(user.to_json())
     return error_response(404, "user id doesn't exist")

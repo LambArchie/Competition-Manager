@@ -12,7 +12,7 @@ from app.auth.forms import RegistrationForm
 def check_setup():
     """Checks if setup has already been completed"""
     try:
-        if User.query.count() == 0:
+        if ((db.session.execute("SELECT count(*) FROM user").fetchone())[0]) == 0:
             return 1
     except (exc.OperationalError, exc.ProgrammingError):
         if "PYTEST_CURRENT_TEST" in environ:

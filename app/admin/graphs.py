@@ -1,8 +1,10 @@
 """
 Controls graph pages
 """
+from sqlalchemy.sql import text
 from flask import render_template, jsonify
 from flask_login import login_required
+from app import db
 from app.database.models import User, Competition, Category, Submission
 from app.admin import bp
 from app.admin.routes import check_permissions
@@ -33,9 +35,9 @@ def graphs_users():
 def json_nousers():
     """Gives JSON of submissions, categories and competitions with links"""
     check_permissions()
-    competitions = Competition.query.all()
-    categories = Category.query.all()
-    submissions = Submission.query.all()
+    competitions = db.session.query(Competition).from_statement(text("SELECT id, name FROM competition")).all()
+    categories = db.session.query(Category).from_statement(text("SELECT id, name, comp_id FROM category")).all()
+    submissions = db.session.query(Submission).from_statement(text("SELECT id, name FROM submission")).all()
     nodes = []
     edges = []
     combined = {}
@@ -43,7 +45,7 @@ def json_nousers():
         nodes.append(competition.name)
     for _, category in enumerate(categories):
         nodes.append(category.name)
-        temp = Competition.query.filter_by(id=category.comp_id).first().name
+        temp = db.session.query(Competition).from_statement(text("SELECT id, name FROM competition WHERE id = :id LIMIT 1 OFFSET 0")).params(id=category.comp_id).first().name
         edges.append([temp, category.name])
     for _, submission in enumerate(submissions):
         nodes.append(submission.name)
@@ -58,10 +60,10 @@ def json_nousers():
 def json_users():
     """Gives JSON of submissions, categories, competitions and users with links"""
     check_permissions()
-    users = User.query.all()
-    competitions = Competition.query.all()
-    categories = Category.query.all()
-    submissions = Submission.query.all()
+    users = db.session.query(User).from_statement(text("SELECT id, username FROM user")).all()
+    competitions = db.session.query(Competition).from_statement(text("SELECT id, name FROM competition")).all()
+    categories = db.session.query(Category).from_statement(text("SELECT id, name, comp_id FROM category")).all()
+    submissions = db.session.query(Submission).from_statement(text("SELECT id, name, user_id FROM submission")).all()
     nodes = []
     edges = []
     combined = {}
@@ -71,13 +73,13 @@ def json_users():
         nodes.append(competition.name)
     for _, category in enumerate(categories):
         nodes.append(category.name)
-        temp = Competition.query.filter_by(id=category.comp_id).first().name
+        temp = db.session.query(Competition).from_statement(text("SELECT id, name FROM competition WHERE id = :id LIMIT 1 OFFSET 0")).params(id=category.comp_id).first().name
         edges.append([temp, category.name])
     for _, submission in enumerate(submissions):
         nodes.append(submission.name)
         for _, submission_cat in enumerate(submission.categories):
             edges.append([submission_cat.name, submission.name])
-        temp = User.query.filter_by(id=submission.user_id).first().username
+        temp = db.session.query(User).from_statement(text("SELECT id, username FROM user WHERE id = :id")).params(id=submission.user_id).first().username
         edges.append([submission.name, temp])
     combined['nodes'] = nodes
     combined['edges'] = edges

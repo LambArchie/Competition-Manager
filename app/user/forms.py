@@ -1,13 +1,14 @@
 """
 Controls forms for user control
 """
+from sqlalchemy.sql import text
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_login import current_user
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import ValidationError, DataRequired, Email
+from app import db, avatar_uploads
 from app.database.models import User
-from app import avatar_uploads
 
 class DeleteUserForm(FlaskForm):
     """Deletes the user"""
@@ -44,14 +45,16 @@ class EditProfileForm(FlaskForm):
     def validate_username(self, username):
         """Checks if username is already used unless its current username"""
         if username.data != self.original_username:
-            user = User.query.filter_by(username=self.username.data).first()
+            query = text("SELECT id, username FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+            user = db.session.query(User).from_statement(query).params(username=self.username.data).first()
             if user is not None:
                 raise ValidationError('Please use a different username.')
 
     def validate_email(self, email):
         """Checks if email is already used unless its current email"""
         if email.data != self.original_email:
-            user = User.query.filter_by(email=self.email.data).first()
+            query = text("SELECT id, email FROM user WHERE email = :email LIMIT 1 OFFSET 0")
+            user = db.session.query(User).from_statement(query).params(email=self.email.data).first()
             if user is not None:
                 raise ValidationError('Please use a different email address.')
 

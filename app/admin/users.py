@@ -1,6 +1,7 @@
 """
 Controls users admin pages
 """
+from sqlalchemy.sql import text
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required
 from app import db
@@ -30,7 +31,8 @@ def api_users():
 def user_edit(username):
     """Allows admin to edit user information"""
     check_permissions()
-    user = User.query.filter_by(username=username).first_or_404()
+    query = text("SELECT id, name, organisation, username, email, admin, reviewer FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(username=username).first_or_404()
     form = EditProfileForm(user.username, user.email)
     if form.validate_on_submit():
         user.name = form.name.data
@@ -56,7 +58,8 @@ def user_edit(username):
 def user_pwreset(username):
     """Allows admin to reset password"""
     check_permissions()
-    user = User.query.filter_by(username=username).first_or_404()
+    query = text("SELECT password_hash, token_expiration FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+    user = db.session.query(User).from_statement(query).params(username=username).first_or_404()
     form = ChangePasswordForm()
     del form.currentpassword
     if form.validate_on_submit():

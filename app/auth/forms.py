@@ -1,9 +1,11 @@
 """
 Controls forms for auth
 """
+from sqlalchemy.sql import text
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from app import db
 from app.database.models import User
 from app.auth.passwords import strength_check
 
@@ -30,13 +32,15 @@ class RegistrationForm(FlaskForm):
 
     def validate_username(self, username):
         """Checks if username is already used"""
-        user = User.query.filter_by(username=username.data).first()
+        query = text("SELECT id, username FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+        user = db.session.query(User).from_statement(query).params(username=username.data).first()
         if user is not None:
             raise ValidationError('Please use a different username.')
 
     def validate_email(self, email):
         """Checks if email is already used"""
-        user = User.query.filter_by(email=email.data).first()
+        query = text("SELECT id, email FROM user WHERE email = :email LIMIT 1 OFFSET 0")
+        user = db.session.query(User).from_statement(query).params(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
 

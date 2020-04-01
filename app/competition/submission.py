@@ -34,14 +34,16 @@ def submissions_overview(comp_id, cat_id):
                 cat_submissions.append(json)
     scores = []
     if current_user.admin:
-        votes = db.session.execute("""SELECT score, submission_id FROM votes WHERE comp_id = :comp
-                                   AND cat_id = :cat""", {'comp': comp_id, 'cat': cat_id})
+        query = text("SELECT id, score, submission_id FROM votes WHERE comp_id = :comp AND cat_id = :cat")
+        votes = db.session.query(Votes).from_statement(query).params(comp=comp_id, cat=cat_id).all()
+        query = "SELECT count(*) FROM votes WHERE comp_id = :comp_id AND cat_id = :cat_id"
+        votes_count = ((db.session.execute(query, {'comp_id': comp_id, 'cat_id': cat_id}).fetchone())[0])
         for _, sub in enumerate(cat_submissions):
             score = 0
             current_votes = 0
-            for vote in votes:
-                if vote.submission_id == sub.get('id'):
-                    score = score + vote.score
+            for j in range(votes_count):
+                if votes[j].submission_id == sub.get('id'):
+                    score = score + votes[j].score
                     current_votes = current_votes + 1
             try:
                 average = score / current_votes
@@ -163,7 +165,7 @@ def submission_files(comp_id, cat_id, sub_id):
 @login_required
 def submission_upload(comp_id, cat_id, sub_id):
     """Allow documents to be attached to the submission"""
-    query = text("SELECT id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
+    query = text("SELECT id, user_id FROM submission WHERE id = :id AND comp_id = :comp_id LIMIT 1 OFFSET 0")
     submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
     form = SubmissionUploadForm()
     if not submission.check_category(cat_id):
@@ -210,8 +212,8 @@ def submission_voting(comp_id, cat_id, sub_id):
     if current_user.id == submission.user_id:
         abort(403)
     form = SubmissionVotingForm()
-    previous_vote = Votes.query.filter_by(user_id=current_user.id).filter_by(submission_id=sub_id).filter_by(
-        comp_id=comp_id).filter_by(cat_id=cat_id).first()
+    query = text("SELECT id, score, comments FROM votes WHERE user_id = :user_id AND submission_id = :submission_id AND comp_id = :comp_id AND cat_id = :cat_id LIMIT 1 OFFSET 0")
+    previous_vote = db.session.query(Votes).from_statement(query).params(user_id=current_user.id, submission_id=sub_id, comp_id=comp_id, cat_id=cat_id).first()
     if form.validate_on_submit():
         if previous_vote is None:
             vote = Votes(score=form.score.data,
@@ -243,8 +245,8 @@ def submission_vote_overviewer(comp_id, cat_id, sub_id):
         submission = db.session.query(Submission).from_statement(query).params(id=sub_id, comp_id=comp_id).first_or_404()
         if not submission.check_category(cat_id):
             abort(404)
-        query = text("SELECT id, user_id, score, comments FROM votes WHERE comp_id = :comp_id AND cat_id = :cat_id")
-        votes = db.session.query(Votes).from_statement(query).params(comp_id=comp_id, cat_id=cat_id).all()
+        query = text("SELECT id, user_id, score, comments FROM votes WHERE comp_id = :comp_id AND cat_id = :cat_id AND submission_id = :sub_id")
+        votes = db.session.query(Votes).from_statement(query).params(comp_id=comp_id, cat_id=cat_id, sub_id=sub_id).all()
         for _, vote in enumerate(votes):
             vote.reviewer_name, vote.username = db.session.execute("""SELECT name, username FROM user
                                                                    WHERE id = :id LIMIT 1 OFFSET 0""",
