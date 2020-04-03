@@ -1,5 +1,54 @@
 {% extends "base.html" %}
 
+## background should be placed at files/background.jpg
+## to change path change cover.css, minify and update the integrity
+{% block body_attribs %}
+{{super()}}
+background
+{% endblock %}
+
+## workaround to avoid using js. browsers prefer first class with override
+## if background picture is dark change this to navbar-dark and replace text-dark with text-light below
+## also swap the css being loaded to the dark variant
+{% block navbar_attribs %}
+navbar-light
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<!-- Homepage Custom CSS -->
+<!--<link rel="stylesheet" href="{{ url_for('home.static',filename='cover.dark.min.css') }}" integrity="sha384-kPo8f7nz9FP1d7L24v2QFTJPCTpy0doFDcCEKxfBSURqoaYjQbnhZhFMsSGD8C1s" crossorigin="anonymous"/>-->
+<link rel="stylesheet" href="{{ url_for('home.static',filename='cover.light.min.css') }}" integrity="sha384-Q7o4A9NU18daUT1UDsUkQH0kEks+AMhZTUlp9PKU3I20o1UPVbES87CPYeTXWVbQ" crossorigin="anonymous"/>
+{% endblock %}
+
 {% block app_content %}
-    <h1>Welcome to {{ config['BRAND_NAME'] }} Competition Manager</h1>
+<div class="row h-100 justify-content-center align-items-center">
+    <main role="main" class="inner main-text cover col-md-6 text-center text-dark">
+        <h1 class="cover-heading display-3 text-break">{{ config['BRAND_NAME'] }} Competition Manager</h1>
+        <p class="lead">Allows you to view, create & vote on different competitions. Allows submitting the same submission to multiple categories allowing it to be judged seperately. Vote totals are hidden till the end to minimise bias.</p>
+        <p class="lead">
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('auth.login') }}" class="left-button btn btn-lg btn-primary">Sign In</a>
+                <a href="{{ url_for('auth.register') }}" class="right-button btn btn-lg btn-success">Register</a>
+            {% else %}
+                <a href="{{ url_for('competition.competitions_overview') }}" class="btn btn-lg btn-primary">View Competitions</a>
+            {% endif %}
+        </p>
+    </main>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+    <div class="container footer-custom">
+        <hr>
+        <p class="text-left">&copy; 2019-2020 <a class="text-dark" href="https://github.com/LambArchie/Competition-Manager">Competition Manager Authors</a>
+        <!-- If you need to attribute an image replace the credits below-->
+        <!--<br class="d-md-none">
+        <span class="float-md-right ">
+            PLACEHOLDER
+        </span>-->
+        </p>
+    </div>
+</footer>
 {% endblock %}
