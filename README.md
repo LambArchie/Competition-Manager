@@ -75,6 +75,6 @@ gunicorn --bind 0.0.0.0:5000 CompetitionManger:app
 * Create a file at `app/home/templates/custom-index.html` and this will be used instead of the default homepage.
 * I have includes three other hompages which can be customised to suit your needs.
   * Carousel contains a slideshow. To add images to it place files in `app/home/files/img/`
-  * Cover uses the background image found at `app/home/files/img/background.jpg`. The file used can be changed by editing cover.If the css is editted ensure you minify the file and tjem update the integrity inside `custom-index.html`
+  * Cover uses the background image found at `app/home/files/img/background.jpg`. The file used can be changed by editing cover.If the css is editted ensure you minify the file and then update the integrity inside `custom-index.html`
   * Basic is basic. It just prints the brand name with competition manager after
   * Using docker you can mount a volume at these locations, allowing you to easily use this feature.
