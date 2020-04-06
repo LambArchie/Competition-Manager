@@ -12,7 +12,7 @@ def index():
     """Landing page"""
     if isfile("app/home/templates/custom-index.html"):
         try:
-            filelist = listdir("app/home/files")
+            filelist = listdir("app/home/files/img")
         except FileNotFoundError:
             filelist = []
         return render_template('custom-index.html', title='Home', files=filelist)
