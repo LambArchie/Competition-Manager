@@ -58,7 +58,7 @@ def user_edit(username):
 def user_pwreset(username):
     """Allows admin to reset password"""
     check_permissions()
-    query = text("SELECT password_hash, token_expiration FROM user WHERE username = :username LIMIT 1 OFFSET 0")
+    query = text("SELECT id, password_hash, token_expiration FROM user WHERE username = :username LIMIT 1 OFFSET 0")
     user = db.session.query(User).from_statement(query).params(username=username).first_or_404()
     form = ChangePasswordForm()
     del form.currentpassword
