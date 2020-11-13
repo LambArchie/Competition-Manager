@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 from markdown import markdown
 from arrow import get as arrowGet
 from bleach import clean
-from bleach_whitelist import markdown_tags, markdown_attrs
+from bleach_allowlist import markdown_tags, markdown_attrs
 from app import db, submission_uploads
 from app.database.models import Competition, Category, Submission, SubmissionUploads, User, Votes
 from app.competition import bp
