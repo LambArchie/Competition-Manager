@@ -1,14 +1,15 @@
 wheel
 psycopg2
-werkzeug<1.0.0 # flask-uploads breaks on 1.0.0, will remove when fixed
+werkzeug
 flask
 arrow
 bootstrap-flask
+email_validator
 flask-login
 flask-migrate
 flask-sqlalchemy
 flask-httpauth
-flask-uploads
+Flask-Reuploaded # Replaces flask-uploads
 flask-wtf
 markdown
 bleach
