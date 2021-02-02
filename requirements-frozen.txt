@@ -2,7 +2,7 @@ alembic==1.4.3
 arrow==0.17.0
 astroid==2.4.2
 attrs==20.3.0
-bleach==3.2.1
+bleach==3.3.0
 bleach-allowlist==1.0.3
 Bootstrap-Flask==1.5.1
 click==7.1.2
