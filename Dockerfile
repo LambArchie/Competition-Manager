@@ -1,17 +1,20 @@
-FROM python:3.8-alpine
+FROM python:3.8-slim as builder
+WORKDIR app
+# Psycopg2 requires gcc to build itself, not using binary version as it has issues
+RUN apt-get update -y && \
+    apt-get install --no-install-recommends -y gcc libc-dev libpq-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+FROM python:3.8-slim as app
 WORKDIR /app
 RUN addgroup --gid 61000 docker && \
     adduser --disabled-password --gecos "" --ingroup docker --no-create-home --uid 61000 --home "/app" docker && \
     mkdir /app/logs /app/uploads && \
     chown -R docker:docker /app
-RUN apk update
-# Psycopg2 requires gcc to build itself, not using binary version as it has issues
-RUN apk add postgresql-dev gcc musl-dev && \
-    pip install --no-cache-dir psycopg2 && \
-    apk del gcc musl-dev && \
-    rm -rf /var/cache/apk/*
-COPY --chown=docker:docker requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=docker:docker --from=builder /root/.local .local
 COPY --chown=docker:docker . .
 VOLUME /app/logs
 VOLUME /app/uploads
