@@ -14,7 +14,8 @@
 docker-compose up
 ```
 
-This will automatically pull the latest docker container from [Docker Hub](https://hub.docker.com/r/lambarchie/competition-manager)
+This will automatically pull the latest docker container from [GitHub Container Registry](https://ghcr.io/lambarchie/competition-manager)  
+You can also pull the image from [Docker Hub](https://hub.docker.com/r/lambarchie/competition-manager), but the main location is now GitHub
 
 #### Building the container yourself
 
